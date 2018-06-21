@@ -8,8 +8,11 @@
 
 import UIKit
 
-class MapViewController: UIViewController {
+class MapViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
 
+    private let mapViewCellId = "mapViewCellId"
+//    let mapViewLayout = UICollectionViewFlowLayout()
+    
     let mapBarSelectedContaner: UIView = {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
         view.backgroundColor = .clear
@@ -33,6 +36,18 @@ class MapViewController: UIViewController {
         setupNavBar()
         setupMapBarSelectedView()
 //        setupMapView()
+        
+//        delegate = self
+//        dataSource = self
+//        setupViews()
+        setupMapBarSelectedView()
+        
+        collectionView?.register(MapViewCell.self, forCellWithReuseIdentifier: mapViewCellId)
+        
+//        collectionView.scrollDirection = .horizontal
+        collectionView?.backgroundColor = mainViewBackgroundColor
+        
+        
     }
 
 //    func setupMapView() {
@@ -59,8 +74,53 @@ class MapViewController: UIViewController {
         
     }
     
+//    override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
+//        super.init(frame: frame, collectionViewLayout: mapViewLayout)
+//        delegate = self
+//        dataSource = self
+//        setupViews()
+//        setupNavBar()
+//        setupMapBarSelectedView()
+//
+//    }
+    
+//    func setupViews() {
+//        register(MapViewCell.self, forCellWithReuseIdentifier: mapViewCellId)
+//        mapViewLayout.scrollDirection = .horizontal
+//        backgroundColor = mainViewBackgroundColor
+//    }
+    
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 2
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: mapViewCellId, for: indexPath) as! MapViewCell
+        
+        if indexPath.item == 0 {
+            cell.backgroundColor = .red
+        } else {
+            cell.backgroundColor = .green
+        }
+        
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: view.frame.width, height: view.frame.height)
+    }
     
     
-    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
+    }
 }
 
+class MapViewCell: BaseCell {
+    
+    override func setupViews() {
+        super.setupViews()
+        
+        
+    }
+}

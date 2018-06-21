@@ -21,8 +21,10 @@ class TabBarController: UITabBarController {
         navigationController.title = "站點"
         navigationController.tabBarItem.image = #imageLiteral(resourceName: "note")
         
-        let bikeMapView = MapViewController()
-        let secondnavigationController = UINavigationController(rootViewController: bikeMapView)
+        let mapLayout = UICollectionViewFlowLayout()
+        mapLayout.scrollDirection = .horizontal
+        let mapViewController = MapViewController(collectionViewLayout: mapLayout)
+        let secondnavigationController = UINavigationController(rootViewController: mapViewController)
         secondnavigationController.title = "地圖"
         secondnavigationController.tabBarItem.image = #imageLiteral(resourceName: "map")
         

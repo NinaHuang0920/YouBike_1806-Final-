@@ -8,7 +8,7 @@
 
 import UIKit
 
-class BikeCell: UICollectionViewCell {
+class BikeCell: BaseCell {
     
     var bikeStationInfo: BikeStationInfo? {
         didSet {
@@ -39,13 +39,6 @@ class BikeCell: UICollectionViewCell {
             
             
         }
-    }
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setupViews()
-        self.layer.cornerRadius = 5
-        self.layer.masksToBounds = true
     }
     
     let profileImage: UIImageView = {
@@ -136,7 +129,12 @@ class BikeCell: UICollectionViewCell {
         return label
     }()
     
-    func setupViews() {
+   override func setupViews() {
+    super.setupViews()
+    
+    self.layer.cornerRadius = 5
+    self.layer.masksToBounds = true
+    
         backgroundColor = .white
         
         addSubview(profileImage)
@@ -179,11 +177,5 @@ class BikeCell: UICollectionViewCell {
         
         timeLabelView.addSubview(timeLabel)
         timeLabel.anchor(top: timeLabelView.topAnchor, left: timeLabelView.leftAnchor, bottom: timeLabelView.bottomAnchor, right: timeLabelView.rightAnchor, topConstant: 0.5, leftConstant: 3, bottomConstant: 1, rightConstant: 3, widthConstant: 0, heightConstant: 0)
-    }
-    
-    
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }

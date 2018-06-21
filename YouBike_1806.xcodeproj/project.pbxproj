@@ -21,7 +21,6 @@
 		BF4F974820D8F05F0033343F /* BikeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF4F974720D8F05F0033343F /* BikeCell.swift */; };
 		BFDEBB2220D7ED63006CF920 /* BikeCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDEBB2120D7ED63006CF920 /* BikeCollectionViewController.swift */; };
 		BFF9BEB320DA97D70011C11C /* MapBarSelectedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFF9BEB220DA97D70011C11C /* MapBarSelectedView.swift */; };
-		BFF9BEB520DA98680011C11C /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFF9BEB420DA98680011C11C /* MapView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,7 +40,6 @@
 		BF4F974720D8F05F0033343F /* BikeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BikeCell.swift; sourceTree = "<group>"; };
 		BFDEBB2120D7ED63006CF920 /* BikeCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BikeCollectionViewController.swift; sourceTree = "<group>"; };
 		BFF9BEB220DA97D70011C11C /* MapBarSelectedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapBarSelectedView.swift; sourceTree = "<group>"; };
-		BFF9BEB420DA98680011C11C /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,7 +85,6 @@
 				BF3D654620DA323D00C310EF /* TabBarController.swift */,
 				BF3D654820DA331900C310EF /* MapViewController.swift */,
 				BFF9BEB220DA97D70011C11C /* MapBarSelectedView.swift */,
-				BFF9BEB420DA98680011C11C /* MapView.swift */,
 				BF3D654C20DA433100C310EF /* InformationView.swift */,
 				BF3D654E20DA573600C310EF /* GeneralSetting.swift */,
 			);
@@ -165,7 +162,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BFF9BEB520DA98680011C11C /* MapView.swift in Sources */,
 				BF3D654920DA331900C310EF /* MapViewController.swift in Sources */,
 				BF3D654F20DA573600C310EF /* GeneralSetting.swift in Sources */,
 				BF18DDFF20D39C6C0053B565 /* Json.swift in Sources */,
