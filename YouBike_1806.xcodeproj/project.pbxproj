@@ -8,20 +8,40 @@
 
 /* Begin PBXBuildFile section */
 		BF18DDED20D39C250053B565 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF18DDEC20D39C250053B565 /* AppDelegate.swift */; };
-		BF18DDEF20D39C250053B565 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF18DDEE20D39C250053B565 /* ViewController.swift */; };
 		BF18DDF220D39C250053B565 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BF18DDF020D39C250053B565 /* Main.storyboard */; };
 		BF18DDF420D39C270053B565 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BF18DDF320D39C270053B565 /* Assets.xcassets */; };
 		BF18DDF720D39C270053B565 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BF18DDF520D39C270053B565 /* LaunchScreen.storyboard */; };
+		BF18DDFF20D39C6C0053B565 /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF18DDFE20D39C6C0053B565 /* Json.swift */; };
+		BF18DE0220D3ABD00053B565 /* Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF18DE0120D3ABD00053B565 /* Service.swift */; };
+		BF3D654720DA323D00C310EF /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3D654620DA323D00C310EF /* TabBarController.swift */; };
+		BF3D654920DA331900C310EF /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3D654820DA331900C310EF /* MapViewController.swift */; };
+		BF3D654D20DA433100C310EF /* InformationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3D654C20DA433100C310EF /* InformationView.swift */; };
+		BF3D654F20DA573600C310EF /* GeneralSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3D654E20DA573600C310EF /* GeneralSetting.swift */; };
+		BF4F974620D8DAF30033343F /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF4F974520D8DAF30033343F /* Extensions.swift */; };
+		BF4F974820D8F05F0033343F /* BikeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF4F974720D8F05F0033343F /* BikeCell.swift */; };
+		BFDEBB2220D7ED63006CF920 /* BikeCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDEBB2120D7ED63006CF920 /* BikeCollectionViewController.swift */; };
+		BFF9BEB320DA97D70011C11C /* MapBarSelectedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFF9BEB220DA97D70011C11C /* MapBarSelectedView.swift */; };
+		BFF9BEB520DA98680011C11C /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFF9BEB420DA98680011C11C /* MapView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		BF18DDE920D39C250053B565 /* YouBike_1806.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YouBike_1806.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF18DDEC20D39C250053B565 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		BF18DDEE20D39C250053B565 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		BF18DDF120D39C250053B565 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		BF18DDF320D39C270053B565 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BF18DDF620D39C270053B565 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		BF18DDF820D39C270053B565 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BF18DDFE20D39C6C0053B565 /* Json.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Json.swift; sourceTree = "<group>"; };
+		BF18DE0120D3ABD00053B565 /* Service.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Service.swift; sourceTree = "<group>"; };
+		BF3D654620DA323D00C310EF /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
+		BF3D654820DA331900C310EF /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		BF3D654C20DA433100C310EF /* InformationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InformationView.swift; sourceTree = "<group>"; };
+		BF3D654E20DA573600C310EF /* GeneralSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSetting.swift; sourceTree = "<group>"; };
+		BF4F974520D8DAF30033343F /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		BF4F974720D8F05F0033343F /* BikeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BikeCell.swift; sourceTree = "<group>"; };
+		BFDEBB2120D7ED63006CF920 /* BikeCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BikeCollectionViewController.swift; sourceTree = "<group>"; };
+		BFF9BEB220DA97D70011C11C /* MapBarSelectedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapBarSelectedView.swift; sourceTree = "<group>"; };
+		BFF9BEB420DA98680011C11C /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,11 +75,21 @@
 			isa = PBXGroup;
 			children = (
 				BF18DDEC20D39C250053B565 /* AppDelegate.swift */,
-				BF18DDEE20D39C250053B565 /* ViewController.swift */,
 				BF18DDF020D39C250053B565 /* Main.storyboard */,
 				BF18DDF320D39C270053B565 /* Assets.xcassets */,
 				BF18DDF520D39C270053B565 /* LaunchScreen.storyboard */,
 				BF18DDF820D39C270053B565 /* Info.plist */,
+				BF18DDFE20D39C6C0053B565 /* Json.swift */,
+				BF18DE0120D3ABD00053B565 /* Service.swift */,
+				BFDEBB2120D7ED63006CF920 /* BikeCollectionViewController.swift */,
+				BF4F974720D8F05F0033343F /* BikeCell.swift */,
+				BF4F974520D8DAF30033343F /* Extensions.swift */,
+				BF3D654620DA323D00C310EF /* TabBarController.swift */,
+				BF3D654820DA331900C310EF /* MapViewController.swift */,
+				BFF9BEB220DA97D70011C11C /* MapBarSelectedView.swift */,
+				BFF9BEB420DA98680011C11C /* MapView.swift */,
+				BF3D654C20DA433100C310EF /* InformationView.swift */,
+				BF3D654E20DA573600C310EF /* GeneralSetting.swift */,
 			);
 			path = YouBike_1806;
 			sourceTree = "<group>";
@@ -135,8 +165,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BF18DDEF20D39C250053B565 /* ViewController.swift in Sources */,
+				BFF9BEB520DA98680011C11C /* MapView.swift in Sources */,
+				BF3D654920DA331900C310EF /* MapViewController.swift in Sources */,
+				BF3D654F20DA573600C310EF /* GeneralSetting.swift in Sources */,
+				BF18DDFF20D39C6C0053B565 /* Json.swift in Sources */,
+				BF4F974620D8DAF30033343F /* Extensions.swift in Sources */,
+				BFDEBB2220D7ED63006CF920 /* BikeCollectionViewController.swift in Sources */,
+				BF3D654D20DA433100C310EF /* InformationView.swift in Sources */,
+				BF18DE0220D3ABD00053B565 /* Service.swift in Sources */,
+				BF3D654720DA323D00C310EF /* TabBarController.swift in Sources */,
 				BF18DDED20D39C250053B565 /* AppDelegate.swift in Sources */,
+				BFF9BEB320DA97D70011C11C /* MapBarSelectedView.swift in Sources */,
+				BF4F974820D8F05F0033343F /* BikeCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
