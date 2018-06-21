@@ -81,12 +81,12 @@
 				BF18DE0120D3ABD00053B565 /* Service.swift */,
 				BFDEBB2120D7ED63006CF920 /* BikeCollectionViewController.swift */,
 				BF4F974720D8F05F0033343F /* BikeCell.swift */,
-				BF4F974520D8DAF30033343F /* Extensions.swift */,
 				BF3D654620DA323D00C310EF /* TabBarController.swift */,
 				BF3D654820DA331900C310EF /* MapViewController.swift */,
 				BFF9BEB220DA97D70011C11C /* MapBarSelectedView.swift */,
 				BF3D654C20DA433100C310EF /* InformationView.swift */,
 				BF3D654E20DA573600C310EF /* GeneralSetting.swift */,
+				BF4F974520D8DAF30033343F /* Extensions.swift */,
 			);
 			path = YouBike_1806;
 			sourceTree = "<group>";

@@ -13,7 +13,11 @@ let mapBarLabelText = ["借車地圖","還車地圖"]
 
 class MapBarSelectedView: UIView, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UICollectionViewDelegate {
     
+//    let mapBarWidth:CGFloat = (UIApplication.shared.keyWindow?.bounds.width)!/2
+    
     private let cellId = "cellId"
+    
+    var mapViewController: MapViewController?
     
     lazy var collectionView : UICollectionView = {
         let leyout = UICollectionViewFlowLayout()
@@ -28,7 +32,7 @@ class MapBarSelectedView: UIView, UICollectionViewDelegateFlowLayout, UICollecti
     override init(frame: CGRect) {
         super.init(frame: frame)
        
-//       backgroundColor = .red
+//       backgroundColor = .purple
         
         addSubview(collectionView)
         collectionView.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
@@ -38,14 +42,13 @@ class MapBarSelectedView: UIView, UICollectionViewDelegateFlowLayout, UICollecti
         let selectedIndexPath = IndexPath(item: 0, section: 0)
         collectionView.selectItem(at: selectedIndexPath, animated: false, scrollPosition: UICollectionViewScrollPosition.centeredHorizontally)
         
-                setupHorizontalBar()
+        setupHorizontalBar()
     }
     
     
     var horizontalLeftAnchorConstraint: NSLayoutConstraint?
 
     func setupHorizontalBar() {
-
         let horizontalBarView = UIView()
         horizontalBarView.backgroundColor = mapBarColor
         horizontalBarView.translatesAutoresizingMaskIntoConstraints = false
@@ -60,16 +63,15 @@ class MapBarSelectedView: UIView, UICollectionViewDelegateFlowLayout, UICollecti
      }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+//        //讓ManuBar 隨著點選ManuBarCollection而移動
+//        let x = CGFloat(indexPath.item) * (self.frame.width / 2)
+//        horizontalLeftAnchorConstraint?.constant = x
+//        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+//            self.layoutIfNeeded()
+//        }, completion: nil)
+//        // end
         
-        //讓ManuBar 隨著點選ManuBarCollection而移動
-        let x = CGFloat(indexPath.item) * (self.frame.width / 2)
-        horizontalLeftAnchorConstraint?.constant = x
-        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-            self.layoutIfNeeded()
-        }, completion: nil)
-        // end
-        
-        
+        mapViewController?.scrollToMenuIndex(menuIndex: indexPath.item)
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -78,6 +80,7 @@ class MapBarSelectedView: UIView, UICollectionViewDelegateFlowLayout, UICollecti
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! MapBarSelectedCollectionCell
+        cell.backgroundColor = .clear
         
         cell.selectedBarImage.image = UIImage(named: imageNames[indexPath.item])?.withRenderingMode(.alwaysTemplate)
         
@@ -86,15 +89,15 @@ class MapBarSelectedView: UIView, UICollectionViewDelegateFlowLayout, UICollecti
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: self.frame.width/2, height: self.frame.height)
-    }
+    }  
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 0
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsetsMake(0, 0, 0, 0)
-    }
+//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+//        return UIEdgeInsetsMake(0, 0, 0, 0)
+//    }
    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
