@@ -23,6 +23,7 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         let lb = UILabel()
         lb.text = "借車地圖"
         lb.font = UIFont.boldSystemFont(ofSize: 22)
+        lb.textColor = mapBarColor
         lb.translatesAutoresizingMaskIntoConstraints = false
         return lb
     }()
@@ -34,13 +35,13 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         mb.mapViewController = self
         return mb
     }()
-    
+    // MapBar移動的設定
     func scrollToMenuIndex(menuIndex: Int) {
         let indexPath = IndexPath(item: menuIndex, section: 0)
         collectionView?.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
         setTitleForIndex(index: menuIndex)
     }
-    
+    // MapBar移動的設定
     private func setTitleForIndex(index: Int) {
         mapBarTitle.text = mapBarTitleText[index]
     }
@@ -56,23 +57,16 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         
         collectionView?.isPagingEnabled = true // MapBar移動的設定
     }
-   
+   // MapBar移動的設定
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        print(scrollView.contentOffset.x)
-        
-//        let ratio = (mapBarSelectedContaner.frame.width*0.3)/scrollView.contentOffset.x
-        
-//        let ratio = mapBarSelectedVi ew.frame.width / scrollView.contentOffset.x
-        mapBarSelectedView.horizontalLeftAnchorConstraint?.constant = scrollView.contentOffset.x * 0.15
-        //(scrollView.contentOffset.x) * ratio * 0.5
+        mapBarSelectedView.horizontalLeftAnchorConstraint?.constant = scrollView.contentOffset.x * 0.15  // width * 0.3 / 2
     }
-    
+    // MapBar移動的設定
     override func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
 //        print(targetContentOffset.pointee.x / view.frame.width)
         let index = targetContentOffset.pointee.x / view.frame.width
         let indexPath = IndexPath(item: Int(index), section: 0)
         mapBarSelectedView.collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
-        
         setTitleForIndex(index: Int(index))
     }
     
@@ -104,11 +98,8 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: mapViewCellId, for: indexPath) as! MapViewCell
         
-        if indexPath.item == 0 {
-            cell.backgroundColor = .red
-        } else {
-            cell.backgroundColor = .green
-        }
+        let bgcolors = [UIColor.lightGray, UIColor.cyan]
+      cell.backgroundColor = bgcolors[indexPath.item]
         
         return cell
     }
@@ -123,11 +114,3 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
     }
 }
 
-class MapViewCell: BaseCell {
-    
-    override func setupViews() {
-        super.setupViews()
-        
-        
-    }
-}

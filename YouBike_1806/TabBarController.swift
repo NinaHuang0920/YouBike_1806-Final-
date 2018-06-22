@@ -16,7 +16,7 @@ class TabBarController: UITabBarController {
         super.viewDidLoad()
 
         let layout = UICollectionViewFlowLayout()
-        let bikeCollectionViewController = BikeCollectionViewController(collectionViewLayout: layout)
+        let bikeCollectionViewController = BikeViewController(collectionViewLayout: layout)
         let navigationController = UINavigationController(rootViewController: bikeCollectionViewController)
         navigationController.title = "站點"
         navigationController.tabBarItem.image = #imageLiteral(resourceName: "note")

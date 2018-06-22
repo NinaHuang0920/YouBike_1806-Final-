@@ -8,17 +8,28 @@
 
 import UIKit
 
-class BikeCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
+class BikeViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     
     var bikeDatas: [BikeStationInfo]?
     
-   static var bikeControllerInstance = BikeCollectionViewController()
+    var refreshControl = UIRefreshControl()
     
     let networkCheckFailLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.boldSystemFont(ofSize: 30)
-        label.text = "NETWORK FAIL \n網路沒開/網址錯誤"
+        label.text = "資料載入失敗\n重新下拉更新"
+        label.textAlignment = .center
+        label.numberOfLines = 2
+        return label
+    }()
+    
+    let refreshFailLabel: UILabel = {
+        let label = UILabel()
+        label.isHidden = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.boldSystemFont(ofSize: 30)
+        label.text = "更新失敗\n請確認網路狀態"
         label.textAlignment = .center
         label.numberOfLines = 2
         return label
@@ -41,8 +52,57 @@ class BikeCollectionViewController: UICollectionViewController, UICollectionView
         self.collectionView!.register(BikeCell.self, forCellWithReuseIdentifier: cellId)
         
         setupNatWorkFailMessage(showMessage: networkCheckFail!)
-    }
+        setupRefreshControl()
 
+    }
+    
+
+    func setupRefreshControl() {
+        refreshControl.addTarget(self, action: #selector(refreshContents), for: .valueChanged)
+        if #available(iOS 10.0, *) {
+            collectionView?.refreshControl = refreshControl
+        } else {
+            collectionView?.addSubview(refreshControl)
+        }
+    }
+    
+    @objc func refreshContents() {
+        refreshControl.attributedTitle = NSAttributedString(string: "資料更新中")
+         self.showRefreshFailMessage(showMessage: false)
+        self.setupNatWorkFailMessage(showMessage: true)
+        self.bikeDatas?.removeAll()
+        self.SetService()
+        
+        self.collectionView?.reloadData()
+        self.perform(#selector(finishedRefreshing), with: nil, afterDelay: 1.5)
+    }
+    
+    @objc func finishedRefreshing() {
+        UIView.animate(withDuration: 0.2, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            self.refreshControl.attributedTitle = NSAttributedString(string: "資料更新完畢")
+        }, completion: { _ in
+             self.refreshControl.endRefreshing()
+            
+            if let bikeDataCount = self.bikeDatas?.count {
+                if bikeDataCount == 0 {
+                    self.showRefreshFailMessage(showMessage: true)
+                } else {
+                    self.showRefreshFailMessage(showMessage: false)
+                }
+            } else {
+                self.setupNatWorkFailMessage(showMessage: false)
+                self.showRefreshFailMessage(showMessage: true)
+            }
+        })
+    }
+    
+    func showRefreshFailMessage(showMessage: Bool) {
+        refreshFailLabel.isHidden = !showMessage
+        view.addSubview(refreshFailLabel)
+        refreshFailLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        refreshFailLabel.anchor(top: nil, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 0, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: 0, heightConstant: 0)
+    }
+    
     func SetService() {
         Service.sharedInstance.fetchJsonData(urlString: webString, completion: { (bikeinfos, err) in
             if let err = err {
@@ -54,6 +114,7 @@ class BikeCollectionViewController: UICollectionViewController, UICollectionView
             DispatchQueue.main.async {
                 self.setupNatWorkFailMessage(showMessage: networkCheckFail!)
                 self.collectionView?.reloadData()
+                
             }
         })
     }
