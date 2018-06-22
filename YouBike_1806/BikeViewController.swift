@@ -19,6 +19,7 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.boldSystemFont(ofSize: 30)
         label.text = "資料載入失敗\n重新下拉更新"
+        label.textColor = UIColor.darkGray
         label.textAlignment = .center
         label.numberOfLines = 2
         return label
@@ -30,6 +31,7 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.boldSystemFont(ofSize: 30)
         label.text = "更新失敗\n請確認網路狀態"
+        label.textColor = UIColor.lightGray
         label.textAlignment = .center
         label.numberOfLines = 2
         return label
@@ -43,7 +45,7 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
         SetService()
         
         navigationItem.title = "租賃站列表"
-        navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: UIFont.boldSystemFont(ofSize: 22)]
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: UIFont.boldSystemFont(ofSize: 22), NSAttributedStringKey.foregroundColor: mapBarColor]
         navigationController?.navigationBar.barTintColor = stationBarColor
         navigationController?.navigationBar.isTranslucent = false
         
@@ -69,7 +71,6 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
     @objc func refreshContents() {
         refreshControl.attributedTitle = NSAttributedString(string: "資料更新中")
          self.showRefreshFailMessage(showMessage: false)
-        self.setupNatWorkFailMessage(showMessage: true)
         self.bikeDatas?.removeAll()
         self.SetService()
         
