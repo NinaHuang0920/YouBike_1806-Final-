@@ -27,17 +27,17 @@ class BikeStationInfo: Decodable {
     }
  
     var sarea: String?     //場站區域(中文)
-    var sareaen: String?   //場站區域(英文)
+//    var sareaen: String?   //場站區域(英文)
     var sna: String?       //站場名稱(中文)
-    var aren: String?      //地址(英文)
+//    var aren: String?      //地址(英文)
     var sno: String?       //站點代號
     var tot: String?       //站場總停車格
-    var snaen: String?     //站場名稱(英文)
+//    var snaen: String?     //站場名稱(英文)
     var bemp: String?      //空站數量(可還車位數)
     var ar: String?        //地址(中文)
     var act: String?       //全站禁用狀態(場站暫停營運)
-    var lat: String?       //緯度
-    var lng: String?       //經度
+//    var lat: String?       //緯度
+//    var lng: String?       //經度
     var sbi: String?       //場站目前車輛數量
     var mday: String?      //資料更新時間
     var locate:CLLocationCoordinate2D? //lat緯度, lng經度
@@ -72,9 +72,9 @@ class BikeStationInfo: Decodable {
         bemp = try container.decode(String.self, forKey: .bemp)
         mday = try container.decode(String.self, forKey: .mday)
         act = try container.decode(String.self, forKey: .act)
-        sareaen = try container.decode(String.self, forKey: .sareaen)
-        snaen = try container.decode(String.self, forKey: .snaen)
-        aren = try container.decode(String.self, forKey: .aren)
+//        sareaen = try container.decode(String.self, forKey: .sareaen)
+//        snaen = try container.decode(String.self, forKey: .snaen)
+//        aren = try container.decode(String.self, forKey: .aren)
         
         let lat = try container.decode(String.self, forKey: .lat)
         let lng = try container.decode(String.self, forKey: .lng)

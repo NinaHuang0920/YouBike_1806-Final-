@@ -73,7 +73,6 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
          self.showRefreshFailMessage(showMessage: false)
         self.bikeDatas?.removeAll()
         self.SetService()
-        
         self.collectionView?.reloadData()
         self.perform(#selector(finishedRefreshing), with: nil, afterDelay: 1.5)
     }
@@ -82,8 +81,7 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
         UIView.animate(withDuration: 0.2, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             self.refreshControl.attributedTitle = NSAttributedString(string: "資料更新完畢")
         }, completion: { _ in
-             self.refreshControl.endRefreshing()
-            
+            self.refreshControl.endRefreshing()
             if let bikeDataCount = self.bikeDatas?.count {
                 if bikeDataCount == 0 {
                     self.showRefreshFailMessage(showMessage: true)
@@ -107,7 +105,7 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
     func SetService() {
         Service.sharedInstance.fetchJsonData(urlString: webString, completion: { (bikeinfos, err) in
             if let err = err {
-                print("ViewController error fetching json:", err)
+                print("BikeViewController error fetching json:", err)
             }
             if let bikeinfos = bikeinfos {
                 self.bikeDatas = bikeinfos

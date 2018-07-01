@@ -8,13 +8,12 @@
 
 import UIKit
 
-let imageNames = ["bicycle", "parking"]
-let mapBarLabelText = ["借車地圖","還車地圖"]
-
 class MapBarSelectedView: UIView, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UICollectionViewDelegate {
     
     private let cellId = "cellId"
+    private let imageNames = ["bicycle", "parking"]
     
+    var horizontalLeftAnchorConstraint: NSLayoutConstraint?
     var mapViewController: MapViewController?
     
     lazy var collectionView : UICollectionView = {
@@ -27,24 +26,27 @@ class MapBarSelectedView: UIView, UICollectionViewDelegateFlowLayout, UICollecti
         return cv
     }()
     
+    lazy var mapViewBaseCell: MapViewBaseCell = {
+        let mc = MapViewBaseCell()
+        mc.mapBarSelectedView = self
+        return mc
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
-       
-//       backgroundColor = .purple
-        
-        addSubview(collectionView)
-        collectionView.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
-        
-        collectionView.register(MapBarSelectedViewCell.self, forCellWithReuseIdentifier: cellId)
-        
-        let selectedIndexPath = IndexPath(item: 0, section: 0)
-        collectionView.selectItem(at: selectedIndexPath, animated: false, scrollPosition: UICollectionViewScrollPosition.centeredHorizontally)
-        
+    
+        setupCollectionView()
         setupHorizontalBar()
+        
     }
     
-    
-    var horizontalLeftAnchorConstraint: NSLayoutConstraint?
+    func setupCollectionView() {
+        addSubview(collectionView)
+        collectionView.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
+        collectionView.register(MapBarSelectedViewCell.self, forCellWithReuseIdentifier: cellId)
+        let selectedIndexPath = IndexPath(item: 0, section: 0)
+        collectionView.selectItem(at: selectedIndexPath, animated: false, scrollPosition: UICollectionViewScrollPosition.centeredHorizontally)
+    }
 
     func setupHorizontalBar() {
         let horizontalBarView = UIView()
@@ -60,6 +62,7 @@ class MapBarSelectedView: UIView, UICollectionViewDelegateFlowLayout, UICollecti
         horizontalBarView.heightAnchor.constraint(equalToConstant: 4).isActive = true
      }
     
+    
     // MapBar移動的設定
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 //        //讓ManuBar 隨著點選ManuBarCollection而移動
@@ -69,8 +72,8 @@ class MapBarSelectedView: UIView, UICollectionViewDelegateFlowLayout, UICollecti
 //            self.layoutIfNeeded()
 //        }, completion: nil)
 //        // end
-        
         mapViewController?.scrollToMenuIndex(menuIndex: indexPath.item)
+        mapViewBaseCell.mapBarItem = indexPath.item
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -104,7 +107,7 @@ class MapBarSelectedViewCell: BaseCell {
     let selectedBarImage: UIImageView = {
         let image = UIImageView()
         image.image = #imageLiteral(resourceName: "bicycle").withRenderingMode(.alwaysTemplate)
-        image.contentMode = .scaleAspectFill
+        image.contentMode = .scaleAspectFit
         image.tintColor = selectedMapBarItemColor
         return image
     }()
@@ -118,5 +121,5 @@ class MapBarSelectedViewCell: BaseCell {
         override func setupViews() {
         super.setupViews()
         addSubview(selectedBarImage)
-        selectedBarImage.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)        }
+        selectedBarImage.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 5, rightConstant: 0, widthConstant: 0, heightConstant: 0)        }
 }

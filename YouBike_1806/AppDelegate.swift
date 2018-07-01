@@ -22,6 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController = TabBarController()
         UITabBar.appearance().backgroundColor = UIColor.rgb(red: 250, green: 246, blue: 227)
         
+//        application.statusBarStyle = .lightContent  // plist要增加
         
         return true
     }

@@ -7,11 +7,14 @@
 //
 
 import UIKit
+import MapKit
 
-class MapViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
+ var bikeDatas: [BikeStationInfo]?
+
+class MapViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, CLLocationManagerDelegate {
 
     private let mapViewCellId = "mapViewCellId"
-    let mapBarTitleText = ["借車地圖","還車地圖"]
+   private let bikeMapViewCellId = "bikeMapViewCellId"
     
     let mapBarSelectedContaner: UIView = {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
@@ -27,14 +30,20 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         lb.translatesAutoresizingMaskIntoConstraints = false
         return lb
     }()
-    
-//    let mapBarSelectedView = MapBarSelectedView()
+
     // MapBar移動的設定
     lazy var mapBarSelectedView: MapBarSelectedView = {
         let mb = MapBarSelectedView()
         mb.mapViewController = self
         return mb
     }()
+    
+    lazy var mapViewBaseCell: MapViewBaseCell = {
+        let mc = MapViewBaseCell()
+        mc.mapViewController = self
+        return mc
+    }()
+    
     // MapBar移動的設定
     func scrollToMenuIndex(menuIndex: Int) {
         let indexPath = IndexPath(item: menuIndex, section: 0)
@@ -43,6 +52,7 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
     }
     // MapBar移動的設定
     private func setTitleForIndex(index: Int) {
+        let mapBarTitleText = ["借車地圖","還車地圖"]
         mapBarTitle.text = mapBarTitleText[index]
     }
     
@@ -50,13 +60,13 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         super.viewDidLoad()
         setupNavBar()
         setupMapBarSelectedView()
-        setupMapBarSelectedView()
-        
-        collectionView?.register(MapViewCell.self, forCellWithReuseIdentifier: mapViewCellId)
+        collectionView?.register(MapViewBaseCell.self, forCellWithReuseIdentifier: mapViewCellId)
+//        collectionView?.register(ParkingMapViewCell.self, forCellWithReuseIdentifier: bikeMapViewCellId)
         collectionView?.backgroundColor = mainViewBackgroundColor
-        
         collectionView?.isPagingEnabled = true // MapBar移動的設定
     }
+    
+    
    // MapBar移動的設定
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         mapBarSelectedView.horizontalLeftAnchorConstraint?.constant = scrollView.contentOffset.x * 0.15  // width * 0.3 / 2
@@ -68,6 +78,7 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         let indexPath = IndexPath(item: Int(index), section: 0)
         mapBarSelectedView.collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
         setTitleForIndex(index: Int(index))
+        mapViewBaseCell.mapViewItem = Int(index)
     }
     
     func setupNavBar() {
@@ -77,18 +88,14 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         navigationController?.navigationBar.isTranslucent = false
         navigationItem.titleView = mapBarSelectedContaner
     }
-
+    
     func setupMapBarSelectedView() {
         mapBarSelectedContaner.addSubview(mapBarSelectedView)
         mapBarSelectedContaner.addSubview(mapBarTitle)
         
         mapBarSelectedView.anchor(top: mapBarSelectedContaner.topAnchor, left: nil, bottom: mapBarSelectedContaner.bottomAnchor, right: mapBarSelectedContaner.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: screenWidth*0.3, heightConstant: 0)
-        
-//        mapBarSelectedView.anchor(top: mapBarSelectedContaner.topAnchor, left: mapBarSelectedContaner.leftAnchor, bottom: mapBarSelectedContaner.bottomAnchor, right: mapBarSelectedContaner.rightAnchor, topConstant: 0, leftConstant: mapBarSelectedContaner.frame.width*0.7, bottomConstant: 0, rightConstant: 20, widthConstant: 0, heightConstant: 0)
-        
         mapBarTitle.centerYAnchor.constraint(equalTo: mapBarSelectedContaner.centerYAnchor).isActive = true
         mapBarTitle.centerXAnchor.constraint(equalTo: mapBarSelectedContaner.centerXAnchor).isActive = true
-        
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -96,21 +103,27 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: mapViewCellId, for: indexPath) as! MapViewCell
         
-        let bgcolors = [UIColor.lightGray, UIColor.cyan]
-      cell.backgroundColor = bgcolors[indexPath.item]
-        
-        return cell
+//        if indexPath.item == 1 {
+//            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: bikeMapViewCellId, for: indexPath) as! ParkingMapViewCell
+//            return cell
+//        }
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: mapViewCellId, for: indexPath) as! MapViewBaseCell
+            return cell
+
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: view.frame.width, height: view.frame.height)
     }
     
-    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 0
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+ 
     }
 }
 
