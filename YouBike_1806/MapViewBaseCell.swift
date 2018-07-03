@@ -9,23 +9,23 @@
 import UIKit
 import MapKit
 
-class MapViewBaseCell: BaseCell {
+class MapViewBaseCell: BaseCell, UISearchControllerDelegate {
     
-    var mapViewItem:Int = 0 {
-        didSet {
-            print("mapViewItem 監測值", mapViewItem)
-        }
-    }
-    var mapBarItem:Int = 0 {
-        didSet {
-            print("mapBarItem 監測值",mapBarItem)
-        }
-    }
+//    var mapViewItem:Int = 0 {
+//        didSet {
+//            print("mapViewItem 監測值", mapViewItem)
+//        }
+//    }
+//    var mapBarItem:Int = 0 {
+//        didSet {
+//            print("mapBarItem 監測值",mapBarItem)
+//        }
+//    }
     
     let cellItem = 0
     
     var mapViewController: MapViewController?
-    var mapBarSelectedView: MapBarSelectedView?
+//    var mapBarSelectedView: MapBarSelectedView?
     
     var currentCoordinate: CLLocationCoordinate2D!
 //    let locationManager = CLLocationManager()   //UL
@@ -51,6 +51,24 @@ class MapViewBaseCell: BaseCell {
         return manager
     }()
     
+    
+//    let searchController = UISearchController(searchResultsController: nil)
+//    var searchActive: Bool = false {
+//        didSet {
+//            print("searchActive : ",searchActive)
+//        }
+//    }
+//    var isShowSearchResult: Bool = false {
+//        didSet {
+//            print("isShowSearchResult : ",isShowSearchResult)
+//        }
+//    }
+//    var searchArr: [BikeStationInfo] = [BikeStationInfo]() {
+//        didSet {
+//            self.mapView.updateConstraints()
+//        }
+//    }
+
     lazy var searchBar: UISearchBar = {
         let sb = UISearchBar()
         sb.delegate = self
@@ -68,7 +86,7 @@ class MapViewBaseCell: BaseCell {
         return btn
     }()
     
-    let alertView: UIView = {
+    let networkMessageView: UIView = {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: screenWidth*0.8, height: screenHeight*0.3))
         view.backgroundColor = UIColor(white: 0.15, alpha: 0.95)
         view.layer.cornerRadius = 10
@@ -78,13 +96,13 @@ class MapViewBaseCell: BaseCell {
         return view
     }()
     
-    let cancelButton: UIButton = {
+    let networkMessageCancelButton: UIButton = {
         let btn = UIButton(type: UIButtonType.system)
         btn.setImage(#imageLiteral(resourceName: "cross").withRenderingMode(UIImageRenderingMode.alwaysOriginal), for: .normal)
         return btn
     }()
     
-    let alertLabel: UILabel = {
+    let networkMessageLabel: UILabel = {
         let lb = UILabel()
         lb.text = "資料更新成功"
         lb.textColor = UIColor.orange
@@ -99,11 +117,28 @@ class MapViewBaseCell: BaseCell {
         super.setupViews()
         
         SetService()
+//        setupSearchControl()
         setupSearchBar()
         setupMap()
         setupUserTrackingButtonAndScaleView()
         setPinToMap()
         setUpdateButton()
+    }
+    
+//    func setupSearchControl() {
+//        self.searchController.delegate = self
+//        self.searchController.searchBar.delegate = self
+//        self.searchController.searchResultsUpdater = self
+//        self.searchController.hidesNavigationBarDuringPresentation = false
+//        self.searchController.obscuresBackgroundDuringPresentation = false
+//        self.searchController.searchBar.placeholder = "請輸入關鍵字"
+//        searchController.searchBar.becomeFirstResponder()
+//        present(searchController, animated: true, completion: nil)
+//    }
+    
+    func setupSearchBar() {
+        addSubview(searchBar)
+        searchBar.anchor(top: self.topAnchor, left: self.leftAnchor, bottom: nil, right: self.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 56)
     }
     
     func setUpdateButton() {
@@ -116,31 +151,31 @@ class MapViewBaseCell: BaseCell {
         perform(#selector(handleNetWorkStatus), with: self, afterDelay: 1)
     }
     
-    func showAlertView(mapNetworkCheck: Bool) {
-        addSubview(alertView)
-        alertView.addSubview(alertLabel)
-        alertView.addSubview(cancelButton)
-        alertView.center = CGPoint(x: frame.width/2, y: frame.height/2)
-        alertLabel.anchor(top: alertView.topAnchor, left: alertView.leftAnchor, bottom: alertView.bottomAnchor, right: alertView.rightAnchor, topConstant: 60, leftConstant: 60, bottomConstant: 60, rightConstant: 60, widthConstant: 0, heightConstant: 0)
-        cancelButton.anchor(top: alertView.topAnchor, left: nil, bottom: nil, right: alertView.rightAnchor, topConstant: -10, leftConstant: 0, bottomConstant: 0, rightConstant: -10, widthConstant: 60, heightConstant: 60)
-        cancelButton.addTarget(self, action: #selector(handleCancelBtn), for: .touchUpInside)
+    func showNetworkMessageView(mapNetworkCheck: Bool) {
+        addSubview(networkMessageView)
+        networkMessageView.addSubview(networkMessageLabel)
+        networkMessageView.addSubview(networkMessageCancelButton)
+        networkMessageView.center = CGPoint(x: frame.width/2, y: frame.height/2)
+        networkMessageLabel.anchor(top: networkMessageView.topAnchor, left: networkMessageView.leftAnchor, bottom: networkMessageView.bottomAnchor, right: networkMessageView.rightAnchor, topConstant: 60, leftConstant: 60, bottomConstant: 60, rightConstant: 60, widthConstant: 0, heightConstant: 0)
+        networkMessageCancelButton.anchor(top: networkMessageView.topAnchor, left: nil, bottom: nil, right: networkMessageView.rightAnchor, topConstant: -10, leftConstant: 0, bottomConstant: 0, rightConstant: -10, widthConstant: 60, heightConstant: 60)
+        networkMessageCancelButton.addTarget(self, action: #selector(handleNetworkMessageViewCancelBtn), for: .touchUpInside)
         if mapNetworkCheck == false {
-            alertLabel.text = "請確認網路"
+            networkMessageLabel.text = "請確認網路"
         } else if mapNetworkCheck == true {
-            alertLabel.text = "資料下載完成"
+            networkMessageLabel.text = "資料下載完成"
         }
     }
     
-    @objc func handleCancelBtn() {
-        alertView.removeFromSuperview()
+    @objc func handleNetworkMessageViewCancelBtn() {
+        networkMessageView.removeFromSuperview()
     }
     
     @objc func handleNetWorkStatus() {
-        showAlertView(mapNetworkCheck: mapNetworkCheck)
+        showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
         if mapNetworkCheck == false {
-            alertLabel.text = "更新失敗\n請確認網路"
+            networkMessageLabel.text = "更新失敗\n請確認網路"
         } else if mapNetworkCheck == true {
-            alertLabel.text = "資料更新完畢"
+            networkMessageLabel.text = "資料更新完畢"
         }
     }
 
@@ -157,14 +192,9 @@ class MapViewBaseCell: BaseCell {
             DispatchQueue.main.async {
                 self.mapView.updateConstraints()
                 self.mapViewController?.collectionView?.reloadData()
-                self.showAlertView(mapNetworkCheck: mapNetworkCheck)
+                self.showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
             }
         })
-    }
-    
-    func setupSearchBar() {
-        addSubview(searchBar)
-        searchBar.anchor(top: self.topAnchor, left: self.leftAnchor, bottom: nil, right: self.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 56)
     }
 
     func setupMap()  {
@@ -200,7 +230,7 @@ class MapViewBaseCell: BaseCell {
     }
     
     func setPinToMap() {
-        showAlertView(mapNetworkCheck: mapNetworkCheck)
+        showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
         arrAnnotation.removeAll()
         guard let bikeDataCount = bikeDatas?.count else { return }
         print("MAP PIN bikeDataCount",bikeDataCount)
@@ -233,6 +263,14 @@ extension MapViewBaseCell: CLLocationManagerDelegate {
         currentCoordinate = currentLocation.coordinate
         mapView.userTrackingMode = .followWithHeading
     }
+}
+
+extension MapViewBaseCell: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        //Todo
+    }
+    
+    
 }
 
 extension MapViewBaseCell: UISearchBarDelegate {

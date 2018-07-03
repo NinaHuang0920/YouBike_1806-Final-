@@ -26,11 +26,11 @@ class MapBarSelectedView: UIView, UICollectionViewDelegateFlowLayout, UICollecti
         return cv
     }()
     
-    lazy var mapViewBaseCell: MapViewBaseCell = {
-        let mc = MapViewBaseCell()
-        mc.mapBarSelectedView = self
-        return mc
-    }()
+//    lazy var mapViewBaseCell: MapViewBaseCell = {
+//        let mc = MapViewBaseCell()
+//        mc.mapBarSelectedView = self
+//        return mc
+//    }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -73,7 +73,7 @@ class MapBarSelectedView: UIView, UICollectionViewDelegateFlowLayout, UICollecti
 //        }, completion: nil)
 //        // end
         mapViewController?.scrollToMenuIndex(menuIndex: indexPath.item)
-        mapViewBaseCell.mapBarItem = indexPath.item
+//        mapViewBaseCell.mapBarItem = indexPath.item
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

@@ -38,11 +38,11 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         return mb
     }()
     
-    lazy var mapViewBaseCell: MapViewBaseCell = {
-        let mc = MapViewBaseCell()
-        mc.mapViewController = self
-        return mc
-    }()
+//    lazy var mapViewBaseCell: MapViewBaseCell = {
+//        let mc = MapViewBaseCell()
+//        mc.mapViewController = self
+//        return mc
+//    }()
     
     // MapBar移動的設定
     func scrollToMenuIndex(menuIndex: Int) {
@@ -78,7 +78,7 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         let indexPath = IndexPath(item: Int(index), section: 0)
         mapBarSelectedView.collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
         setTitleForIndex(index: Int(index))
-        mapViewBaseCell.mapViewItem = Int(index)
+//        mapViewBaseCell.mapViewItem = Int(index)
     }
     
     func setupNavBar() {

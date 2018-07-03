@@ -13,9 +13,9 @@ class ParkingMapViewCell: MapViewBaseCell {
     
     private let cellItem: Int = 1
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-    }
+//    override init(frame: CGRect) {
+//        super.init(frame: frame)
+//    }
     
     override func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if annotation is MKUserLocation {
@@ -31,8 +31,8 @@ class ParkingMapViewCell: MapViewBaseCell {
         return view
     }
 
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+//    required init?(coder aDecoder: NSCoder) {
+//        fatalError("init(coder:) has not been implemented")
+//    }
 }
 
