@@ -60,12 +60,17 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         super.viewDidLoad()
         setupNavBar()
         setupMapBarSelectedView()
+        setupMapBarLeftBtns()
+        setupCollectionView()
+        
+    }
+
+    func setupCollectionView() {
         collectionView?.register(MapViewBaseCell.self, forCellWithReuseIdentifier: mapViewCellId)
-//        collectionView?.register(ParkingMapViewCell.self, forCellWithReuseIdentifier: bikeMapViewCellId)
+        //        collectionView?.register(ParkingMapViewCell.self, forCellWithReuseIdentifier: bikeMapViewCellId)
         collectionView?.backgroundColor = mainViewBackgroundColor
         collectionView?.isPagingEnabled = true // MapBar移動的設定
     }
-    
     
    // MapBar移動的設定
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -97,6 +102,11 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         mapBarTitle.centerYAnchor.constraint(equalTo: mapBarSelectedContaner.centerYAnchor).isActive = true
         mapBarTitle.centerXAnchor.constraint(equalTo: mapBarSelectedContaner.centerXAnchor).isActive = true
     }
+    
+    func setupMapBarLeftBtns() {
+     
+    }
+    
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 2

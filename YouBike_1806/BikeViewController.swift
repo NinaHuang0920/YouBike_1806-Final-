@@ -161,6 +161,7 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
         if searchController.isActive == true {
             print("你選擇的是 \(self.searchArr[indexPath.row].sna!)")
         } else {
@@ -196,10 +197,11 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
         headerCell.headerLabel.text = searchResultText(searchArrCount: searchArr.count)
         return headerCell
     }
+    
+//     var searchTextText: String = ""
 }
 
 class HeaderCell: BaseCell {
-    
     let headerLabel: UILabel = {
         let lb = UILabel()
         lb.textAlignment = .center
@@ -210,7 +212,6 @@ class HeaderCell: BaseCell {
         lb.textColor = UIColor.white
         return lb
     }()
-    
     override func setupViews() {
         super.setupViews()
        
@@ -235,6 +236,11 @@ extension BikeViewController: UISearchBarDelegate {
         isShowSearchResult = false
     }
 
+//    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+////        guard let searchText = searchController.searchBar.text else { return }
+//        searchTextText = searchText
+//        print("輸入的是：",searchTextText)
+//    }
 }
 
 extension BikeViewController: UISearchResultsUpdating {
@@ -242,16 +248,11 @@ extension BikeViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         
         isShowSearchResult = true
-         guard let searchText = searchController.searchBar.text else { return }
+        guard let searchText = searchController.searchBar.text else { return }
         if searchText.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).count == 0 { return }
-        
         searchArr = bikeDatas!.filter({ (bikeStation) -> Bool in
-            return bikeStation.sna?.lowercased().range(of: searchText.lowercased()) != nil
+            return (bikeStation.sna?.contains(searchText))! || (bikeStation.ar?.contains(searchText))!
         })
-        searchArr = bikeDatas!.filter({ (bikeStation) -> Bool in
-            return bikeStation.ar?.lowercased().range(of: searchText.lowercased()) != nil
-        })
-
         collectionView?.reloadData()
     }
 }
