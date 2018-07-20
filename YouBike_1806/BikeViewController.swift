@@ -127,7 +127,8 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
     func SetService() {
         Service.sharedInstance.fetchJsonData(urlString: webString, completion: { (bikeinfos, err) in
             if let err = err {
-                print("BikeViewController error fetching json:", err)
+//                print("BikeViewController error fetching json form URL:", err)
+                 print("BikeViewController 偵測網路沒開：",err)
             }
             if let bikeinfos = bikeinfos {
                 self.bikeDatas = bikeinfos

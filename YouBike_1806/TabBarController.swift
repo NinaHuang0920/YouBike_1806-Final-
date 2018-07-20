@@ -33,7 +33,7 @@ class TabBarController: UITabBarController {
         infoNavgationController.title = "更多"
         infoNavgationController.tabBarItem.image = #imageLiteral(resourceName: "information")
         
-        viewControllers = [secondnavigationController, navigationController, infoNavgationController]
+        viewControllers = [navigationController, secondnavigationController, infoNavgationController]
         tabBar.isTranslucent = false
         tabBar.tintColor = mapBarColor
         

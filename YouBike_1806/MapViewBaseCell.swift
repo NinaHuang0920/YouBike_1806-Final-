@@ -9,7 +9,7 @@
 import UIKit
 import MapKit
 
-class MapViewBaseCell: BaseCell, UISearchControllerDelegate {
+class MapViewBaseCell: BaseCell {
     
 //    var mapViewItem:Int = 0 {
 //        didSet {
@@ -25,12 +25,15 @@ class MapViewBaseCell: BaseCell, UISearchControllerDelegate {
     let cellItem = 0
     
     var mapViewController: MapViewController?
-//    var mapBarSelectedView: MapBarSelectedView?
+//    lazy var mapViewController: MapViewController = {
+//        let mvc = MapViewController()
+//        mvc.mapViewBaseCell = self
+//        return mvc
+//    }()
     
     var currentCoordinate: CLLocationCoordinate2D!
-//    let locationManager = CLLocationManager()   //UL
     var selectedPinLocation: CLLocationCoordinate2D!
-    var arrAnnotation = [MKPointAnnotation]()
+    var arrAnnotation = [MKAnnotation]()
     
     lazy var mapView: MKMapView = {
         let mapv = MKMapView()
@@ -51,31 +54,6 @@ class MapViewBaseCell: BaseCell, UISearchControllerDelegate {
         return manager
     }()
     
-    
-//    let searchController = UISearchController(searchResultsController: nil)
-//    var searchActive: Bool = false {
-//        didSet {
-//            print("searchActive : ",searchActive)
-//        }
-//    }
-//    var isShowSearchResult: Bool = false {
-//        didSet {
-//            print("isShowSearchResult : ",isShowSearchResult)
-//        }
-//    }
-//    var searchArr: [BikeStationInfo] = [BikeStationInfo]() {
-//        didSet {
-//            self.mapView.updateConstraints()
-//        }
-//    }
-
-    lazy var searchBar: UISearchBar = {
-        let sb = UISearchBar()
-        sb.delegate = self
-        sb.placeholder = "搜尋站點"
-        return sb
-    }()
-    
     lazy var mapDataUpdateButton: UIButton = {
         let btn = UIButton(type: UIButtonType.custom)
         btn.backgroundColor = .black
@@ -86,15 +64,6 @@ class MapViewBaseCell: BaseCell, UISearchControllerDelegate {
         return btn
     }()
     
-    let networkMessageView: UIView = {
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: screenWidth*0.8, height: screenHeight*0.3))
-        view.backgroundColor = UIColor(white: 0.15, alpha: 0.95)
-        view.layer.cornerRadius = 10
-        view.layer.borderWidth = 5
-        view.layer.borderColor = UIColor.orange.cgColor
-        view.layer.masksToBounds = true
-        return view
-    }()
     
     let networkMessageCancelButton: UIButton = {
         let btn = UIButton(type: UIButtonType.system)
@@ -117,29 +86,12 @@ class MapViewBaseCell: BaseCell, UISearchControllerDelegate {
         super.setupViews()
         
         SetService()
-//        setupSearchControl()
-        setupSearchBar()
         setupMap()
         setupUserTrackingButtonAndScaleView()
         setPinToMap()
         setUpdateButton()
     }
     
-//    func setupSearchControl() {
-//        self.searchController.delegate = self
-//        self.searchController.searchBar.delegate = self
-//        self.searchController.searchResultsUpdater = self
-//        self.searchController.hidesNavigationBarDuringPresentation = false
-//        self.searchController.obscuresBackgroundDuringPresentation = false
-//        self.searchController.searchBar.placeholder = "請輸入關鍵字"
-//        searchController.searchBar.becomeFirstResponder()
-//        present(searchController, animated: true, completion: nil)
-//    }
-    
-    func setupSearchBar() {
-        addSubview(searchBar)
-        searchBar.anchor(top: self.topAnchor, left: self.leftAnchor, bottom: nil, right: self.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 56)
-    }
     
     func setUpdateButton() {
         mapView.addSubview(mapDataUpdateButton)
@@ -151,6 +103,15 @@ class MapViewBaseCell: BaseCell, UISearchControllerDelegate {
         perform(#selector(handleNetWorkStatus), with: self, afterDelay: 1)
     }
     
+    let networkMessageView: UIView = {
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: screenWidth*0.8, height: screenHeight*0.3))
+        view.backgroundColor = UIColor(white: 0.15, alpha: 0.95)
+        view.layer.cornerRadius = 10
+        view.layer.borderWidth = 5
+        view.layer.borderColor = UIColor.orange.cgColor
+        view.layer.masksToBounds = true
+        return view
+    }()
     func showNetworkMessageView(mapNetworkCheck: Bool) {
         addSubview(networkMessageView)
         networkMessageView.addSubview(networkMessageLabel)
@@ -165,49 +126,57 @@ class MapViewBaseCell: BaseCell, UISearchControllerDelegate {
             networkMessageLabel.text = "資料下載完成"
         }
     }
-    
     @objc func handleNetworkMessageViewCancelBtn() {
         networkMessageView.removeFromSuperview()
     }
-    
     @objc func handleNetWorkStatus() {
         showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
+//        mapViewController?.showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
         if mapNetworkCheck == false {
             networkMessageLabel.text = "更新失敗\n請確認網路"
         } else if mapNetworkCheck == true {
             networkMessageLabel.text = "資料更新完畢"
         }
     }
+    
+    func handleNetWorkStatusMVC() {
+        showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
+//         mapViewController?.showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
+        if mapNetworkCheck == false {
+            networkMessageLabel.text = "更新失敗\n請確認網路"
+        } else if mapNetworkCheck == true {
+            networkMessageLabel.text = "資料更新完畢"
+        }
+    }
+    ///////////////////
+
 
     func SetService() {
         Service.sharedInstance.fetchJsonData(urlString: webString, completion: { (bikeinfos, err) in
             if let err = err {
-                print("MapViewCell error fetching json:", err)
+//                print("MapViewCell error fetching json form URL:", err)
+                print("MapViewCell 偵測網路沒開：",err)
             }
             if let bikeinfos = bikeinfos {
                 bikeDatas = bikeinfos
                 self.setPinToMap()
                 mapNetworkCheck = true
+                print("SetSerivce 呼叫成功")
+//                print(bikeDatas!.count)
             }
             DispatchQueue.main.async {
+
+                self.showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
+//                self.mapViewController?.showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
                 self.mapView.updateConstraints()
                 self.mapViewController?.collectionView?.reloadData()
-                self.showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
             }
         })
     }
 
     func setupMap()  {
         addSubview(mapView)
-        mapView.anchor(top: searchBar.bottomAnchor, left: searchBar.leftAnchor, bottom: bottomAnchor, right: searchBar.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
-//        mapView.showsUserLocation = true
-//        mapView.isZoomEnabled = true
-//        mapView.isScrollEnabled = true
-//        locationManager.requestWhenInUseAuthorization()
-//        locationManager.delegate = self
-//        locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
-//        locationManager.startUpdatingLocation()
-        
+        mapView.anchor(top: self.topAnchor, left: self.leftAnchor, bottom: self.bottomAnchor, right: self.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
     }
     
     func setupUserTrackingButtonAndScaleView() {
@@ -231,6 +200,7 @@ class MapViewBaseCell: BaseCell, UISearchControllerDelegate {
     
     func setPinToMap() {
         showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
+//         mapViewController?.showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
         arrAnnotation.removeAll()
         guard let bikeDataCount = bikeDatas?.count else { return }
         print("MAP PIN bikeDataCount",bikeDataCount)
@@ -278,6 +248,10 @@ extension MapViewBaseCell: UISearchBarDelegate {
 }
 
 extension MapViewBaseCell: MKMapViewDelegate {
+    
+    func mapViewWillStartLoadingMap(_ mapView: MKMapView) {
+        print("MAP View Will Start Loading MAP")
+    }
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if annotation is MKUserLocation {
@@ -387,94 +361,3 @@ extension MKPinAnnotationView {
         return color
     }
 }
-
-
-/*
-class TestAnnotations: MKPinAnnotationView ,  UISearchBarDelegate {
-    
-    var ccellItem:Int
-    
-    init(ccellItem: Int, annotatio: MKAnnotation?, reuseIdentifier: String?) {
-        self.ccellItem = ccellItem
-        super.init(annotation: nil, reuseIdentifier: nil)
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        if annotation is MKUserLocation {
-            return nil
-        }
-        var view = mapView.dequeueReusableAnnotationView(withIdentifier: "Pin") as? MKPinAnnotationView
-        if view == nil {
-            view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "Pin")
-        }
-        let index = Int((annotation.subtitle!)!)!
-        
-        //        print("PIN 監測 mapBarItem", mapBarItem)// not work well
-//        view?.setupPinCalloutView(index: index!, cellItem: mapBarItem)
-        
-        view?.pinTintColor = ssetPinColor(annSubTitle: index, cellItem: ccellItem)
-        
-        let label = UILabel()
-        label.numberOfLines = 3
-        let ar = bikeDatas![index].ar!
-        let sbi = bikeDatas![index].sbi!
-        let bemp = bikeDatas![index].bemp!
-        var lblText:String
-        lblText = "\(ar)"
-        lblText += "\n🚲 有\(sbi)台"
-        lblText += "\n🅿️ 有\(bemp)格"
-        label.text = lblText
-        view?.detailCalloutAccessoryView = label
-        view?.canShowCallout = true
-        
-        return view
-    }
-    
-//    func setupPinCalloutView(index: Int, cellItem: Int) {
-//        
-//        pinTintColor = setPinColor(annSubTitle: index, cellItem: cellItem)
-//        
-//        let label = UILabel()
-//        label.numberOfLines = 3
-//        let ar = bikeDatas![index].ar!
-//        let sbi = bikeDatas![index].sbi!
-//        let bemp = bikeDatas![index].bemp!
-//        var lblText:String
-//        lblText = "\(ar)"
-//        lblText += "\n🚲 有\(sbi)台"
-//        lblText += "\n🅿️ 有\(bemp)格"
-//        label.text = lblText
-//        detailCalloutAccessoryView = label
-//        canShowCallout = true
-//    }
-    
-    internal func ssetPinColor(annSubTitle: Int, cellItem: Int) -> UIColor {
-        let index = annSubTitle
-        let color: UIColor
-        let mapFunction: Int
-        
-        switch cellItem {
-        case 1:
-            mapFunction = Int(bikeDatas![index].bemp!)!
-        default:
-            mapFunction = Int(bikeDatas![index].sbi!)!
-        }
-        if bikeDatas![index].act == "0" {
-            color = UIColor.gray
-        } else {
-            switch mapFunction {
-            case 0:
-                color = UIColor.red
-            case 1...9:
-                color = UIColor.orange
-            default:
-                color = UIColor.green
-            }
-        }
-        return color
-    }
-}*/

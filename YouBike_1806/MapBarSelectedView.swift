@@ -26,6 +26,7 @@ class MapBarSelectedView: UIView, UICollectionViewDelegateFlowLayout, UICollecti
         return cv
     }()
     
+//    var mapViewBaseCell: MapViewBaseCell?
 //    lazy var mapViewBaseCell: MapViewBaseCell = {
 //        let mc = MapViewBaseCell()
 //        mc.mapBarSelectedView = self

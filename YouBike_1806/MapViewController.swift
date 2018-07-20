@@ -9,9 +9,9 @@
 import UIKit
 import MapKit
 
- var bikeDatas: [BikeStationInfo]?
+var bikeDatas: [BikeStationInfo]?
 
-class MapViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, CLLocationManagerDelegate {
+class MapViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, CLLocationManagerDelegate, MKMapViewDelegate {
 
     private let mapViewCellId = "mapViewCellId"
    private let bikeMapViewCellId = "bikeMapViewCellId"
@@ -38,11 +38,21 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         return mb
     }()
     
-//    lazy var mapViewBaseCell: MapViewBaseCell = {
-//        let mc = MapViewBaseCell()
-//        mc.mapViewController = self
-//        return mc
-//    }()
+    lazy var mapBarLeftToolbar: UIToolbar = {
+        let tb = UIToolbar()
+        tb.barTintColor = stationBarColor
+        tb.setShadowImage(UIImage(), forToolbarPosition: UIBarPosition.any)
+        return tb
+    }()
+    
+//    var mapViewBaseCell: MapViewBaseCell?
+    lazy var mapViewBaseCell: MapViewBaseCell = {
+        let mc = MapViewBaseCell()
+        mc.mapView.delegate = self
+        mc.locationManager.delegate = self
+        mc.mapViewController = self
+        return mc
+    }()
     
     // MapBar移動的設定
     func scrollToMenuIndex(menuIndex: Int) {
@@ -60,7 +70,6 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         super.viewDidLoad()
         setupNavBar()
         setupMapBarSelectedView()
-        setupMapBarLeftBtns()
         setupCollectionView()
         
     }
@@ -87,27 +96,76 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
     }
     
     func setupNavBar() {
-        navigationItem.title = "地圖"
-        navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: UIFont.boldSystemFont(ofSize: 22)]
-        navigationController?.navigationBar.barTintColor = UIColor.rgb(red: 250, green: 246, blue: 227)
+        navigationController?.navigationBar.barTintColor = stationBarColor
         navigationController?.navigationBar.isTranslucent = false
         navigationItem.titleView = mapBarSelectedContaner
     }
     
     func setupMapBarSelectedView() {
+        
+        let searchButton =  UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.search, target: self, action: #selector(handleSearchBarItem))
+        mapBarLeftToolbar.items = [searchButton]
+        
         mapBarSelectedContaner.addSubview(mapBarSelectedView)
         mapBarSelectedContaner.addSubview(mapBarTitle)
+        mapBarSelectedContaner.addSubview(mapBarLeftToolbar)
+        mapBarSelectedContaner.addSubview(mapBarDataUpdateButton)
         
         mapBarSelectedView.anchor(top: mapBarSelectedContaner.topAnchor, left: nil, bottom: mapBarSelectedContaner.bottomAnchor, right: mapBarSelectedContaner.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: screenWidth*0.3, heightConstant: 0)
         mapBarTitle.centerYAnchor.constraint(equalTo: mapBarSelectedContaner.centerYAnchor).isActive = true
         mapBarTitle.centerXAnchor.constraint(equalTo: mapBarSelectedContaner.centerXAnchor).isActive = true
+        
+        mapBarDataUpdateButton.anchor(top: mapBarSelectedContaner.topAnchor, left: mapBarSelectedContaner.leftAnchor, bottom: mapBarSelectedContaner.bottomAnchor, right: nil, topConstant: 6, leftConstant: 3, bottomConstant: 6, rightConstant: 0, widthConstant: 60, heightConstant: 0)
+        
+        mapBarLeftToolbar.anchor(top: mapBarSelectedContaner.topAnchor, left: mapBarDataUpdateButton.rightAnchor, bottom: mapBarSelectedContaner.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 0)
     }
     
-    func setupMapBarLeftBtns() {
-     
+    let searchController = UISearchController(searchResultsController: nil)
+    var searchActive: Bool = false
+    var isShowSearchResult: Bool = false
+    var searchArr: [BikeStationInfo] = [BikeStationInfo]() {
+        didSet {
+            self.collectionView?.reloadData()
+        }
     }
     
+    lazy var mapBarDataUpdateButton: UIButton = {
+        let btn = UIButton(type: UIButtonType.custom)
+        btn.backgroundColor = mapBarColorBlue
+        btn.setTitle("更新", for: UIControlState.normal)
+        btn.setTitleColor(UIColor.white, for: .normal)
+        btn.layer.cornerRadius = 3
+        btn.addTarget(self, action: #selector(handleMapDataUpdate), for: UIControlEvents.touchUpInside)
+        return btn
+    }()
     
+    @objc func handleSearchBarItem() {
+//        self.searchController.delegate = self
+//        self.searchController.searchBar.delegate = self
+//        self.searchController.searchResultsUpdater = self
+//        self.searchController.hidesNavigationBarDuringPresentation = false
+//        self.searchController.obscuresBackgroundDuringPresentation = false
+//        self.searchController.searchBar.placeholder = "請輸入關鍵字"
+//        searchController.searchBar.becomeFirstResponder()
+//        present(searchController, animated: true, completion: nil)
+    }
+    @objc func handleMapDataUpdate() {
+        print("Map Controller Btn Pressed")
+        mapViewBaseCell.SetService()
+
+//        perform(#selector(mapViewBaseCell?.handleNetWorkStatus), with: self, afterDelay: 1)
+        mapViewBaseCell.handleNetWorkStatusMVC()
+
+    }
+    
+//    func showNetworkMessageView(mapNetworkCheck: Bool) {
+//        if mapNetworkCheck == false {
+//           print("請確認網路")
+//        } else if mapNetworkCheck == true {
+//           print("資料下載完成")
+//        }
+//    }
+  
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 2
     }

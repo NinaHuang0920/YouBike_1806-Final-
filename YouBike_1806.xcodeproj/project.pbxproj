@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BF11D70920E7BBA600EAD538 /* BicycleAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF11D70820E7BBA600EAD538 /* BicycleAnnotationView.swift */; };
 		BF18DDED20D39C250053B565 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF18DDEC20D39C250053B565 /* AppDelegate.swift */; };
 		BF18DDF220D39C250053B565 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BF18DDF020D39C250053B565 /* Main.storyboard */; };
 		BF18DDF420D39C270053B565 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BF18DDF320D39C270053B565 /* Assets.xcassets */; };
@@ -220,7 +219,6 @@
 				BF4F974620D8DAF30033343F /* Extensions.swift in Sources */,
 				BFDEBB2220D7ED63006CF920 /* BikeViewController.swift in Sources */,
 				BF3D654D20DA433100C310EF /* InformationView.swift in Sources */,
-				BF11D70920E7BBA600EAD538 /* BicycleAnnotationView.swift in Sources */,
 				BF18DE0220D3ABD00053B565 /* Service.swift in Sources */,
 				BF3D654720DA323D00C310EF /* TabBarController.swift in Sources */,
 				BF18DDED20D39C250053B565 /* AppDelegate.swift in Sources */,
@@ -372,6 +370,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = YouBike_1806/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -389,6 +388,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = YouBike_1806/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

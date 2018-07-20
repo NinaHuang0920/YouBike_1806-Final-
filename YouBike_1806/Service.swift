@@ -12,10 +12,10 @@ var mapNetworkCheck: Bool = true {
     didSet {
 //        print("MAP networkCheck Change:", mapNetworkCheck)
         if mapNetworkCheck == false {
-//            print(" mapNetworkCheck == false,網路沒開")
+            print("mapNetworkCheck == false,網路沒開")
             return
         } else if mapNetworkCheck == true {
-//            print(" mapNetworkCheck == true,網路已重新開啟")
+            print("mapNetworkCheck == true,網路已重新開啟")
             return
         }
     }
@@ -29,18 +29,25 @@ var networkCheckFail: Bool? = true {
     }
 }
 
-struct Service {
+class Service {
+    
+    private init() {}
     static let sharedInstance = Service()
+    
     func fetchJsonData(urlString: String ,completion: @escaping ([BikeStationInfo]?, Error?) -> ()) {
 
         guard let url = URL(string: urlString) else {
            print("Apologies, something went wrong. Please try again latter...(網址錯誤)")
             return
         }
+        
         URLSession.shared.dataTask(with: url) { (data, response, error) in
             guard error == nil else {
                 print("NETWORK FAIL(網路沒開/網址錯誤)")
-                mapNetworkCheck = false
+                DispatchQueue.main.async {
+                    completion(nil, error)
+                    mapNetworkCheck = false
+                }
                 return
             }
             if let httpResponse = response as? HTTPURLResponse {
@@ -50,8 +57,6 @@ struct Service {
             }
             guard let data = data else { return }
             guard let json = try? JSONDecoder().decode(Top.self, from: data) else {
-
-                completion(nil, error)
                 print("Failed to fetch json...")
                 return
             }
