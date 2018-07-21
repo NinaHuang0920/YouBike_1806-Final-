@@ -23,9 +23,7 @@ struct BikeResult: Decodable {
 
 class BikeStationInfo: Decodable {
     
-    enum Keys: String, CodingKey { case sno, sna, sarea, ar, lat, lng, tot, sbi, bemp, mday, act, sareaen, snaen, aren
-    }
- 
+    var id: Int?
     var sarea: String?     //場站區域(中文)
 //    var sareaen: String?   //場站區域(英文)
     var sna: String?       //站場名稱(中文)
@@ -42,27 +40,15 @@ class BikeStationInfo: Decodable {
     var mday: String?      //資料更新時間
     var locate:CLLocationCoordinate2D? //lat緯度, lng經度
     
-//    required init(from decoder: Decoder) throws {
-//        let container = try decoder.container(keyedBy: Keys.self)
-//        sarea = try container.decode(String.self, forKey: .sarea)
-//        sareaen = try container.decode(String.self, forKey: .sareaen)
-//        sna = try container.decode(String.self, forKey: .sna)
-//        aren = try container.decode(String.self, forKey: .aren)
-//        sno = try container.decode(String.self, forKey: .sno)
-//        tot = try container.decode(String.self, forKey: .tot)
-//        snaen = try container.decode(String.self, forKey: .snaen)
-//        bemp = try container.decode(String.self, forKey: .bemp)
-//        ar = try container.decode(String.self, forKey: .ar)
-//        act = try container.decode(String.self, forKey: .act)
-//        lat = try container.decode(String.self, forKey: .lat)
-//        lng = try container.decode(String.self, forKey: .lng)
-//        sbi = try container.decode(String.self, forKey: .sbi)
-//        mday = try container.decode(String.self, forKey: .mday)
-//    }
-//    
+    enum CodingKeys: String, CodingKey {
+        case sno, sna, sarea, ar, lat, lng, tot, sbi, bemp, mday, act, sareaen, snaen, aren
+        case id = "_id"
+    }
+    
     required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: Keys.self)
+        let container = try decoder.container(keyedBy: CodingKeys.self)
         
+        id = try container.decode(Int.self, forKey: .id)
         sno = try container.decode(String.self, forKey: .sno)
         sna = try container.decode(String.self, forKey: .sna)
         sarea = try container.decode(String.self, forKey: .sarea)

@@ -13,10 +13,10 @@ var mapNetworkCheck: Bool = true {
 //        print("MAP networkCheck Change:", mapNetworkCheck)
         if mapNetworkCheck == false {
             print("mapNetworkCheck == false,網路沒開")
-            return
+//            return
         } else if mapNetworkCheck == true {
             print("mapNetworkCheck == true,網路已重新開啟")
-            return
+//            return
         }
     }
 }
@@ -42,28 +42,53 @@ class Service {
         }
         
         URLSession.shared.dataTask(with: url) { (data, response, error) in
-            guard error == nil else {
-                print("NETWORK FAIL(網路沒開/網址錯誤)")
-                DispatchQueue.main.async {
-                    completion(nil, error)
-                    mapNetworkCheck = false
-                }
+            
+            if let error = error {
+                completion(nil, error)
+                debugPrint()
+                print("NETWORK FAIL(網路沒開/網址錯誤)",error)
+                mapNetworkCheck = false
                 return
             }
+
+//            guard error == nil else {
+//                print("NETWORK FAIL(網路沒開/網址錯誤)")
+//                DispatchQueue.main.async {
+//                    completion(nil, error)
+//                    mapNetworkCheck = false
+//                }
+//                return
+//            }
+            
             if let httpResponse = response as? HTTPURLResponse {
                 if httpResponse.statusCode != 200 {
-                     return print("Status code was not 200")
+                    debugPrint()
+                    return print("Status code was not 200")
                 }
             }
             guard let data = data else { return }
-            guard let json = try? JSONDecoder().decode(Top.self, from: data) else {
-                print("Failed to fetch json...")
-                return
+            
+            do {
+                let json = try JSONDecoder().decode(Top.self, from: data)
+                DispatchQueue.main.async {
+                    completion(json.result.records, nil)
+                    networkCheckFail = false
+                }
+            } catch let jsonErr {
+                debugPrint()
+                print("Failed to decode json:", jsonErr.localizedDescription)
             }
-            DispatchQueue.main.async {
-               completion(json.result.records, nil)
-                networkCheckFail = false
-            }
+            
+//            guard let data = data else { return }
+//            guard let json = try? JSONDecoder().decode(Top.self, from: data) else {
+//                print("Failed to fetch json...")
+//                return
+//            }
+//            DispatchQueue.main.async {
+//               completion(json.result.records, nil)
+//                networkCheckFail = false
+//            }
+            
         }.resume()
     }
 }

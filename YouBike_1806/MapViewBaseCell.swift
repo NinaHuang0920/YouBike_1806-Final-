@@ -155,7 +155,7 @@ class MapViewBaseCell: BaseCell {
         Service.sharedInstance.fetchJsonData(urlString: webString, completion: { (bikeinfos, err) in
             if let err = err {
 //                print("MapViewCell error fetching json form URL:", err)
-                print("MapViewCell 偵測網路沒開：",err)
+                print("MapViewCell 偵測網路沒開：",err.localizedDescription)
             }
             if let bikeinfos = bikeinfos {
                 bikeDatas = bikeinfos
