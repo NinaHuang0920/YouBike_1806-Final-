@@ -26,28 +26,28 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
         }
     }
     
-    let networkCheckFailLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.boldSystemFont(ofSize: 30)
-        label.text = "資料載入失敗\n重新下拉更新"
-        label.textColor = UIColor.darkGray
-        label.textAlignment = .center
-        label.numberOfLines = 2
-        return label
-    }()
+//    let networkCheckFailLabel: UILabel = {
+//        let label = UILabel()
+//        label.translatesAutoresizingMaskIntoConstraints = false
+//        label.font = UIFont.boldSystemFont(ofSize: 30)
+//        label.text = "資料載入失敗\n重新下拉更新"
+//        label.textColor = UIColor.darkGray
+//        label.textAlignment = .center
+//        label.numberOfLines = 2
+//        return label
+//    }()
     
-    let refreshFailLabel: UILabel = {
-        let label = UILabel()
-        label.isHidden = true
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.boldSystemFont(ofSize: 30)
-        label.text = "更新失敗\n請確認網路狀態"
-        label.textColor = UIColor.lightGray
-        label.textAlignment = .center
-        label.numberOfLines = 2
-        return label
-    }()
+//    let refreshFailLabel: UILabel = {
+//        let label = UILabel()
+//        label.isHidden = true
+//        label.translatesAutoresizingMaskIntoConstraints = false
+//        label.font = UIFont.boldSystemFont(ofSize: 30)
+//        label.text = "更新失敗\n請確認網路狀態"
+//        label.textColor = UIColor.lightGray
+//        label.textAlignment = .center
+//        label.numberOfLines = 2
+//        return label
+//    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,7 +55,7 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
         setupNav()
         setupNavSearchItem()
         setupCollectionView()
-        setupNatWorkFailMessage(showMessage: networkCheckFail!)
+//        setupNatWorkFailMessage(showMessage: networkCheckFail!)
         setupRefreshControl()
     }
     
@@ -99,7 +99,7 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
     
     @objc func refreshContents() {
         refreshControl.attributedTitle = NSAttributedString(string: "資料更新中")
-         self.showRefreshFailMessage(showMessage: false)
+//         self.showRefreshFailMessage(showMessage: false)
         self.bikeDatas?.removeAll()
         self.SetService()
         self.collectionView?.reloadData()
@@ -111,16 +111,29 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
             self.refreshControl.attributedTitle = NSAttributedString(string: "資料更新完畢")
         }, completion: { _ in
             self.refreshControl.endRefreshing()
-            if let bikeDataCount = self.bikeDatas?.count {
-                if bikeDataCount == 0 {
-                    self.showRefreshFailMessage(showMessage: true)
-                } else {
-                    self.showRefreshFailMessage(showMessage: false)
-                }
-            } else {
-                self.setupNatWorkFailMessage(showMessage: false)
-                self.showRefreshFailMessage(showMessage: true)
+            
+            guard let bikeDataCount = self.bikeDatas?.count else {
+               Alert.showAlert(title: "請檢查網路", message: "", vc: self)
+                return
             }
+            
+            if bikeDataCount == 0 {
+                Alert.showAlert(title: "更新失敗", message: "請檢查網路", vc: self)
+            }
+            
+//            if let bikeDataCount = self.bikeDatas?.count {
+//                if bikeDataCount == 0 {
+//                    Alert.showAlert(title: "更新失敗", message: "請檢查網路", vc: self)
+////                    self.showRefreshFailMessage(showMessage: true)
+//                } else {
+//                    Alert.showAlert(title: "更新完畢", message: "", vc: self)
+////                    self.showRefreshFailMessage(showMessage: false)
+//                }
+//            } else {
+//                Alert.showAlert(title: "請檢查網路", message: "", vc: self)
+////                self.setupNatWorkFailMessage(showMessage: false)
+////                self.showRefreshFailMessage(showMessage: true)
+//            }
         })
     }
     
@@ -129,12 +142,14 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
             if let err = err {
 //                print("BikeViewController error fetching json form URL:", err)
                  print("BikeViewController 偵測網路沒開：",err.localizedDescription)
+                Alert.showAlert(title: "請開啟網路", message: "", vc: self)
             }
             if let bikeinfos = bikeinfos {
                 self.bikeDatas = bikeinfos
+                Alert.showAlert(title: "資料下載完畢", message: "", vc: self)
             }
             DispatchQueue.main.async {
-                self.setupNatWorkFailMessage(showMessage: networkCheckFail!)
+//                self.setupNatWorkFailMessage(showMessage: networkCheckFail!)
                 self.collectionView?.reloadData()
             }
         })
@@ -198,8 +213,6 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
         headerCell.headerLabel.text = searchResultText(searchArrCount: searchArr.count)
         return headerCell
     }
-    
-//     var searchTextText: String = ""
 }
 
 class HeaderCell: BaseCell {
@@ -213,9 +226,9 @@ class HeaderCell: BaseCell {
         lb.textColor = UIColor.white
         return lb
     }()
+    
     override func setupViews() {
         super.setupViews()
-       
         addSubview(headerLabel)
         headerLabel.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
     }
@@ -236,12 +249,6 @@ extension BikeViewController: UISearchBarDelegate {
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         isShowSearchResult = false
     }
-
-//    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-////        guard let searchText = searchController.searchBar.text else { return }
-//        searchTextText = searchText
-//        print("輸入的是：",searchTextText)
-//    }
 }
 
 extension BikeViewController: UISearchResultsUpdating {
@@ -259,19 +266,19 @@ extension BikeViewController: UISearchResultsUpdating {
 }
 
 extension BikeViewController {
-    func setupNatWorkFailMessage(showMessage: Bool) {
-        networkCheckFailLabel.isHidden = !showMessage
-        view.addSubview(networkCheckFailLabel)
-        networkCheckFailLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        networkCheckFailLabel.anchor(top: nil, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 0, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: 0, heightConstant: 0)
-    }
+//    func setupNatWorkFailMessage(showMessage: Bool) {
+//        networkCheckFailLabel.isHidden = !showMessage
+//        view.addSubview(networkCheckFailLabel)
+//        networkCheckFailLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+//        networkCheckFailLabel.anchor(top: nil, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 0, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: 0, heightConstant: 0)
+//    }
     
-    func showRefreshFailMessage(showMessage: Bool) {
-        refreshFailLabel.isHidden = !showMessage
-        view.addSubview(refreshFailLabel)
-        refreshFailLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        refreshFailLabel.anchor(top: nil, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 0, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: 0, heightConstant: 0)
-    }
+//    func showRefreshFailMessage(showMessage: Bool) {
+//        refreshFailLabel.isHidden = !showMessage
+//        view.addSubview(refreshFailLabel)
+//        refreshFailLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+//        refreshFailLabel.anchor(top: nil, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 0, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: 0, heightConstant: 0)
+//    }
     
     func searchResultText(searchArrCount: Int) -> String {
         let searchResult: String
