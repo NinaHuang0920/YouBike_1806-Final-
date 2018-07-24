@@ -10,7 +10,7 @@ import UIKit
 
 class BikeViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UISearchControllerDelegate {
     
-    var bikeDatas: [BikeStationInfo]?
+    var bikeDatas = [BikeStationInfo]()
     
     var refreshControl = UIRefreshControl()
     
@@ -26,36 +26,12 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
         }
     }
     
-//    let networkCheckFailLabel: UILabel = {
-//        let label = UILabel()
-//        label.translatesAutoresizingMaskIntoConstraints = false
-//        label.font = UIFont.boldSystemFont(ofSize: 30)
-//        label.text = "資料載入失敗\n重新下拉更新"
-//        label.textColor = UIColor.darkGray
-//        label.textAlignment = .center
-//        label.numberOfLines = 2
-//        return label
-//    }()
-    
-//    let refreshFailLabel: UILabel = {
-//        let label = UILabel()
-//        label.isHidden = true
-//        label.translatesAutoresizingMaskIntoConstraints = false
-//        label.font = UIFont.boldSystemFont(ofSize: 30)
-//        label.text = "更新失敗\n請確認網路狀態"
-//        label.textColor = UIColor.lightGray
-//        label.textAlignment = .center
-//        label.numberOfLines = 2
-//        return label
-//    }()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         SetService()
         setupNav()
         setupNavSearchItem()
         setupCollectionView()
-//        setupNatWorkFailMessage(showMessage: networkCheckFail!)
         setupRefreshControl()
     }
     
@@ -99,8 +75,7 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
     
     @objc func refreshContents() {
         refreshControl.attributedTitle = NSAttributedString(string: "資料更新中")
-//         self.showRefreshFailMessage(showMessage: false)
-        self.bikeDatas?.removeAll()
+        self.bikeDatas.removeAll()
         self.SetService()
         self.collectionView?.reloadData()
         self.perform(#selector(finishedRefreshing), with: nil, afterDelay: 1.5)
@@ -108,50 +83,29 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
     
     @objc func finishedRefreshing() {
         UIView.animate(withDuration: 0.2, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-            self.refreshControl.attributedTitle = NSAttributedString(string: "資料更新完畢")
+            self.refreshControl.attributedTitle = NSAttributedString(string: "資料更新完成")
         }, completion: { _ in
             self.refreshControl.endRefreshing()
             
-            guard let bikeDataCount = self.bikeDatas?.count else {
-               Alert.showAlert(title: "請檢查網路", message: "", vc: self)
-                return
+            if self.bikeDatas.count == 0 {
+                Alert.showAlert(title: "請檢查網路", message: "", vc: self)
             }
-            
-            if bikeDataCount == 0 {
-                Alert.showAlert(title: "更新失敗", message: "請檢查網路", vc: self)
-            }
-            
-//            if let bikeDataCount = self.bikeDatas?.count {
-//                if bikeDataCount == 0 {
-//                    Alert.showAlert(title: "更新失敗", message: "請檢查網路", vc: self)
-////                    self.showRefreshFailMessage(showMessage: true)
-//                } else {
-//                    Alert.showAlert(title: "更新完畢", message: "", vc: self)
-////                    self.showRefreshFailMessage(showMessage: false)
-//                }
-//            } else {
-//                Alert.showAlert(title: "請檢查網路", message: "", vc: self)
-////                self.setupNatWorkFailMessage(showMessage: false)
-////                self.showRefreshFailMessage(showMessage: true)
-//            }
         })
     }
     
     func SetService() {
         Service.sharedInstance.fetchJsonData(urlString: webString, completion: { (bikeinfos, err) in
             if let err = err {
-//                print("BikeViewController error fetching json form URL:", err)
                  print("BikeViewController 偵測網路沒開：",err.localizedDescription)
-                Alert.showAlert(title: "請開啟網路", message: "", vc: self)
+                Alert.showAlert(title: "請開啟網路", message: "更新失敗", vc: self)
             }
-            if let bikeinfos = bikeinfos {
-                self.bikeDatas = bikeinfos
-                Alert.showAlert(title: "資料下載完畢", message: "", vc: self)
-            }
+            guard let bikeinfos = bikeinfos else { self.bikeDatas = []; return }
+            self.bikeDatas = bikeinfos
             DispatchQueue.main.async {
-//                self.setupNatWorkFailMessage(showMessage: networkCheckFail!)
                 self.collectionView?.reloadData()
             }
+            
+            Alert.showAlert(title: "下載完成", message: TimeHelper.showUpdateTime(timeString: self.bikeDatas[0].mday!), vc: self)
         })
     }
     
@@ -160,7 +114,7 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
         if searchController.isActive == true {
             return self.searchArr.count
         } else {
-            return self.bikeDatas?.count ?? 0
+            return self.bikeDatas.count
         }
         
     }
@@ -171,7 +125,7 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
         if searchController.isActive == true {
             cell.bikeStationInfo = self.searchArr[indexPath.item]
         } else {
-            cell.bikeStationInfo = self.bikeDatas?[indexPath.item]
+            cell.bikeStationInfo = self.bikeDatas[indexPath.item]
         }
         return cell
     }
@@ -181,7 +135,7 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
         if searchController.isActive == true {
             print("你選擇的是 \(self.searchArr[indexPath.row].sna!)")
         } else {
-            print("你選擇的是 \(self.bikeDatas![indexPath.row].sna!)")
+            print("你選擇的是 \(self.bikeDatas[indexPath.row].sna!)")
         }
     }
 
@@ -258,7 +212,7 @@ extension BikeViewController: UISearchResultsUpdating {
         isShowSearchResult = true
         guard let searchText = searchController.searchBar.text else { return }
         if searchText.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).count == 0 { return }
-        searchArr = bikeDatas!.filter({ (bikeStation) -> Bool in
+        searchArr = bikeDatas.filter({ (bikeStation) -> Bool in
             return (bikeStation.sna?.contains(searchText))! || (bikeStation.ar?.contains(searchText))!
         })
         collectionView?.reloadData()
@@ -266,19 +220,8 @@ extension BikeViewController: UISearchResultsUpdating {
 }
 
 extension BikeViewController {
-//    func setupNatWorkFailMessage(showMessage: Bool) {
-//        networkCheckFailLabel.isHidden = !showMessage
-//        view.addSubview(networkCheckFailLabel)
-//        networkCheckFailLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-//        networkCheckFailLabel.anchor(top: nil, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 0, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: 0, heightConstant: 0)
-//    }
     
-//    func showRefreshFailMessage(showMessage: Bool) {
-//        refreshFailLabel.isHidden = !showMessage
-//        view.addSubview(refreshFailLabel)
-//        refreshFailLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-//        refreshFailLabel.anchor(top: nil, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 0, leftConstant: 10, bottomConstant: 0, rightConstant: 10, widthConstant: 0, heightConstant: 0)
-//    }
+   
     
     func searchResultText(searchArrCount: Int) -> String {
         let searchResult: String

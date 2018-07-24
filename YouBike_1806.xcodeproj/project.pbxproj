@@ -20,6 +20,7 @@
 		BF4F974620D8DAF30033343F /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF4F974520D8DAF30033343F /* Extensions.swift */; };
 		BF4F974820D8F05F0033343F /* BikeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF4F974720D8F05F0033343F /* BikeCell.swift */; };
 		BF735F9F2106F24700EDC110 /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF735F9E2106F24700EDC110 /* Alert.swift */; };
+		BF735FA121070A7B00EDC110 /* TimeHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF735FA021070A7B00EDC110 /* TimeHelper.swift */; };
 		BFCE9DCF20DB8E6700C55267 /* MapViewBaseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFCE9DCE20DB8E6700C55267 /* MapViewBaseCell.swift */; };
 		BFCE9DF320DBACC900C55267 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFCE9DF220DBACC900C55267 /* MapKit.framework */; };
 		BFDEBB2220D7ED63006CF920 /* BikeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDEBB2120D7ED63006CF920 /* BikeViewController.swift */; };
@@ -44,6 +45,7 @@
 		BF4F974520D8DAF30033343F /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		BF4F974720D8F05F0033343F /* BikeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BikeCell.swift; sourceTree = "<group>"; };
 		BF735F9E2106F24700EDC110 /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
+		BF735FA021070A7B00EDC110 /* TimeHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeHelper.swift; sourceTree = "<group>"; };
 		BFCE9DCE20DB8E6700C55267 /* MapViewBaseCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewBaseCell.swift; sourceTree = "<group>"; };
 		BFCE9DF220DBACC900C55267 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		BFDEBB2120D7ED63006CF920 /* BikeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BikeViewController.swift; sourceTree = "<group>"; };
@@ -125,6 +127,7 @@
 				BF0FD51420E628F90078ED44 /* ParkingMapViewCell.swift */,
 				BF11D70820E7BBA600EAD538 /* BicycleAnnotationView.swift */,
 				BF735F9E2106F24700EDC110 /* Alert.swift */,
+				BF735FA021070A7B00EDC110 /* TimeHelper.swift */,
 			);
 			path = YouBike_1806;
 			sourceTree = "<group>";
@@ -218,6 +221,7 @@
 			files = (
 				BF3D654920DA331900C310EF /* MapViewController.swift in Sources */,
 				BF3D654F20DA573600C310EF /* GeneralSetting.swift in Sources */,
+				BF735FA121070A7B00EDC110 /* TimeHelper.swift in Sources */,
 				BF18DDFF20D39C6C0053B565 /* Json.swift in Sources */,
 				BF4F974620D8DAF30033343F /* Extensions.swift in Sources */,
 				BFDEBB2220D7ED63006CF920 /* BikeViewController.swift in Sources */,
