@@ -212,8 +212,13 @@ extension BikeViewController: UISearchResultsUpdating {
         isShowSearchResult = true
         guard let searchText = searchController.searchBar.text else { return }
         if searchText.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).count == 0 { return }
+
         searchArr = bikeDatas.filter({ (bikeStation) -> Bool in
-            return (bikeStation.sna?.contains(searchText))! || (bikeStation.ar?.contains(searchText))!
+            
+            let bikeId = bikeStation.id ?? 0
+            let bikeStationId = "#"+String(bikeId)
+            
+            return (bikeStation.sna?.contains(searchText))! || (bikeStation.ar?.contains(searchText))! || (bikeStationId.contains(searchText))
         })
         collectionView?.reloadData()
     }

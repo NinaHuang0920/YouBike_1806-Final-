@@ -33,16 +33,10 @@ class TabBarController: UITabBarController {
         infoNavgationController.title = "更多"
         infoNavgationController.tabBarItem.image = #imageLiteral(resourceName: "information")
         
-        viewControllers = [navigationController, secondnavigationController, infoNavgationController]
+        viewControllers = [secondnavigationController, navigationController, infoNavgationController]
         tabBar.isTranslucent = false
         tabBar.tintColor = mapBarColor
         
-        
-//        let topBorder = CALayer()
-//        topBorder.frame = CGRect(x: 0, y: 0, width: 1000, height: 0.5)
-//        topBorder.backgroundColor = mapBarColor.cgColor
-//        
-//        tabBar.layoutSublayers(of: topBorder)
     }
 
    

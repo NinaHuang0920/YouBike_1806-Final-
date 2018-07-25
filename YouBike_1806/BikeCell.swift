@@ -13,8 +13,8 @@ class BikeCell: BaseCell {
     var bikeStationInfo: BikeStationInfo? {
         didSet {
             
-            if let stationNameLabelText = bikeStationInfo?.sna {
-                stationNameLabel.text = stationNameLabelText
+            if let stationNameLabelText = bikeStationInfo?.sna, let stationIdNumber = bikeStationInfo?.id {
+                stationNameLabel.text = "\(stationNameLabelText) (#\(stationIdNumber))"
             }
             
             if let stationAddsLabelText = bikeStationInfo?.ar {

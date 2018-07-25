@@ -9,20 +9,17 @@
 import UIKit
 import MapKit
 
+protocol MapViewCellDelegate {
+    func updateStatusAlert(status updateSuccess: Bool)
+}
+
+
+var arrAnnotation = [MKAnnotation]()
+
 class MapViewBaseCell: BaseCell {
     
-//    var mapViewItem:Int = 0 {
-//        didSet {
-//            print("mapViewItem 監測值", mapViewItem)
-//        }
-//    }
-//    var mapBarItem:Int = 0 {
-//        didSet {
-//            print("mapBarItem 監測值",mapBarItem)
-//        }
-//    }
-    
     let cellItem = 0
+    var mapViewCellDelegate: MapViewCellDelegate?
     
     var mapViewController: MapViewController?
 //    lazy var mapViewController: MapViewController = {
@@ -33,7 +30,7 @@ class MapViewBaseCell: BaseCell {
     
     var currentCoordinate: CLLocationCoordinate2D!
     var selectedPinLocation: CLLocationCoordinate2D!
-    var arrAnnotation = [MKAnnotation]()
+    
     
     lazy var mapView: MKMapView = {
         let mapv = MKMapView()
@@ -88,7 +85,7 @@ class MapViewBaseCell: BaseCell {
         SetService()
         setupMap()
         setupUserTrackingButtonAndScaleView()
-        setPinToMap()
+//        setPinToMap()
         setUpdateButton()
     }
     
@@ -99,6 +96,8 @@ class MapViewBaseCell: BaseCell {
     }
     
     @objc func handleMapUpdate() {
+        bikeDatas = []
+        self.mapView.removeAnnotations(self.mapView.annotations)
         SetService()
         perform(#selector(handleNetWorkStatus), with: self, afterDelay: 1)
     }
@@ -139,38 +138,40 @@ class MapViewBaseCell: BaseCell {
         }
     }
     
-    func handleNetWorkStatusMVC() {
-        showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
-//         mapViewController?.showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
-        if mapNetworkCheck == false {
-            networkMessageLabel.text = "更新失敗\n請確認網路"
-        } else if mapNetworkCheck == true {
-            networkMessageLabel.text = "資料更新完畢"
-        }
-    }
-    ///////////////////
+//    func handleNetWorkStatusMVC() {
+//        showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
+////         mapViewController?.showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
+//        if mapNetworkCheck == false {
+//            networkMessageLabel.text = "更新失敗\n請確認網路"
+//        } else if mapNetworkCheck == true {
+//            networkMessageLabel.text = "資料更新完畢"
+//        }
+//    }
 
 
     func SetService() {
+        
         Service.sharedInstance.fetchJsonData(urlString: webString, completion: { (bikeinfos, err) in
             if let err = err {
-//                print("MapViewCell error fetching json form URL:", err)
                 print("MapViewCell 偵測網路沒開：",err.localizedDescription)
+                self.mapViewCellDelegate?.updateStatusAlert(status: false)
             }
-            if let bikeinfos = bikeinfos {
-                bikeDatas = bikeinfos
-                self.setPinToMap()
-                mapNetworkCheck = true
-                print("SetSerivce 呼叫成功")
-//                print(bikeDatas!.count)
-            }
-            DispatchQueue.main.async {
+            
+            guard let bikeinfos = bikeinfos else { return }
+            bikeDatas = bikeinfos
+            self.setPinToMap()
+            mapNetworkCheck = true
+            print("SetSerivce 呼叫成功")
+            print(bikeDatas.count)
 
+            DispatchQueue.main.async {
+               
                 self.showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
-//                self.mapViewController?.showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
                 self.mapView.updateConstraints()
                 self.mapViewController?.collectionView?.reloadData()
             }
+            
+            self.mapViewCellDelegate?.updateStatusAlert(status: true)
         })
     }
 
@@ -200,20 +201,18 @@ class MapViewBaseCell: BaseCell {
     
     func setPinToMap() {
         showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
-//         mapViewController?.showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
-        arrAnnotation.removeAll()
-        guard let bikeDataCount = bikeDatas?.count else { return }
+
+        let bikeDataCount = bikeDatas.count
         print("MAP PIN bikeDataCount",bikeDataCount)
-        guard let bikeInfo = bikeDatas else { return }
-        
+
         for item in 0 ..< bikeDataCount {
             let annottaion = MKPointAnnotation()
-            annottaion.coordinate = bikeInfo[item].locate!
-            annottaion.title = "\(bikeInfo[item].sna!)"
-            annottaion.subtitle = "\(item)"
+            annottaion.coordinate = bikeDatas[item].locate!
+            annottaion.title = "\(bikeDatas[item].sna!)"
+            annottaion.subtitle = "\(bikeDatas[item].id!-1)"
             arrAnnotation.append(annottaion)
         }
-        
+        print("大頭針數量",arrAnnotation.count)
         self.mapView.addAnnotations(arrAnnotation)
         self.mapView.showAnnotations(arrAnnotation, animated: false)
         
@@ -222,7 +221,7 @@ class MapViewBaseCell: BaseCell {
         locationManager.startUpdatingHeading()
         
         mapView.updateConstraints()
-        mapViewController?.collectionView?.reloadData()
+        self.mapViewController?.collectionView?.reloadData()
     }
 }
 
@@ -254,6 +253,7 @@ extension MapViewBaseCell: MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        
         if annotation is MKUserLocation {
             return nil
         }
@@ -261,6 +261,7 @@ extension MapViewBaseCell: MKMapViewDelegate {
         if view == nil {
             view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "Pin")
         }
+        view?.detailCalloutAccessoryView?.removeFromSuperview()
         
         let index = Int((annotation.subtitle!)!)!
 
@@ -320,13 +321,15 @@ extension MKPinAnnotationView {
 
         let label = UILabel()
         label.numberOfLines = 3
-        let ar = bikeDatas![index].ar!
-        let sbi = bikeDatas![index].sbi!
-        let bemp = bikeDatas![index].bemp!
+        let ar = bikeDatas[index].ar!
+        let sbi = bikeDatas[index].sbi!
+        let bemp = bikeDatas[index].bemp!
+        let time = TimeHelper.showUpdateTime(timeString: bikeDatas[index].mday!)
         var lblText:String
         lblText = "\(ar)"
-        lblText += "\n🚲 有\(sbi)台"
-        lblText += "\n🅿️ 有\(bemp)格"
+        lblText += "\n🚲： \(sbi)        "
+        lblText += "🅿️： \(bemp)"
+        lblText += "\n\(time)"
         label.text = lblText
         label.adjustsFontSizeToFitWidth = true
 //        label.backgroundColor = UIColor(white: 0.5, alpha: 0.5)
@@ -342,11 +345,11 @@ extension MKPinAnnotationView {
 
         switch cellItem {
         case 1:
-            mapFunction = Int(bikeDatas![index].bemp!)!
+            mapFunction = Int(bikeDatas[index].bemp!)!
         default:
-            mapFunction = Int(bikeDatas![index].sbi!)!
+            mapFunction = Int(bikeDatas[index].sbi!)!
         }
-        if bikeDatas![index].act == "0" {
+        if bikeDatas[index].act == "0" {
             color = UIColor.gray
         } else {
             switch mapFunction {

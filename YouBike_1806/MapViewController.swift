@@ -9,12 +9,14 @@
 import UIKit
 import MapKit
 
-var bikeDatas: [BikeStationInfo]?
+var bikeDatas = [BikeStationInfo]()
 
 class MapViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, CLLocationManagerDelegate, MKMapViewDelegate {
 
     private let mapViewCellId = "mapViewCellId"
    private let bikeMapViewCellId = "bikeMapViewCellId"
+    
+     var refreshControl = UIRefreshControl()
     
     let mapBarSelectedContaner: UIView = {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
@@ -51,6 +53,7 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         mc.mapView.delegate = self
         mc.locationManager.delegate = self
         mc.mapViewController = self
+        mc.mapViewCellDelegate = self
         return mc
     }()
     
@@ -68,10 +71,10 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        mapViewBaseCell.mapViewCellDelegate = self
         setupNavBar()
         setupMapBarSelectedView()
         setupCollectionView()
-        
     }
 
     func setupCollectionView() {
@@ -120,14 +123,14 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         mapBarLeftToolbar.anchor(top: mapBarSelectedContaner.topAnchor, left: mapBarDataUpdateButton.rightAnchor, bottom: mapBarSelectedContaner.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 0)
     }
     
-    let searchController = UISearchController(searchResultsController: nil)
-    var searchActive: Bool = false
-    var isShowSearchResult: Bool = false
-    var searchArr: [BikeStationInfo] = [BikeStationInfo]() {
-        didSet {
-            self.collectionView?.reloadData()
-        }
-    }
+//    let searchController = UISearchController(searchResultsController: nil)
+//    var searchActive: Bool = false
+//    var isShowSearchResult: Bool = false
+//    var searchArr: [BikeStationInfo] = [BikeStationInfo]() {
+//        didSet {
+//            self.collectionView?.reloadData()
+//        }
+//    }
     
     lazy var mapBarDataUpdateButton: UIButton = {
         let btn = UIButton(type: UIButtonType.custom)
@@ -140,31 +143,21 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
     }()
     
     @objc func handleSearchBarItem() {
-//        self.searchController.delegate = self
-//        self.searchController.searchBar.delegate = self
-//        self.searchController.searchResultsUpdater = self
-//        self.searchController.hidesNavigationBarDuringPresentation = false
-//        self.searchController.obscuresBackgroundDuringPresentation = false
-//        self.searchController.searchBar.placeholder = "請輸入關鍵字"
-//        searchController.searchBar.becomeFirstResponder()
-//        present(searchController, animated: true, completion: nil)
-    }
-    @objc func handleMapDataUpdate() {
-        print("Map Controller Btn Pressed")
-        mapViewBaseCell.SetService()
-
-//        perform(#selector(mapViewBaseCell?.handleNetWorkStatus), with: self, afterDelay: 1)
-        mapViewBaseCell.handleNetWorkStatusMVC()
 
     }
     
-//    func showNetworkMessageView(mapNetworkCheck: Bool) {
-//        if mapNetworkCheck == false {
-//           print("請確認網路")
-//        } else if mapNetworkCheck == true {
-//           print("資料下載完成")
-//        }
-//    }
+    @objc func handleMapDataUpdate() {
+        
+        print("Map Controller Btn Pressed")
+        mapViewBaseCell.SetService()
+        
+//        mapViewBaseCell.mapView.updateConstraints()
+//        collectionView?.reloadData()
+//        mapViewBaseCell.handleNetWorkStatusMVC()
+
+    }
+    
+
   
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 2
@@ -195,3 +188,44 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
     }
 }
 
+extension MapViewController: MapViewCellDelegate {
+    
+    func updateStatusAlert(status updateSuccess: Bool) {
+        if updateSuccess == true {
+            Alert.showAlert(title: "下載完成", message: TimeHelper.showUpdateTime(timeString: bikeDatas[0].mday!), vc: self)
+        } else if updateSuccess == false {
+            Alert.showAlert(title: "請開啟網路", message: "更新失敗", vc: self)
+        }
+    }
+}
+
+//extension MapViewController {
+//func setupRefreshControl() {
+//    refreshControl.addTarget(self, action: #selector(refreshContents), for: .valueChanged)
+//    if #available(iOS 10.0, *) {
+//        collectionView?.refreshControl = refreshControl
+//    } else {
+//        collectionView?.addSubview(refreshControl)
+//    }
+//}
+//
+//@objc func refreshContents() {
+//    refreshControl.attributedTitle = NSAttributedString(string: "資料更新中")
+//    bikeDatas.removeAll()
+//    mapViewBaseCell.SetService()
+//    self.collectionView?.reloadData()
+//    self.perform(#selector(finishedRefreshing), with: nil, afterDelay: 1.5)
+//}
+//
+//@objc func finishedRefreshing() {
+//    UIView.animate(withDuration: 0.2, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+//        self.refreshControl.attributedTitle = NSAttributedString(string: "資料更新完成")
+//    }, completion: { _ in
+//        self.refreshControl.endRefreshing()
+//
+//        if bikeDatas.count == 0 {
+//            Alert.showAlert(title: "請檢查網路", message: "", vc: self)
+//        }
+//    })
+//}
+//}
