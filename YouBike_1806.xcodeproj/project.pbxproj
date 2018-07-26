@@ -17,6 +17,7 @@
 		BF3D654920DA331900C310EF /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3D654820DA331900C310EF /* MapViewController.swift */; };
 		BF3D654D20DA433100C310EF /* InformationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3D654C20DA433100C310EF /* InformationView.swift */; };
 		BF3D654F20DA573600C310EF /* GeneralSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3D654E20DA573600C310EF /* GeneralSetting.swift */; };
+		BF4EED592109C084009F9C10 /* ParkingMapViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0FD51420E628F90078ED44 /* ParkingMapViewCell.swift */; };
 		BF4F974620D8DAF30033343F /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF4F974520D8DAF30033343F /* Extensions.swift */; };
 		BF4F974820D8F05F0033343F /* BikeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF4F974720D8F05F0033343F /* BikeCell.swift */; };
 		BF735F9F2106F24700EDC110 /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF735F9E2106F24700EDC110 /* Alert.swift */; };
@@ -227,6 +228,7 @@
 				BFDEBB2220D7ED63006CF920 /* BikeViewController.swift in Sources */,
 				BF735F9F2106F24700EDC110 /* Alert.swift in Sources */,
 				BF3D654D20DA433100C310EF /* InformationView.swift in Sources */,
+				BF4EED592109C084009F9C10 /* ParkingMapViewCell.swift in Sources */,
 				BF18DE0220D3ABD00053B565 /* Service.swift in Sources */,
 				BF3D654720DA323D00C310EF /* TabBarController.swift in Sources */,
 				BF18DDED20D39C250053B565 /* AppDelegate.swift in Sources */,

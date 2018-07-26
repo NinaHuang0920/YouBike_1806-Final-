@@ -53,29 +53,55 @@ class MapViewBaseCell: BaseCell {
     
     lazy var mapDataUpdateButton: UIButton = {
         let btn = UIButton(type: UIButtonType.custom)
-        btn.backgroundColor = .black
-        btn.setTitle("更新資訊", for: UIControlState.normal)
+        btn.backgroundColor = mapBarColorBlue
+        btn.setTitle("更新", for: UIControlState.normal)
         btn.setTitleColor(UIColor.white, for: .normal)
         btn.layer.cornerRadius = 3
         btn.addTarget(self, action: #selector(handleMapUpdate), for: UIControlEvents.touchUpInside)
         return btn
     }()
-    
-    
-    let networkMessageCancelButton: UIButton = {
-        let btn = UIButton(type: UIButtonType.system)
-        btn.setImage(#imageLiteral(resourceName: "cross").withRenderingMode(UIImageRenderingMode.alwaysOriginal), for: .normal)
-        return btn
+    let networkMessageView: UIView = {
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: screenWidth*0.8, height: screenHeight*0.3))
+        view.backgroundColor = UIColor(white: 1, alpha: 0.9)
+        view.layer.cornerRadius = 10
+        view.layer.borderWidth = 0.5
+        view.layer.borderColor = UIColor.lightGray.cgColor
+        view.layer.masksToBounds = true
+        return view
     }()
-    
     let networkMessageLabel: UILabel = {
         let lb = UILabel()
         lb.text = "資料更新成功"
-        lb.textColor = UIColor.orange
-        lb.font = UIFont.boldSystemFont(ofSize: 28)
+        lb.textColor = UIColor.black
+        lb.font = UIFont.boldSystemFont(ofSize: 24)
         lb.textAlignment = .center
         lb.adjustsFontSizeToFitWidth = true
         lb.numberOfLines = 2
+        return lb
+    }()
+    let dividerLineView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor.lightGray
+        return view
+    }()
+    
+    let networkMessageCancelButton: UIButton = {
+        let btn = UIButton()
+        btn.setTitle("確定", for: .normal)
+        btn.setTitleColor(UIColor.blue, for: .normal)
+        btn.tintColor = UIColor.blue
+        btn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 24)
+        return btn
+    }()
+    
+    let updateTimeLabel: UILabel = {
+        let lb = UILabel()
+        lb.text = "更新時間: 00:00 "
+        lb.textColor = UIColor.black
+        lb.backgroundColor = UIColor(white: 0.95, alpha: 0.3)
+        lb.font = UIFont.boldSystemFont(ofSize: 14)
+        lb.textAlignment = .left
+        lb.adjustsFontSizeToFitWidth = true
         return lb
     }()
     
@@ -85,14 +111,22 @@ class MapViewBaseCell: BaseCell {
         SetService()
         setupMap()
         setupUserTrackingButtonAndScaleView()
-//        setPinToMap()
         setUpdateButton()
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+2) {
+            self.updateTimeLabel.text = TimeHelper.showUpdateTime(timeString: bikeDatas[0].mday!)
+        }
+        
     }
     
     
     func setUpdateButton() {
+        mapView.addSubview(updateTimeLabel)
         mapView.addSubview(mapDataUpdateButton)
-        mapDataUpdateButton.anchor(top: mapView.topAnchor, left: mapView.leftAnchor, bottom: nil, right: nil, topConstant: 5, leftConstant: 5, bottomConstant: 0, rightConstant: 0, widthConstant: screenWidth*0.22, heightConstant: 0)
+        
+        updateTimeLabel.anchor(top: mapView.topAnchor, left:  mapView.leftAnchor, bottom: nil, right: nil, topConstant: 2, leftConstant: 12, bottomConstant: 0, rightConstant: 0, widthConstant: 200, heightConstant: 20)
+        
+        mapDataUpdateButton.anchor(top: updateTimeLabel.bottomAnchor, left: mapView.leftAnchor, bottom: nil, right: nil, topConstant: 2, leftConstant: 12, bottomConstant: 0, rightConstant: 0, widthConstant: 65, heightConstant: 38)
+       
     }
     
     @objc func handleMapUpdate() {
@@ -102,26 +136,28 @@ class MapViewBaseCell: BaseCell {
         perform(#selector(handleNetWorkStatus), with: self, afterDelay: 1)
     }
     
-    let networkMessageView: UIView = {
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: screenWidth*0.8, height: screenHeight*0.3))
-        view.backgroundColor = UIColor(white: 0.15, alpha: 0.95)
-        view.layer.cornerRadius = 10
-        view.layer.borderWidth = 5
-        view.layer.borderColor = UIColor.orange.cgColor
-        view.layer.masksToBounds = true
-        return view
-    }()
+    
     func showNetworkMessageView(mapNetworkCheck: Bool) {
         addSubview(networkMessageView)
         networkMessageView.addSubview(networkMessageLabel)
+        networkMessageView.addSubview(dividerLineView)
         networkMessageView.addSubview(networkMessageCancelButton)
+        
         networkMessageView.center = CGPoint(x: frame.width/2, y: frame.height/2)
-        networkMessageLabel.anchor(top: networkMessageView.topAnchor, left: networkMessageView.leftAnchor, bottom: networkMessageView.bottomAnchor, right: networkMessageView.rightAnchor, topConstant: 60, leftConstant: 60, bottomConstant: 60, rightConstant: 60, widthConstant: 0, heightConstant: 0)
-        networkMessageCancelButton.anchor(top: networkMessageView.topAnchor, left: nil, bottom: nil, right: networkMessageView.rightAnchor, topConstant: -10, leftConstant: 0, bottomConstant: 0, rightConstant: -10, widthConstant: 60, heightConstant: 60)
+        
+        networkMessageLabel.anchor(top: networkMessageView.topAnchor, left: networkMessageView.leftAnchor, bottom: nil, right: networkMessageView.rightAnchor, topConstant: 0, leftConstant: 60, bottomConstant: 0, rightConstant: 60, widthConstant: 0, heightConstant: networkMessageView.bounds.height*0.65)
+//        networkMessageCancelButton.anchor(top: networkMessageView.topAnchor, left: nil, bottom: nil, right: networkMessageView.rightAnchor, topConstant: -10, leftConstant: 0, bottomConstant: 0, rightConstant: -10, widthConstant: 60, heightConstant: 60)
+        
+        dividerLineView.anchor(top: networkMessageLabel.bottomAnchor, left: networkMessageView.leftAnchor, bottom: nil, right: networkMessageView.rightAnchor, topConstant: 0, leftConstant: 1, bottomConstant: 0, rightConstant: 1, widthConstant: 0, heightConstant: 0.2)
+        
+        networkMessageCancelButton.anchor(top: dividerLineView.bottomAnchor, left: networkMessageView.leftAnchor, bottom: networkMessageView.bottomAnchor, right: networkMessageView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
+        
         networkMessageCancelButton.addTarget(self, action: #selector(handleNetworkMessageViewCancelBtn), for: .touchUpInside)
         if mapNetworkCheck == false {
             networkMessageLabel.text = "請確認網路"
+//            self.mapViewCellDelegate?.updateStatusAlert(status: false)
         } else if mapNetworkCheck == true {
+//            self.mapViewCellDelegate?.updateStatusAlert(status: true)
             networkMessageLabel.text = "資料下載完成"
         }
     }
@@ -132,21 +168,13 @@ class MapViewBaseCell: BaseCell {
         showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
 //        mapViewController?.showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
         if mapNetworkCheck == false {
+//            self.mapViewCellDelegate?.updateStatusAlert(status: false)
             networkMessageLabel.text = "更新失敗\n請確認網路"
         } else if mapNetworkCheck == true {
-            networkMessageLabel.text = "資料更新完畢"
+//            self.mapViewCellDelegate?.updateStatusAlert(status: true)
+            networkMessageLabel.text = "資料下載完成"
         }
     }
-    
-//    func handleNetWorkStatusMVC() {
-//        showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
-////         mapViewController?.showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
-//        if mapNetworkCheck == false {
-//            networkMessageLabel.text = "更新失敗\n請確認網路"
-//        } else if mapNetworkCheck == true {
-//            networkMessageLabel.text = "資料更新完畢"
-//        }
-//    }
 
 
     func SetService() {
@@ -154,7 +182,7 @@ class MapViewBaseCell: BaseCell {
         Service.sharedInstance.fetchJsonData(urlString: webString, completion: { (bikeinfos, err) in
             if let err = err {
                 print("MapViewCell 偵測網路沒開：",err.localizedDescription)
-                self.mapViewCellDelegate?.updateStatusAlert(status: false)
+//                self.mapViewCellDelegate?.updateStatusAlert(status: false)
             }
             
             guard let bikeinfos = bikeinfos else { return }
@@ -166,12 +194,12 @@ class MapViewBaseCell: BaseCell {
 
             DispatchQueue.main.async {
                
-                self.showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
+//                self.showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
                 self.mapView.updateConstraints()
                 self.mapViewController?.collectionView?.reloadData()
             }
             
-            self.mapViewCellDelegate?.updateStatusAlert(status: true)
+//            self.mapViewCellDelegate?.updateStatusAlert(status: true)
         })
     }
 
@@ -325,17 +353,20 @@ extension MKPinAnnotationView {
         let sbi = bikeDatas[index].sbi!
         let bemp = bikeDatas[index].bemp!
         let time = TimeHelper.showUpdateTime(timeString: bikeDatas[index].mday!)
-        var lblText:String
-        lblText = "\(ar)"
-        lblText += "\n🚲： \(sbi)        "
-        lblText += "🅿️： \(bemp)"
-        lblText += "\n\(time)"
-        label.text = lblText
+        
+        let attributedText = NSMutableAttributedString(string: "\(ar)\n", attributes: [NSAttributedStringKey.font : UIFont.systemFont(ofSize: 14)])
+        attributedText.append(NSAttributedString(string: "🚲： \(sbi)        🅿️： \(bemp)\n", attributes: [NSAttributedStringKey.font : UIFont.systemFont(ofSize: 18), NSAttributedStringKey.foregroundColor: #colorLiteral(red: 0.3176470697, green: 0.07450980693, blue: 0.02745098062, alpha: 1)]))
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 4
+        let range = NSRange(location: 0, length: attributedText.string.count)
+        attributedText.addAttribute(NSAttributedStringKey.paragraphStyle, value: paragraphStyle, range: range)
+        attributedText.append(NSAttributedString(string: time, attributes: [NSAttributedStringKey.font : UIFont.systemFont(ofSize: 12), NSAttributedStringKey.foregroundColor: #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)]))
+        
+        label.attributedText = attributedText
         label.adjustsFontSizeToFitWidth = true
-//        label.backgroundColor = UIColor(white: 0.5, alpha: 0.5)
-
         detailCalloutAccessoryView = label
         canShowCallout = true
+        
     }
 
     func setPinColor(annSubTitle: Int, cellItem: Int) -> UIColor {

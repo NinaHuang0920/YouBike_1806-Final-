@@ -79,7 +79,7 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
 
     func setupCollectionView() {
         collectionView?.register(MapViewBaseCell.self, forCellWithReuseIdentifier: mapViewCellId)
-        //        collectionView?.register(ParkingMapViewCell.self, forCellWithReuseIdentifier: bikeMapViewCellId)
+                collectionView?.register(ParkingMapViewCell.self, forCellWithReuseIdentifier: bikeMapViewCellId)
         collectionView?.backgroundColor = mainViewBackgroundColor
         collectionView?.isPagingEnabled = true // MapBar移動的設定
     }
@@ -112,15 +112,15 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         mapBarSelectedContaner.addSubview(mapBarSelectedView)
         mapBarSelectedContaner.addSubview(mapBarTitle)
         mapBarSelectedContaner.addSubview(mapBarLeftToolbar)
-        mapBarSelectedContaner.addSubview(mapBarDataUpdateButton)
+//        mapBarSelectedContaner.addSubview(mapBarDataUpdateButton)
         
         mapBarSelectedView.anchor(top: mapBarSelectedContaner.topAnchor, left: nil, bottom: mapBarSelectedContaner.bottomAnchor, right: mapBarSelectedContaner.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: screenWidth*0.3, heightConstant: 0)
         mapBarTitle.centerYAnchor.constraint(equalTo: mapBarSelectedContaner.centerYAnchor).isActive = true
         mapBarTitle.centerXAnchor.constraint(equalTo: mapBarSelectedContaner.centerXAnchor).isActive = true
         
-        mapBarDataUpdateButton.anchor(top: mapBarSelectedContaner.topAnchor, left: mapBarSelectedContaner.leftAnchor, bottom: mapBarSelectedContaner.bottomAnchor, right: nil, topConstant: 6, leftConstant: 3, bottomConstant: 6, rightConstant: 0, widthConstant: 60, heightConstant: 0)
+//        mapBarDataUpdateButton.anchor(top: mapBarSelectedContaner.topAnchor, left: mapBarSelectedContaner.leftAnchor, bottom: mapBarSelectedContaner.bottomAnchor, right: nil, topConstant: 6, leftConstant: 3, bottomConstant: 6, rightConstant: 0, widthConstant: 60, heightConstant: 0)
         
-        mapBarLeftToolbar.anchor(top: mapBarSelectedContaner.topAnchor, left: mapBarDataUpdateButton.rightAnchor, bottom: mapBarSelectedContaner.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 50, heightConstant: 0)
+        mapBarLeftToolbar.anchor(top: mapBarSelectedContaner.topAnchor, left: mapBarSelectedContaner.leftAnchor, bottom: mapBarSelectedContaner.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 65, heightConstant: 0)
     }
     
 //    let searchController = UISearchController(searchResultsController: nil)
@@ -132,15 +132,15 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
 //        }
 //    }
     
-    lazy var mapBarDataUpdateButton: UIButton = {
-        let btn = UIButton(type: UIButtonType.custom)
-        btn.backgroundColor = mapBarColorBlue
-        btn.setTitle("更新", for: UIControlState.normal)
-        btn.setTitleColor(UIColor.white, for: .normal)
-        btn.layer.cornerRadius = 3
-        btn.addTarget(self, action: #selector(handleMapDataUpdate), for: UIControlEvents.touchUpInside)
-        return btn
-    }()
+//    lazy var mapBarDataUpdateButton: UIButton = {
+//        let btn = UIButton(type: UIButtonType.custom)
+//        btn.backgroundColor = mapBarColorBlue
+//        btn.setTitle("更新", for: UIControlState.normal)
+//        btn.setTitleColor(UIColor.white, for: .normal)
+//        btn.layer.cornerRadius = 3
+//        btn.addTarget(self, action: #selector(handleMapDataUpdate), for: UIControlEvents.touchUpInside)
+//        return btn
+//    }()
     
     @objc func handleSearchBarItem() {
 
@@ -165,10 +165,10 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-//        if indexPath.item == 1 {
-//            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: bikeMapViewCellId, for: indexPath) as! ParkingMapViewCell
-//            return cell
-//        }
+        if indexPath.item == 1 {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: bikeMapViewCellId, for: indexPath) as! ParkingMapViewCell
+            return cell
+        }
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: mapViewCellId, for: indexPath) as! MapViewBaseCell
             return cell
 

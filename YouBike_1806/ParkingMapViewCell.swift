@@ -11,11 +11,7 @@ import MapKit
 
 class ParkingMapViewCell: MapViewBaseCell {
     
-    private let cellItem: Int = 1
-    
-//    override init(frame: CGRect) {
-//        super.init(frame: frame)
-//    }
+    private let parkingCellItem: Int = 1
     
     override func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if annotation is MKUserLocation {
@@ -27,12 +23,10 @@ class ParkingMapViewCell: MapViewBaseCell {
         }
         let index = Int((annotation.subtitle!)!)
 
-        view?.setupPinCalloutView(index: index!, cellItem: cellItem)
+        view?.setupPinCalloutView(index: index!, cellItem: parkingCellItem)
         return view
     }
 
-//    required init?(coder aDecoder: NSCoder) {
-//        fatalError("init(coder:) has not been implemented")
-//    }
+
 }
 
