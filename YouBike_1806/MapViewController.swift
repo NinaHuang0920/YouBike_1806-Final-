@@ -28,7 +28,7 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         let lb = UILabel()
         lb.text = "借車地圖"
         lb.font = UIFont.boldSystemFont(ofSize: 22)
-        lb.textColor = mapBarColor
+        lb.textColor = mapBarColorBlue
         lb.translatesAutoresizingMaskIntoConstraints = false
         return lb
     }()

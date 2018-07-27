@@ -23,11 +23,11 @@ var mapNetworkCheck: Bool = true {
 
 let webString = "https://data.tycg.gov.tw/api/v1/rest/datastore/a1b4714b-3b75-4ff8-a8f2-cc377e4eaa0f?format=json&limit=1000"
 
-var networkCheckFail: Bool? = true {
-    didSet {
-//        print("networkCheckFail Change:", networkCheckFail!)
-    }
-}
+//var networkCheckFail: Bool? = true {
+//    didSet {
+////        print("networkCheckFail Change:", networkCheckFail!)
+//    }
+//}
 
 class Service {
     
@@ -44,10 +44,14 @@ class Service {
         URLSession.shared.dataTask(with: url) { (data, response, error) in
             
             if let error = error {
-                completion(nil, error)
+                DispatchQueue.main.async {
+                    completion(nil, error)
+//                    mapNetworkCheck = false
+                }
+                
                 debugPrint()
                 print("NETWORK FAIL(網路沒開/網址錯誤)",error)
-                mapNetworkCheck = false
+                
                 return
             }
 
@@ -72,7 +76,6 @@ class Service {
                 let json = try JSONDecoder().decode(Top.self, from: data)
                 DispatchQueue.main.async {
                     completion(json.result.records, nil)
-                    networkCheckFail = false
                 }
             } catch let jsonErr {
                 debugPrint()

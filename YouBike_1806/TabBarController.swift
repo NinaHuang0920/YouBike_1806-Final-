@@ -35,7 +35,7 @@ class TabBarController: UITabBarController {
         
         viewControllers = [secondnavigationController, navigationController, infoNavgationController]
         tabBar.isTranslucent = false
-        tabBar.tintColor = mapBarColor
+        tabBar.tintColor = mapBarColorBlue
         
     }
 

@@ -51,7 +51,7 @@ class MapBarSelectedView: UIView, UICollectionViewDelegateFlowLayout, UICollecti
 
     func setupHorizontalBar() {
         let horizontalBarView = UIView()
-        horizontalBarView.backgroundColor = mapBarColor
+        horizontalBarView.backgroundColor = mapBarColorBlue
         horizontalBarView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(horizontalBarView)
 
@@ -115,7 +115,7 @@ class MapBarSelectedViewCell: BaseCell {
     
     override var isSelected: Bool {
         didSet {
-            selectedBarImage.tintColor = isSelected ? mapBarColor : selectedMapBarItemColor
+            selectedBarImage.tintColor = isSelected ? mapBarColorBlue : selectedMapBarItemColor
         }
     }
     

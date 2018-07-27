@@ -44,7 +44,7 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
     
     func setupNav() {
         navigationItem.title = "租賃站列表"
-        navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: UIFont.boldSystemFont(ofSize: 22), NSAttributedStringKey.foregroundColor: mapBarColor]
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: UIFont.boldSystemFont(ofSize: 22), NSAttributedStringKey.foregroundColor: mapBarColorBlue]
         navigationController?.navigationBar.barTintColor = stationBarColor
         navigationController?.navigationBar.isTranslucent = false
     }

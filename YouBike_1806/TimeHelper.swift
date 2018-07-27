@@ -11,12 +11,15 @@ import Foundation
 class TimeHelper {
     
     static func showUpdateTime(timeString: String) -> String {
+
+        var time = "無法更新時間"
+
         let timeYear = timeString.dropLast(10)
         let timeMonth = (timeString.dropFirst(4)).dropLast(8)
         let timeDate = (timeString.dropFirst(6)).dropLast(6)
         var timeMinSec = (timeString.dropFirst(8)).dropLast(2)
         timeMinSec.insert(":", at: timeMinSec.index(timeMinSec.endIndex, offsetBy: -2))
-        let time = "最新時間: \(timeYear).\(timeMonth).\(timeDate). \(timeMinSec)"
+        time = "最新時間: \(timeYear).\(timeMonth).\(timeDate). \(timeMinSec)"
         return time
     }
     

@@ -32,6 +32,7 @@ class MapViewBaseCell: BaseCell {
     var selectedPinLocation: CLLocationCoordinate2D!
     
     
+    
     lazy var mapView: MKMapView = {
         let mapv = MKMapView()
         mapv.showsUserLocation = true
@@ -105,21 +106,62 @@ class MapViewBaseCell: BaseCell {
         return lb
     }()
     
+    lazy var loadingView: UIView = {
+        let loadingView = UIView()
+        loadingView.backgroundColor = UIColor(white: 0.4, alpha: 0.7)
+        loadingView.clipsToBounds = true
+        loadingView.layer.cornerRadius = 10
+        loadingView.translatesAutoresizingMaskIntoConstraints = false
+        return loadingView
+    }()
+    
+    lazy var activityIndicator: UIActivityIndicatorView = {
+        let act = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.whiteLarge)
+        act.translatesAutoresizingMaskIntoConstraints = false
+//        act.frame = CGRect(x: 0.0, y: 0.0, width: 40.0, height: 40.0)
+//        act.center = CGPoint(x: loadingView.frame.size.width / 2, y: loadingView.frame.size.height / 2)
+        return act
+    }()
+
+    
     override func setupViews() {
         super.setupViews()
         
         SetService()
         setupMap()
+        setupActivityIndicator()
         setupUserTrackingButtonAndScaleView()
         setUpdateButton()
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+2) {
-            self.updateTimeLabel.text = TimeHelper.showUpdateTime(timeString: bikeDatas[0].mday!)
-        }
+    }
+   
+    
+    func setupActivityIndicator() {
+
+        mapView.addSubview(loadingView)
+        loadingView.addSubview(activityIndicator)
         
+        loadingView.anchor(top: nil, left: nil, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 80, heightConstant: 80)
+        loadingView.centerXAnchor.constraint(equalTo: mapView.centerXAnchor).isActive = true
+        loadingView.centerYAnchor.constraint(equalTo: mapView.centerYAnchor).isActive = true
+        
+        activityIndicator.centerXAnchor.constraint(equalTo: loadingView.centerXAnchor).isActive = true
+        activityIndicator.centerYAnchor.constraint(equalTo: loadingView.centerYAnchor).isActive = true
+        activityIndicator.hidesWhenStopped = true
+        
+        activityIndicator.startAnimating()
     }
     
+    func dealTimeLabel() {
+        
+        if bikeDatas.count > 1 {
+            self.updateTimeLabel.text = TimeHelper.showUpdateTime(timeString: bikeDatas[0].mday!)
+        } else {
+            self.updateTimeLabel.text = "無法更新時間"
+        }
+    }
     
     func setUpdateButton() {
+
         mapView.addSubview(updateTimeLabel)
         mapView.addSubview(mapDataUpdateButton)
         
@@ -130,14 +172,31 @@ class MapViewBaseCell: BaseCell {
     }
     
     @objc func handleMapUpdate() {
-        bikeDatas = []
-        self.mapView.removeAnnotations(self.mapView.annotations)
+        setupActivityIndicator()
+        locationManager.stopUpdatingLocation()
         SetService()
-        perform(#selector(handleNetWorkStatus), with: self, afterDelay: 1)
     }
     
-    
     func showNetworkMessageView(mapNetworkCheck: Bool) {
+       
+        if mapNetworkCheck == false {
+            networkMessageLabel.text = "請確認網路"
+        } else if mapNetworkCheck == true {
+            networkMessageLabel.text = "資料下載完成"
+        }
+        
+        UIView.animate(withDuration: 1.5, delay: 0.1, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: UIViewAnimationOptions.curveEaseOut, animations: {
+            self.activityIndicator.stopAnimating()
+            self.dealTimeLabel()
+            self.networkMessageView.removeFromSuperview()
+        }) { (_) in
+            self.loadingView.removeFromSuperview()
+            self.setupNetworkMessageView()
+        }
+        
+    }
+    
+    func setupNetworkMessageView() {
         addSubview(networkMessageView)
         networkMessageView.addSubview(networkMessageLabel)
         networkMessageView.addSubview(dividerLineView)
@@ -146,60 +205,46 @@ class MapViewBaseCell: BaseCell {
         networkMessageView.center = CGPoint(x: frame.width/2, y: frame.height/2)
         
         networkMessageLabel.anchor(top: networkMessageView.topAnchor, left: networkMessageView.leftAnchor, bottom: nil, right: networkMessageView.rightAnchor, topConstant: 0, leftConstant: 60, bottomConstant: 0, rightConstant: 60, widthConstant: 0, heightConstant: networkMessageView.bounds.height*0.65)
-//        networkMessageCancelButton.anchor(top: networkMessageView.topAnchor, left: nil, bottom: nil, right: networkMessageView.rightAnchor, topConstant: -10, leftConstant: 0, bottomConstant: 0, rightConstant: -10, widthConstant: 60, heightConstant: 60)
         
         dividerLineView.anchor(top: networkMessageLabel.bottomAnchor, left: networkMessageView.leftAnchor, bottom: nil, right: networkMessageView.rightAnchor, topConstant: 0, leftConstant: 1, bottomConstant: 0, rightConstant: 1, widthConstant: 0, heightConstant: 0.2)
         
         networkMessageCancelButton.anchor(top: dividerLineView.bottomAnchor, left: networkMessageView.leftAnchor, bottom: networkMessageView.bottomAnchor, right: networkMessageView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
         
         networkMessageCancelButton.addTarget(self, action: #selector(handleNetworkMessageViewCancelBtn), for: .touchUpInside)
-        if mapNetworkCheck == false {
-            networkMessageLabel.text = "請確認網路"
-//            self.mapViewCellDelegate?.updateStatusAlert(status: false)
-        } else if mapNetworkCheck == true {
-//            self.mapViewCellDelegate?.updateStatusAlert(status: true)
-            networkMessageLabel.text = "資料下載完成"
-        }
+//        if mapNetworkCheck == false {
+//            networkMessageLabel.text = "請確認網路"
+//        } else if mapNetworkCheck == true {
+//            networkMessageLabel.text = "資料下載完成"
+//        }
     }
     @objc func handleNetworkMessageViewCancelBtn() {
         networkMessageView.removeFromSuperview()
     }
-    @objc func handleNetWorkStatus() {
-        showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
-//        mapViewController?.showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
-        if mapNetworkCheck == false {
-//            self.mapViewCellDelegate?.updateStatusAlert(status: false)
-            networkMessageLabel.text = "更新失敗\n請確認網路"
-        } else if mapNetworkCheck == true {
-//            self.mapViewCellDelegate?.updateStatusAlert(status: true)
-            networkMessageLabel.text = "資料下載完成"
-        }
-    }
-
 
     func SetService() {
+        bikeDatas = []
+        self.mapView.removeAnnotations(self.mapView.annotations)
         
         Service.sharedInstance.fetchJsonData(urlString: webString, completion: { (bikeinfos, err) in
             if let err = err {
+                mapNetworkCheck = false
                 print("MapViewCell 偵測網路沒開：",err.localizedDescription)
-//                self.mapViewCellDelegate?.updateStatusAlert(status: false)
+                self.showNetworkMessageView(mapNetworkCheck: false)
             }
             
             guard let bikeinfos = bikeinfos else { return }
             bikeDatas = bikeinfos
             self.setPinToMap()
             mapNetworkCheck = true
-            print("SetSerivce 呼叫成功")
-            print(bikeDatas.count)
+            print("SetSerivce 呼叫成功",bikeDatas.count)
 
             DispatchQueue.main.async {
-               
-//                self.showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
                 self.mapView.updateConstraints()
                 self.mapViewController?.collectionView?.reloadData()
             }
-            
-//            self.mapViewCellDelegate?.updateStatusAlert(status: true)
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+1.5) {
+                self.showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
+            }
         })
     }
 
@@ -228,8 +273,9 @@ class MapViewBaseCell: BaseCell {
     }
     
     func setPinToMap() {
-        showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
 
+//        loadingView.removeFromSuperview()
+        
         let bikeDataCount = bikeDatas.count
         print("MAP PIN bikeDataCount",bikeDataCount)
 
@@ -371,27 +417,32 @@ extension MKPinAnnotationView {
 
     func setPinColor(annSubTitle: Int, cellItem: Int) -> UIColor {
         let index = annSubTitle
-        let color: UIColor
+        var color: UIColor = .red
         let mapFunction: Int
 
-        switch cellItem {
-        case 1:
-            mapFunction = Int(bikeDatas[index].bemp!)!
-        default:
-            mapFunction = Int(bikeDatas[index].sbi!)!
+        while bikeDatas.count == 1 {
+            color = .purple
         }
-        if bikeDatas[index].act == "0" {
-            color = UIColor.gray
-        } else {
-            switch mapFunction {
-            case 0:
-                color = UIColor.red
-            case 1...9:
-                color = UIColor.orange
+
+            switch cellItem {
+            case 1:
+                mapFunction = Int(bikeDatas[index].bemp!)!
             default:
-                color = UIColor.green
+                mapFunction = Int(bikeDatas[index].sbi!)!
             }
-        }
+            if bikeDatas[index].act == "0" {
+                color = UIColor.gray
+            } else {
+                switch mapFunction {
+                case 0:
+                    color = UIColor.red
+                case 1...9:
+                    color = UIColor.orange
+                default:
+                    color = UIColor.green
+                }
+            }
+        
         return color
     }
 }
