@@ -16,7 +16,7 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
     private let mapViewCellId = "mapViewCellId"
    private let bikeMapViewCellId = "bikeMapViewCellId"
     
-     var refreshControl = UIRefreshControl()
+//     var refreshControl = UIRefreshControl()
     
     let mapBarSelectedContaner: UIView = {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
@@ -47,13 +47,14 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         return tb
     }()
     
-//    var mapViewBaseCell: MapViewBaseCell?
+////    var mapViewBaseCell: MapViewBaseCell?
     lazy var mapViewBaseCell: MapViewBaseCell = {
+//        let mc = MapViewBaseCell(locationService: LocationService.sharedInstance)
         let mc = MapViewBaseCell()
         mc.mapView.delegate = self
-        mc.locationManager.delegate = self
+//        mc.locationManager.delegate = self
         mc.mapViewController = self
-        mc.mapViewCellDelegate = self
+//        mc.mapViewCellDelegate = self
         return mc
     }()
     
@@ -71,7 +72,7 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        mapViewBaseCell.mapViewCellDelegate = self
+//        mapViewBaseCell.mapViewCellDelegate = self
         setupNavBar()
         setupMapBarSelectedView()
         setupCollectionView()
@@ -79,7 +80,7 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
 
     func setupCollectionView() {
         collectionView?.register(MapViewBaseCell.self, forCellWithReuseIdentifier: mapViewCellId)
-                collectionView?.register(ParkingMapViewCell.self, forCellWithReuseIdentifier: bikeMapViewCellId)
+        collectionView?.register(ParkingMapViewCell.self, forCellWithReuseIdentifier: bikeMapViewCellId)
         collectionView?.backgroundColor = mainViewBackgroundColor
         collectionView?.isPagingEnabled = true // MapBar移動的設定
     }
@@ -112,7 +113,7 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         mapBarSelectedContaner.addSubview(mapBarSelectedView)
         mapBarSelectedContaner.addSubview(mapBarTitle)
         mapBarSelectedContaner.addSubview(mapBarLeftToolbar)
-//        mapBarSelectedContaner.addSubview(mapBarDataUpdateButton)
+        mapBarSelectedContaner.addSubview(mapBarDataUpdateButton)
         
         mapBarSelectedView.anchor(top: mapBarSelectedContaner.topAnchor, left: nil, bottom: mapBarSelectedContaner.bottomAnchor, right: mapBarSelectedContaner.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: screenWidth*0.3, heightConstant: 0)
         mapBarTitle.centerYAnchor.constraint(equalTo: mapBarSelectedContaner.centerYAnchor).isActive = true
@@ -121,6 +122,8 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
 //        mapBarDataUpdateButton.anchor(top: mapBarSelectedContaner.topAnchor, left: mapBarSelectedContaner.leftAnchor, bottom: mapBarSelectedContaner.bottomAnchor, right: nil, topConstant: 6, leftConstant: 3, bottomConstant: 6, rightConstant: 0, widthConstant: 60, heightConstant: 0)
         
         mapBarLeftToolbar.anchor(top: mapBarSelectedContaner.topAnchor, left: mapBarSelectedContaner.leftAnchor, bottom: mapBarSelectedContaner.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 65, heightConstant: 0)
+        
+        mapBarDataUpdateButton.anchor(top: mapBarSelectedContaner.topAnchor, left: mapBarLeftToolbar.rightAnchor, bottom: mapBarSelectedContaner.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 65, heightConstant: 38)
     }
     
 //    let searchController = UISearchController(searchResultsController: nil)
@@ -132,15 +135,15 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
 //        }
 //    }
     
-//    lazy var mapBarDataUpdateButton: UIButton = {
-//        let btn = UIButton(type: UIButtonType.custom)
-//        btn.backgroundColor = mapBarColorBlue
-//        btn.setTitle("更新", for: UIControlState.normal)
-//        btn.setTitleColor(UIColor.white, for: .normal)
-//        btn.layer.cornerRadius = 3
-//        btn.addTarget(self, action: #selector(handleMapDataUpdate), for: UIControlEvents.touchUpInside)
-//        return btn
-//    }()
+    lazy var mapBarDataUpdateButton: UIButton = {
+        let btn = UIButton(type: UIButtonType.custom)
+        btn.backgroundColor = mapBarColorBlue
+        btn.setTitle("更新", for: UIControlState.normal)
+        btn.setTitleColor(UIColor.white, for: .normal)
+        btn.layer.cornerRadius = 3
+        btn.addTarget(self, action: #selector(handleMapDataUpdate), for: UIControlEvents.touchUpInside)
+        return btn
+    }()
     
     @objc func handleSearchBarItem() {
 
@@ -149,11 +152,13 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
     @objc func handleMapDataUpdate() {
         
         print("Map Controller Btn Pressed")
-        mapViewBaseCell.SetService()
         
-//        mapViewBaseCell.mapView.updateConstraints()
-//        collectionView?.reloadData()
-//        mapViewBaseCell.handleNetWorkStatusMVC()
+        SetMapService.sharedInstance.setMapService(mapView: mapViewBaseCell.mapView, mapViewController: self, setPinToMapCompletion: {
+            SetPinToMap.sharedInstance.setPinToMap(arrAnnotation: arrAnnotation, in: self.mapViewBaseCell.mapView, at: self)
+        }, messageblock: {
+            Alert.showAlert(title: "這是測試", message: "", vc: self)
+        })
+        
 
     }
     
@@ -188,16 +193,16 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
     }
 }
 
-extension MapViewController: MapViewCellDelegate {
-    
-    func updateStatusAlert(status updateSuccess: Bool) {
-        if updateSuccess == true {
-            Alert.showAlert(title: "下載完成", message: TimeHelper.showUpdateTime(timeString: bikeDatas[0].mday!), vc: self)
-        } else if updateSuccess == false {
-            Alert.showAlert(title: "請開啟網路", message: "更新失敗", vc: self)
-        }
-    }
-}
+//extension MapViewController: MapViewCellDelegate {
+//
+//    func updateStatusAlert(status updateSuccess: Bool) {
+//        if updateSuccess == true {
+//            Alert.showAlert(title: "下載完成", message: TimeHelper.showUpdateTime(timeString: bikeDatas[0].mday!), vc: self)
+//        } else if updateSuccess == false {
+//            Alert.showAlert(title: "請開啟網路", message: "更新失敗", vc: self)
+//        }
+//    }
+//}
 
 //extension MapViewController {
 //func setupRefreshControl() {

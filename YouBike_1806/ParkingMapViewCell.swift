@@ -24,9 +24,9 @@ class ParkingMapViewCell: MapViewBaseCell {
         let index = Int((annotation.subtitle!)!)
 
         view?.setupPinCalloutView(index: index!, cellItem: parkingCellItem)
+        view?.rightCalloutAccessoryView = setupMapNavButton()
         return view
     }
 
 
 }
-

@@ -13,6 +13,9 @@ extension UIColor {
     static func rgb(red: CGFloat, green: CGFloat, blue: CGFloat) -> UIColor {
         return UIColor(red: red/255, green: green/255, blue: blue/255, alpha: 1)
     }
+    static func rgba(red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) -> UIColor {
+        return UIColor(red: red/255, green: green/255, blue: blue/255, alpha: alpha)
+    }
 }
 
 extension UIView {
@@ -54,21 +57,21 @@ extension BikeCell {
         if act == "0" {
             let closeTamplateImage = #imageLiteral(resourceName: "Close").withRenderingMode(UIImageRenderingMode.alwaysTemplate)
             profileImage.image = closeTamplateImage
-            profileImage.tintColor = UIColor.rgb(red: 228, green: 26, blue: 12)
+            profileImage.tintColor = redColor
         } else {
             switch num {
             case 10...1000:
                 let goTamplateImage = #imageLiteral(resourceName: "goodtogo").withRenderingMode(UIImageRenderingMode.alwaysTemplate)
                 profileImage.image = goTamplateImage
-                profileImage.tintColor = UIColor.rgb(red: 58, green: 139, blue: 38)
+                profileImage.tintColor = greenColor
             case 1...9:
                 let carefulTamplateImage = #imageLiteral(resourceName: "careful").withRenderingMode(UIImageRenderingMode.alwaysTemplate)
                 profileImage.image = carefulTamplateImage
-                profileImage.tintColor = UIColor.rgb(red: 255, green: 145, blue: 0)
+                profileImage.tintColor = orangeColor
             default:
                 let stopTamplateImage = #imageLiteral(resourceName: "stop").withRenderingMode(UIImageRenderingMode.alwaysTemplate)
                 profileImage.image = stopTamplateImage
-                profileImage.tintColor = UIColor.rgb(red: 228, green: 26, blue: 12)
+                profileImage.tintColor = redColor
             }
         }
         return profileImage.image

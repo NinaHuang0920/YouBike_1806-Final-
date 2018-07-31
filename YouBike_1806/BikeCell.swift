@@ -22,10 +22,14 @@ class BikeCell: BaseCell {
             }
             
             if let bikeLabelText = bikeStationInfo?.sbi {
-                bikeLabel.text = "可借：\(bikeLabelText)"
+                let labelMark = NSMutableAttributedString(string: "可借：", attributes: [NSAttributedStringKey.foregroundColor : UIColor.white])
+                labelMark.append(labelTextColor(labelString: bikeLabelText))
+             bikeLabel.attributedText = labelMark
             }
             if let parkLabelText = bikeStationInfo?.bemp {
-                parkLabel.text = "可還：\(parkLabelText)"
+                let labelMark = NSMutableAttributedString(string: "可還：", attributes: [NSAttributedStringKey.foregroundColor : UIColor.white])
+                labelMark.append(labelTextColor(labelString: parkLabelText))
+                parkLabel.attributedText = labelMark
             }
             if let timeLabelText = bikeStationInfo?.mday {
                 var timeMinSec = (timeLabelText.dropFirst(8)).dropLast(2)
@@ -39,6 +43,21 @@ class BikeCell: BaseCell {
             
             
         }
+    }
+    
+    
+    func labelTextColor(labelString: String) -> NSAttributedString  {
+        var  attributedText: NSAttributedString
+        switch labelString {
+        case "0","1","2","3":
+            attributedText = NSMutableAttributedString(string: "\(labelString)", attributes: [NSAttributedStringKey.foregroundColor : redColor])
+        case "4","5","6","7","8","9":
+            attributedText = NSMutableAttributedString(string: "\(labelString)", attributes: [NSAttributedStringKey.foregroundColor : UIColor.orange])
+        default:
+            attributedText = NSMutableAttributedString(string: "\(labelString)", attributes: [NSAttributedStringKey.foregroundColor : UIColor.white])
+        }
+        
+        return attributedText
     }
     
     let profileImage: UIImageView = {
@@ -63,7 +82,8 @@ class BikeCell: BaseCell {
     let stationNameLabel: UILabel = {
         let label = UILabel()
         label.text = "STATION NAME"
-        label.font = UIFont.systemFont(ofSize: 18)
+        label.font = UIFont.boldSystemFont(ofSize: 18)
+        label.textColor = stationTitleColor
         label.translatesAutoresizingMaskIntoConstraints = false
         label.adjustsFontSizeToFitWidth = true
         label.adjustsFontForContentSizeCategory = true

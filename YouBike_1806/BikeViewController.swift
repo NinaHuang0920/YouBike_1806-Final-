@@ -225,9 +225,6 @@ extension BikeViewController: UISearchResultsUpdating {
 }
 
 extension BikeViewController {
-    
-   
-    
     func searchResultText(searchArrCount: Int) -> String {
         let searchResult: String
         if searchArrCount > 0 {
