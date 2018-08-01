@@ -10,11 +10,14 @@ import UIKit
 import MapKit
 
 var bikeDatas = [BikeStationInfo]()
+let updateMapViewNotificationName = Notification.Name(rawValue: updateMapViewNotificationKey)
+
 
 class MapViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, CLLocationManagerDelegate, MKMapViewDelegate {
 
     private let mapViewCellId = "mapViewCellId"
    private let bikeMapViewCellId = "bikeMapViewCellId"
+    
     
 //     var refreshControl = UIRefreshControl()
     
@@ -119,11 +122,11 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         mapBarTitle.centerYAnchor.constraint(equalTo: mapBarSelectedContaner.centerYAnchor).isActive = true
         mapBarTitle.centerXAnchor.constraint(equalTo: mapBarSelectedContaner.centerXAnchor).isActive = true
         
-//        mapBarDataUpdateButton.anchor(top: mapBarSelectedContaner.topAnchor, left: mapBarSelectedContaner.leftAnchor, bottom: mapBarSelectedContaner.bottomAnchor, right: nil, topConstant: 6, leftConstant: 3, bottomConstant: 6, rightConstant: 0, widthConstant: 60, heightConstant: 0)
+        mapBarDataUpdateButton.anchor(top: mapBarSelectedContaner.topAnchor, left: mapBarSelectedContaner.leftAnchor, bottom: mapBarSelectedContaner.bottomAnchor, right: nil, topConstant: 6, leftConstant: 3, bottomConstant: 6, rightConstant: 0, widthConstant: 60, heightConstant: 0)
         
-        mapBarLeftToolbar.anchor(top: mapBarSelectedContaner.topAnchor, left: mapBarSelectedContaner.leftAnchor, bottom: mapBarSelectedContaner.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 65, heightConstant: 0)
+        mapBarLeftToolbar.anchor(top: mapBarSelectedContaner.topAnchor, left: mapBarDataUpdateButton.rightAnchor, bottom: mapBarSelectedContaner.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 65, heightConstant: 0)
         
-        mapBarDataUpdateButton.anchor(top: mapBarSelectedContaner.topAnchor, left: mapBarLeftToolbar.rightAnchor, bottom: mapBarSelectedContaner.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 65, heightConstant: 38)
+//        mapBarDataUpdateButton.anchor(top: mapBarSelectedContaner.topAnchor, left: mapBarLeftToolbar.rightAnchor, bottom: mapBarSelectedContaner.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 65, heightConstant: 38)
     }
     
 //    let searchController = UISearchController(searchResultsController: nil)
@@ -151,15 +154,8 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
     
     @objc func handleMapDataUpdate() {
         
-        print("Map Controller Btn Pressed")
-        
-        SetMapService.sharedInstance.setMapService(mapView: mapViewBaseCell.mapView, mapViewController: self, setPinToMapCompletion: {
-            SetPinToMap.sharedInstance.setPinToMap(arrAnnotation: arrAnnotation, in: self.mapViewBaseCell.mapView, at: self)
-        }, messageblock: {
-            Alert.showAlert(title: "這是測試", message: "", vc: self)
-        })
-        
-
+        NotificationCenter.default.post(name: updateMapViewNotificationName, object: nil)
+    
     }
     
 
@@ -189,7 +185,7 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
- 
+        
     }
 }
 

@@ -14,7 +14,7 @@ class SetPinToMap {
     
     func setPinToMap(arrAnnotation: [MKAnnotation], in mapView: MKMapView, at mapViewController: UICollectionViewController? ) {
         
-        //         self.mapView.removeAnnotations(self.mapView.annotations)
+                 mapView.removeAnnotations(mapView.annotations)
         
         //        arrAnnotation = []
         //        let bikeDataCount = bikeDatas.count

@@ -19,7 +19,9 @@ struct PointAnnotation {
         self.annotation.title = bikeStationInfo.sna
         let stationId = bikeStationInfo.id! - 1
         self.annotation.subtitle = String(stationId)
-        self.annotation.coordinate = bikeStationInfo.locate!
+        
+        guard let bikeStationLocate = bikeStationInfo.locate else { return }
+        self.annotation.coordinate = bikeStationLocate
         arrAnnotation.append(self.annotation)
     }
     

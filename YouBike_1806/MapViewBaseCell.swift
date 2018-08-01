@@ -13,9 +13,20 @@ import MapKit
 //    func updateStatusAlert(status updateSuccess: Bool)
 //}
 
+let updateMapViewNotificationKey = "com.smilec.updateMapViewData"
+let removeMapViewNotificationKey = "com.smilec.removeMapViewData"
+
+
 var arrAnnotation = [MKAnnotation]()
 
 class MapViewBaseCell: BaseCell {
+    
+    let updateMapDataFromMapViewController = Notification.Name(rawValue: updateMapViewNotificationKey)
+    let removeMapDataFromMapView = Notification.Name(rawValue: removeMapViewNotificationKey)
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
     
 //    let locationService: LocationService
 //
@@ -62,15 +73,15 @@ class MapViewBaseCell: BaseCell {
 //        return manager
 //    }()
     
-    lazy var mapDataUpdateButton: UIButton = {
-        let btn = UIButton(type: UIButtonType.custom)
-        btn.backgroundColor = mapBarColorBlue
-        btn.setTitle("更新", for: UIControlState.normal)
-        btn.setTitleColor(UIColor.white, for: .normal)
-        btn.layer.cornerRadius = 3
-        btn.addTarget(self, action: #selector(handleMapUpdate), for: UIControlEvents.touchUpInside)
-        return btn
-    }()
+//    lazy var mapDataUpdateButton: UIButton = {
+//        let btn = UIButton(type: UIButtonType.custom)
+//        btn.backgroundColor = mapBarColorBlue
+//        btn.setTitle("更新", for: UIControlState.normal)
+//        btn.setTitleColor(UIColor.white, for: .normal)
+//        btn.layer.cornerRadius = 3
+//        btn.addTarget(self, action: #selector(handleMapUpdate), for: UIControlEvents.touchUpInside)
+//        return btn
+//    }()
     let networkMessageView: UIView = {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: screenWidth*0.8, height: screenHeight*0.3))
         view.backgroundColor = UIColor(white: 1, alpha: 0.9)
@@ -144,9 +155,7 @@ class MapViewBaseCell: BaseCell {
         
         LocationService.sharedInstance.requestWhenInUseAuthorization()
 //        SetService()
-//        SetMapService {
-//            SetPinToMap.sharedInstance.setPinToMap(arrAnnotation: arrAnnotation, in: self.mapView, at: self.mapViewController)
-//        }
+
         
         SetMapService.sharedInstance.setMapService(mapView: mapView, mapViewController: self.mapViewController, setPinToMapCompletion: {
             SetPinToMap.sharedInstance.setPinToMap(arrAnnotation: arrAnnotation, in: self.mapView, at: self.mapViewController)
@@ -157,9 +166,27 @@ class MapViewBaseCell: BaseCell {
         setupMap()
         setupActivityIndicator()
         setupToolButtonAndScaleView()
-        setUpdateButton()
+//        setUpdateButton()
+        setUpdateTimeLabel() 
+        createObservers()
+        
     }
-   
+    func createObservers() {
+        NotificationCenter.default.addObserver(self, selector: #selector(updateMapData(notification:)), name: updateMapDataFromMapViewController, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(removeMapView(notification:)), name: removeMapDataFromMapView, object: nil)
+    }
+    
+    @objc func removeMapView(notification: NSNotification) {
+        networkMessageView.removeFromSuperview()
+    }
+    
+    @objc func updateMapData(notification: NSNotification) {
+        SetMapService.sharedInstance.setMapService(mapView: mapView, mapViewController: self.mapViewController, setPinToMapCompletion: {
+            SetPinToMap.sharedInstance.setPinToMap(arrAnnotation: arrAnnotation, in: self.mapView, at: self.mapViewController)
+        }, messageblock: {
+            self.showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
+        })
+    }
     
     func setupActivityIndicator() {
         mapView.addSubview(loadingView)
@@ -176,28 +203,31 @@ class MapViewBaseCell: BaseCell {
             self.updateTimeLabel.text = "無法更新時間"
         }
     }
-    
-    func setUpdateButton() {
+
+    func setUpdateTimeLabel() {
         mapView.addSubview(updateTimeLabel)
-        mapView.addSubview(mapDataUpdateButton)
         updateTimeLabel.anchor(top: mapView.topAnchor, left:  mapView.leftAnchor, bottom: nil, right: nil, topConstant: 2, leftConstant: 12, bottomConstant: 0, rightConstant: 0, widthConstant: 200, heightConstant: 20)
-        mapDataUpdateButton.anchor(top: updateTimeLabel.bottomAnchor, left: mapView.leftAnchor, bottom: nil, right: nil, topConstant: 2, leftConstant: 12, bottomConstant: 0, rightConstant: 0, widthConstant: 65, heightConstant: 38)
     }
     
-    @objc func handleMapUpdate() {
-//        bikeDatas = []
-//        arrAnnotation = []
-//        self.mapView.removeAnnotations(self.mapView.annotations)
-        setupActivityIndicator()
-        LocationService.sharedInstance.stopUpdatingLocation()
-        
-        SetMapService.sharedInstance.setMapService(mapView: mapView, mapViewController: self.mapViewController, setPinToMapCompletion: {
-            SetPinToMap.sharedInstance.setPinToMap(arrAnnotation: arrAnnotation, in: self.mapView, at: self.mapViewController)
-        }, messageblock: {
-            self.showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
-        })
-        
-    }
+//    func setUpdateButton() {
+//        mapView.addSubview(updateTimeLabel)
+//        mapView.addSubview(mapDataUpdateButton)
+//        updateTimeLabel.anchor(top: mapView.topAnchor, left:  mapView.leftAnchor, bottom: nil, right: nil, topConstant: 2, leftConstant: 12, bottomConstant: 0, rightConstant: 0, widthConstant: 200, heightConstant: 20)
+//        mapDataUpdateButton.anchor(top: updateTimeLabel.bottomAnchor, left: mapView.leftAnchor, bottom: nil, right: nil, topConstant: 2, leftConstant: 12, bottomConstant: 0, rightConstant: 0, widthConstant: 65, heightConstant: 38)
+//    }
+    
+//    @objc func handleMapUpdate() {
+//
+//        setupActivityIndicator()
+//        LocationService.sharedInstance.stopUpdatingLocation()
+//
+//        SetMapService.sharedInstance.setMapService(mapView: mapView, mapViewController: self.mapViewController, setPinToMapCompletion: {
+//            SetPinToMap.sharedInstance.setPinToMap(arrAnnotation: arrAnnotation, in: self.mapView, at: self.mapViewController)
+//        }, messageblock: {
+//            self.showNetworkMessageView(mapNetworkCheck: mapNetworkCheck)
+//        })
+//
+//    }
     
     func showNetworkMessageView(mapNetworkCheck: Bool) {
        

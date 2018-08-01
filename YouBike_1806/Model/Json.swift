@@ -34,8 +34,8 @@ class BikeStationInfo: Decodable {
     var bemp: String?      //空站數量(可還車位數)
     var ar: String?        //地址(中文)
     var act: String?       //全站禁用狀態(場站暫停營運)
-//    var lat: String?       //緯度
-//    var lng: String?       //經度
+    var lat: String?       //緯度
+    var lng: String?       //經度
     var sbi: String?       //場站目前車輛數量
     var mday: String?      //資料更新時間
     var locate:CLLocationCoordinate2D? //lat緯度, lng經度
@@ -64,7 +64,10 @@ class BikeStationInfo: Decodable {
         
         let lat = try container.decode(String.self, forKey: .lat)
         let lng = try container.decode(String.self, forKey: .lng)
-        locate = CLLocationCoordinate2D(latitude: Double(lat)!, longitude: Double(lng)!)
+        if lat != "" && lng != "" {
+             locate = CLLocationCoordinate2D(latitude: Double(lat)!, longitude: Double(lng)!)
+        }
+//        locate = CLLocationCoordinate2D(latitude: Double(lat)!, longitude: Double(lng)!)
     }
 }
 

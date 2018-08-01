@@ -8,6 +8,8 @@
 
 import UIKit
 
+let removeMapViewNotificationName = Notification.Name(rawValue: removeMapViewNotificationKey)
+
 class MapBarSelectedView: UIView, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UICollectionViewDelegate {
     
     private let cellId = "cellId"
@@ -75,7 +77,17 @@ class MapBarSelectedView: UIView, UICollectionViewDelegateFlowLayout, UICollecti
 //        // end
         mapViewController?.scrollToMenuIndex(menuIndex: indexPath.item)
 //        mapViewBaseCell.mapBarItem = indexPath.item
+      
+        
+        NotificationCenter.default.post(name: updateMapViewNotificationName, object: nil)
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        
+       
+        NotificationCenter.default.post(name: removeMapViewNotificationName, object: nil)
+    }
+    
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return imageNames.count
@@ -96,6 +108,8 @@ class MapBarSelectedView: UIView, UICollectionViewDelegateFlowLayout, UICollecti
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 0
     }
+    
+
    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

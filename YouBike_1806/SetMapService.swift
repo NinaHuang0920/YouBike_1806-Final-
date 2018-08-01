@@ -14,11 +14,11 @@ class SetMapService {
     
     func setMapService(mapView: MKMapView, mapViewController: UICollectionViewController?, setPinToMapCompletion: @escaping () -> (), messageblock: @escaping () -> ()) {
                 bikeDatas = []
-                arrAnnotation = []
-                mapView.removeAnnotations(mapView.annotations)
+//                arrAnnotation = []
+//                mapView.removeAnnotations(mapView.annotations)
         
         Service.sharedInstance.fetchJsonData(urlString: webString, completion: { (bikeinfos, err) in
-            
+            arrAnnotation = []
             if let err = err {
                 mapNetworkCheck = false
                 print("MapViewCell 偵測網路沒開：",err.localizedDescription)
