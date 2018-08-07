@@ -18,7 +18,6 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
     private let headerId = "headerId"
 
     let searchController = UISearchController(searchResultsController: nil)
-    var searchActive: Bool = false
     var isShowSearchResult: Bool = false
     var searchArr: [BikeStationInfo] = [BikeStationInfo]() {
         didSet {
@@ -54,12 +53,13 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
     }
     
     @objc func handleSearchBarItem() {
-        self.searchController.delegate = self
-        self.searchController.searchBar.delegate = self
-        self.searchController.searchResultsUpdater = self
-        self.searchController.hidesNavigationBarDuringPresentation = false
-        self.searchController.obscuresBackgroundDuringPresentation = false
-        self.searchController.searchBar.placeholder = "請輸入關鍵字"
+        searchController.delegate = self
+        searchController.searchBar.delegate = self
+        searchController.searchResultsUpdater = self
+        searchController.hidesNavigationBarDuringPresentation = false
+        searchController.obscuresBackgroundDuringPresentation = false
+//        definesPresentationContext = true
+        searchController.searchBar.placeholder = "請輸入關鍵字"
         searchController.searchBar.becomeFirstResponder()
         present(searchController, animated: true, completion: nil)
     }
@@ -195,7 +195,6 @@ extension BikeViewController: UISearchBarDelegate {
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        searchActive = false
         searchController.dismiss(animated: true, completion: nil)
         collectionView?.reloadData()
     }

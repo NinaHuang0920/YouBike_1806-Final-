@@ -11,15 +11,23 @@ import MapKit
 
 var bikeDatas = [BikeStationInfo]()
 let updateMapViewNotificationName = Notification.Name(rawValue: updateMapViewNotificationKey)
+let showNetworkAlertNotificationKey = "com.smilec.showAlert"
 
+var isShowMapSearchResult: Bool = false
+var mapSearchArr: [MKAnnotation] = [MKAnnotation]()
 
-class MapViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, CLLocationManagerDelegate, MKMapViewDelegate {
+class MapViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, CLLocationManagerDelegate, MKMapViewDelegate, UISearchControllerDelegate {
 
     private let mapViewCellId = "mapViewCellId"
-   private let bikeMapViewCellId = "bikeMapViewCellId"
+    private let parkMapViewCellId = "parkMapViewCellId"
+    private let bickMapViewCellId = "bickMapViewCellId"
     
+    let showNetworkAlertName = Notification.Name(rawValue: showNetworkAlertNotificationKey)
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
     
-//     var refreshControl = UIRefreshControl()
+    var resultSearchController: UISearchController!
     
     let mapBarSelectedContaner: UIView = {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
@@ -50,22 +58,25 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         return tb
     }()
     
-////    var mapViewBaseCell: MapViewBaseCell?
+//    var mapViewBaseCell: MapViewBaseCell?
     lazy var mapViewBaseCell: MapViewBaseCell = {
 //        let mc = MapViewBaseCell(locationService: LocationService.sharedInstance)
         let mc = MapViewBaseCell()
-        mc.mapView.delegate = self
-//        mc.locationManager.delegate = self
         mc.mapViewController = self
-//        mc.mapViewCellDelegate = self
         return mc
     }()
     
+    var mapView: MKMapView?
+    
     // MapBar移動的設定
     func scrollToMenuIndex(menuIndex: Int) {
-        let indexPath = IndexPath(item: menuIndex, section: 0)
-        collectionView?.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
-        setTitleForIndex(index: menuIndex)
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: UIViewAnimationOptions.curveEaseOut, animations: {
+            let indexPath = IndexPath(item: menuIndex, section: 0)
+            self.collectionView?.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
+        }) { (_) in
+            self.setTitleForIndex(index: menuIndex)
+        }
+       
     }
     // MapBar移動的設定
     private func setTitleForIndex(index: Int) {
@@ -75,15 +86,34 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        mapViewBaseCell.mapViewCellDelegate = self
         setupNavBar()
         setupMapBarSelectedView()
         setupCollectionView()
+        createObservers()
+        setupSearchTable()
+        print("在MapViewController看mapBaseCell的位置",mapViewBaseCell.self)
     }
 
+    func createObservers() {
+         NotificationCenter.default.addObserver(self, selector: #selector(handleNetworkAlert(notification:)), name: showNetworkAlertName, object: nil)
+    }
+    
+    @objc func handleNetworkAlert(notification: NSNotification) {
+        if mapNetworkCheck == true {
+            Alert.showAlert(title: "下載完成", message: TimeHelper.showUpdateTime(timeString: bikeDatas[0].mday!), vc: self)
+        } else if mapNetworkCheck == false {
+            Alert.showAlert(title: "請開啟網路", message: "更新失敗", vc: self)
+        }
+    }
+//    @objc func removeNetworkAlert(notification: NSNotification) {
+//
+//    }
+    
     func setupCollectionView() {
-        collectionView?.register(MapViewBaseCell.self, forCellWithReuseIdentifier: mapViewCellId)
-        collectionView?.register(ParkingMapViewCell.self, forCellWithReuseIdentifier: bikeMapViewCellId)
+        
+//        collectionView?.register(MapViewBaseCell.self, forCellWithReuseIdentifier: mapViewCellId)
+        collectionView?.register(BickingMapViewCell.self, forCellWithReuseIdentifier: bickMapViewCellId)
+        collectionView?.register(ParkingMapViewCell.self, forCellWithReuseIdentifier: parkMapViewCellId)
         collectionView?.backgroundColor = mainViewBackgroundColor
         collectionView?.isPagingEnabled = true // MapBar移動的設定
     }
@@ -99,7 +129,6 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         let indexPath = IndexPath(item: Int(index), section: 0)
         mapBarSelectedView.collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
         setTitleForIndex(index: Int(index))
-//        mapViewBaseCell.mapViewItem = Int(index)
     }
     
     func setupNavBar() {
@@ -109,7 +138,6 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
     }
     
     func setupMapBarSelectedView() {
-        
         let searchButton =  UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.search, target: self, action: #selector(handleSearchBarItem))
         mapBarLeftToolbar.items = [searchButton]
         
@@ -125,18 +153,34 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         mapBarDataUpdateButton.anchor(top: mapBarSelectedContaner.topAnchor, left: mapBarSelectedContaner.leftAnchor, bottom: mapBarSelectedContaner.bottomAnchor, right: nil, topConstant: 6, leftConstant: 3, bottomConstant: 6, rightConstant: 0, widthConstant: 60, heightConstant: 0)
         
         mapBarLeftToolbar.anchor(top: mapBarSelectedContaner.topAnchor, left: mapBarDataUpdateButton.rightAnchor, bottom: mapBarSelectedContaner.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 65, heightConstant: 0)
-        
-//        mapBarDataUpdateButton.anchor(top: mapBarSelectedContaner.topAnchor, left: mapBarLeftToolbar.rightAnchor, bottom: mapBarSelectedContaner.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 65, heightConstant: 38)
     }
     
-//    let searchController = UISearchController(searchResultsController: nil)
-//    var searchActive: Bool = false
-//    var isShowSearchResult: Bool = false
-//    var searchArr: [BikeStationInfo] = [BikeStationInfo]() {
-//        didSet {
-//            self.collectionView?.reloadData()
-//        }
-//    }
+    var locationSearchTableViewController = LocationSearchTableViewController(style: UITableViewStyle.plain)
+//    lazy var locationSearchTableViewController: LocationSearchTableViewController = {
+//        let table = LocationSearchTableViewController()
+////        table.handleMapSearchDelegate = self.mapViewBaseCell
+////        table.mapView = self.mapViewBaseCell.mapView
+//        return table
+//    }()
+    func setupSearchTable() {
+        resultSearchController = UISearchController(searchResultsController: locationSearchTableViewController)
+        resultSearchController.searchResultsUpdater = locationSearchTableViewController
+    }
+    
+    @objc func handleSearchBarItem() {
+        resultSearchController.delegate = self
+//        resultSearchController.searchResultsUpdater = locationSearchTableViewController
+        resultSearchController.searchBar.delegate = self
+        resultSearchController.searchBar.sizeToFit()
+        resultSearchController.searchBar.placeholder = "請輸入站點關鍵字"
+        resultSearchController.searchBar.becomeFirstResponder()
+        resultSearchController.hidesNavigationBarDuringPresentation = false
+        resultSearchController.dimsBackgroundDuringPresentation = true
+        definesPresentationContext = true
+        present(resultSearchController, animated: true, completion: nil)
+        isShowMapSearchResult = resultSearchController.isActive
+        print("MapViewContoller 看到的 Map位置", mapViewBaseCell.mapView.self )
+    }
     
     lazy var mapBarDataUpdateButton: UIButton = {
         let btn = UIButton(type: UIButtonType.custom)
@@ -148,18 +192,10 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         return btn
     }()
     
-    @objc func handleSearchBarItem() {
-
-    }
-    
     @objc func handleMapDataUpdate() {
-        
         NotificationCenter.default.post(name: updateMapViewNotificationName, object: nil)
-    
     }
     
-
-  
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 2
     }
@@ -167,10 +203,17 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         if indexPath.item == 1 {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: bikeMapViewCellId, for: indexPath) as! ParkingMapViewCell
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: parkMapViewCellId, for: indexPath) as! ParkingMapViewCell
+            print("在MapController cellForItem == parkMapViewCell 看 MapCell的位置",mapViewBaseCell.self)
             return cell
         }
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: mapViewCellId, for: indexPath) as! MapViewBaseCell
+//            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: mapViewCellId, for: indexPath) as! MapViewBaseCell
+        
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: bickMapViewCellId, for: indexPath) as! BickingMapViewCell
+        print("在MapController cellForItem == bickMapViewCell 看 MapCell的位置",mapViewBaseCell.self)
+        
+        
+         print("在MapController cellForItem == mapViewBaseCell 看 MapCell的位置",mapViewBaseCell.self)
             return cell
 
     }
@@ -185,48 +228,20 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        
     }
 }
 
-//extension MapViewController: MapViewCellDelegate {
-//
-//    func updateStatusAlert(status updateSuccess: Bool) {
-//        if updateSuccess == true {
-//            Alert.showAlert(title: "下載完成", message: TimeHelper.showUpdateTime(timeString: bikeDatas[0].mday!), vc: self)
-//        } else if updateSuccess == false {
-//            Alert.showAlert(title: "請開啟網路", message: "更新失敗", vc: self)
-//        }
-//    }
-//}
-
-//extension MapViewController {
-//func setupRefreshControl() {
-//    refreshControl.addTarget(self, action: #selector(refreshContents), for: .valueChanged)
-//    if #available(iOS 10.0, *) {
-//        collectionView?.refreshControl = refreshControl
-//    } else {
-//        collectionView?.addSubview(refreshControl)
-//    }
-//}
-//
-//@objc func refreshContents() {
-//    refreshControl.attributedTitle = NSAttributedString(string: "資料更新中")
-//    bikeDatas.removeAll()
-//    mapViewBaseCell.SetService()
-//    self.collectionView?.reloadData()
-//    self.perform(#selector(finishedRefreshing), with: nil, afterDelay: 1.5)
-//}
-//
-//@objc func finishedRefreshing() {
-//    UIView.animate(withDuration: 0.2, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-//        self.refreshControl.attributedTitle = NSAttributedString(string: "資料更新完成")
-//    }, completion: { _ in
-//        self.refreshControl.endRefreshing()
-//
-//        if bikeDatas.count == 0 {
-//            Alert.showAlert(title: "請檢查網路", message: "", vc: self)
-//        }
-//    })
-//}
-//}
+extension MapViewController: UISearchBarDelegate {
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        self.resultSearchController.searchBar.becomeFirstResponder() // close keyborad
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        resultSearchController.dismiss(animated: true, completion: nil)
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+//        isShowMapSearchResult = false
+    }
+}

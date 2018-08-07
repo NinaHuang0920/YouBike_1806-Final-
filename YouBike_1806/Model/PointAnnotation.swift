@@ -8,22 +8,21 @@
 
 import MapKit
 
-struct PointAnnotation {
+class PointAnnotation: MKPointAnnotation {
     
     let bikeStationInfo: BikeStationInfo?
-
-    var annotation = MKPointAnnotation()
-
+    
     init(bikeStationInfo: BikeStationInfo) {
         self.bikeStationInfo = bikeStationInfo
-        self.annotation.title = bikeStationInfo.sna
-        let stationId = bikeStationInfo.id! - 1
-        self.annotation.subtitle = String(stationId)
+        super.init()
         
+        self.title = bikeStationInfo.sna
+        let stationId = bikeStationInfo.id! - 1
+        self.subtitle = String(stationId)
         guard let bikeStationLocate = bikeStationInfo.locate else { return }
-        self.annotation.coordinate = bikeStationLocate
-        arrAnnotation.append(self.annotation)
+        self.coordinate = bikeStationLocate
     }
     
 }
+
 

@@ -9,36 +9,28 @@
 import MapKit
 
 class SetPinToMap {
+    
     static let sharedInstance = SetPinToMap()
     private init() {}
     
     func setPinToMap(arrAnnotation: [MKAnnotation], in mapView: MKMapView, at mapViewController: UICollectionViewController? ) {
         
-                 mapView.removeAnnotations(mapView.annotations)
-        
-        //        arrAnnotation = []
-        //        let bikeDataCount = bikeDatas.count
-        //        print("MAP PIN bikeDataCount",bikeDataCount)
-        //        for item in 0 ..< bikeDataCount {
-        //            let annottaion = MKPointAnnotation()
-        //            annottaion.coordinate = bikeDatas[item].locate!
-        //            annottaion.title = "\(bikeDatas[item].sna!)"
-        //            annottaion.subtitle = "\(bikeDatas[item].id!-1)"
-        //            arrAnnotation.append(annottaion)
-        //        }
-        //        print(arrAnnotation[1].title)
-        
-        print("setPinToMap大頭針數量",arrAnnotation.count)
+        mapView.removeAnnotations(mapView.annotations)
+        print("setPin 大頭針加入前map位置:", mapView.self)
+        print("setPinToMap大頭針數量 mapView annotations", mapView.annotations.count, mapView.self)
+        print("setPinToMap大頭針數量 arrAnnotation", arrAnnotation.count, mapView.self)
         mapView.addAnnotations(arrAnnotation)
         mapView.showAnnotations(arrAnnotation, animated: false)
-        
+        print("setPin 大頭針加入後map位置:", mapView.self, mapView.self)
+        print("setPinToMap大頭針數量mapView加入annotations後",mapView.annotations.count, mapView.self)
         let viewRegion = MKCoordinateRegionMakeWithDistance(mapView.userLocation.coordinate,3000,3000)
         mapView.setRegion(viewRegion, animated: true)
-        //        locationManager.startUpdatingHeading()
         LocationService.sharedInstance.startUpdatingHeading()
-        mapView.updateConstraints()
-        mapViewController?.collectionView?.reloadData()
+        
+        DispatchQueue.main.async {
+            mapView.updateConstraints()
+            mapViewController?.collectionView?.reloadData()
+        }
+       
     }
-    
-    
 }

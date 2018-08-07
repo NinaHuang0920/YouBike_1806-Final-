@@ -19,6 +19,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
         
+        
+//        window?.rootViewController = LocationSearchTableViewController(style: UITableViewStyle.plain)
+        
         window?.rootViewController = TabBarController()
         UITabBar.appearance().backgroundColor = UIColor.rgb(red: 250, green: 246, blue: 227)
         

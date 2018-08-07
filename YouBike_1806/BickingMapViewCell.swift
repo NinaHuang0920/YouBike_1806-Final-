@@ -1,23 +1,21 @@
 //
-//  MapViewCell.swift
+//  BickingMapViewCell.swift
 //  YouBike_1806
 //
-//  Created by 黃玉玲 on 2018/6/29.
+//  Created by 黃玉玲 on 2018/8/3.
 //  Copyright © 2018年 CheshireCat. All rights reserved.
 //
 
 import UIKit
 import MapKit
 
-class ParkingMapViewCell: MapViewBaseCell {
-    
-    private let parkingCellItem: Int = 1
+class BickingMapViewCell: MapViewBaseCell {
+    private let parkingCellItem: Int = 0
     
     override func setupViews() {
         super.setupViews()
-        print("在ParkingMapCell看自己的位置",self)
+        print("在新開的BickingMapCell看自己的位置",self)
     }
-    
     
     override func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if annotation is MKUserLocation {
@@ -28,14 +26,12 @@ class ParkingMapViewCell: MapViewBaseCell {
             view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "Pin")
         }
         let index = Int((annotation.subtitle!)!)
-
+        
         view?.setupPinCalloutView(index: index!, cellItem: parkingCellItem)
         view?.rightCalloutAccessoryView = setupMapNavButton()
         
-        print("在ParkingMapCell看MapView的位置", mapView.self)
+        print("在新開的BickingMapCell看MapView的位置", mapView.self)
         
         return view
     }
-
-
 }

@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import MapKit
 
-let removeMapViewNotificationName = Notification.Name(rawValue: removeMapViewNotificationKey)
+let mapChangeNotificationName = Notification.Name(rawValue: mapChangeNotificationKey)
 
 class MapBarSelectedView: UIView, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UICollectionViewDelegate {
     
@@ -65,7 +66,6 @@ class MapBarSelectedView: UIView, UICollectionViewDelegateFlowLayout, UICollecti
         horizontalBarView.heightAnchor.constraint(equalToConstant: 4).isActive = true
      }
     
-    
     // MapBar移動的設定
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 //        //讓ManuBar 隨著點選ManuBarCollection而移動
@@ -78,16 +78,14 @@ class MapBarSelectedView: UIView, UICollectionViewDelegateFlowLayout, UICollecti
         mapViewController?.scrollToMenuIndex(menuIndex: indexPath.item)
 //        mapViewBaseCell.mapBarItem = indexPath.item
       
-        
-        NotificationCenter.default.post(name: updateMapViewNotificationName, object: nil)
+         NotificationCenter.default.post(name: mapChangeNotificationName, object: nil)
+       
     }
     
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-        
-       
-        NotificationCenter.default.post(name: removeMapViewNotificationName, object: nil)
+        let removeAnnotationsName = Notification.Name(rawValue: removeAnnotationsNotificationKey)
+        NotificationCenter.default.post(name: removeAnnotationsName, object: nil)
     }
-    
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return imageNames.count
@@ -138,3 +136,5 @@ class MapBarSelectedViewCell: BaseCell {
         addSubview(selectedBarImage)
         selectedBarImage.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, topConstant: 5, leftConstant: 0, bottomConstant: 5, rightConstant: 0, widthConstant: 0, heightConstant: 0)        }
 }
+
+
