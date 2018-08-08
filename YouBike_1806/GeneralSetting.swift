@@ -16,10 +16,13 @@ let greenColor =  UIColor.rgb(red: 58, green: 139, blue: 38)
 let orangeColor = UIColor.rgb(red: 255, green: 145, blue: 0)
 let redColor = UIColor.rgb(red: 228, green: 26, blue: 12)
 
-let greenColorWithAlpha =  UIColor.rgba(red: 58, green: 139, blue: 38, alpha: 0.7)
+let greenColorWithAlpha =  UIColor.rgba(red: 58, green: 139, blue: 38, alpha: 0.8)
 let orangeColorWithAlpha = UIColor.rgba(red: 255, green: 145, blue: 0, alpha: 0.8)
-let redColorWithAlpha = UIColor.rgba(red: 228, green: 26, blue: 12, alpha: 0.6)
+let redColorWithAlpha = UIColor.rgba(red: 228, green: 26, blue: 12, alpha: 0.8)
 
+let bikeLabelColor = UIColor.rgb(red: 231, green: 179, blue: 70)
+let parkLabelColor =  UIColor.rgb(red: 109, green: 192, blue: 222)
+let timeLabelColor = UIColor.rgb(red: 72, green: 131, blue: 173)
 
 let selectedMapBarItemColor = UIColor.rgb(red: 148, green: 148, blue: 148)
 let mainViewBackgroundColor =  UIColor(white: 0.88, alpha: 1)

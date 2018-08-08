@@ -30,7 +30,7 @@ class SetMapService {
             let pointAnnotation = bikeinfos.map{
                 arrAnnotation.append(PointAnnotation(bikeStationInfo: $0))
             }
-//            print("setService map位置:", mapView.self)
+
             print(pointAnnotation.count)
 //            print("SetService大頭針數量 mapView annotations",mapView.annotations.count)
             print("SetService大頭針數量 arrAnnotation",arrAnnotation.count)
@@ -39,11 +39,8 @@ class SetMapService {
             mapNetworkCheck = true //
 //            print("SetSerivce 呼叫成功",bikeDatas.count)
             
-//            DispatchQueue.main.async {
-//                mapView.updateConstraints() //
-//                mapViewController?.collectionView?.reloadData() //
-//            }
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+1.5) {
+            let deadline = DispatchTime.now() + .seconds(1)
+            DispatchQueue.main.asyncAfter(deadline: deadline) {
                 messageblock()
             }
         })

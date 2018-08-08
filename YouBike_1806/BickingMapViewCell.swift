@@ -14,7 +14,6 @@ class BickingMapViewCell: MapViewBaseCell {
     
     override func setupViews() {
         super.setupViews()
-        print("在新開的BickingMapCell看自己的位置",self)
     }
     
     override func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
@@ -29,8 +28,6 @@ class BickingMapViewCell: MapViewBaseCell {
         
         view?.setupPinCalloutView(index: index!, cellItem: parkingCellItem)
         view?.rightCalloutAccessoryView = setupMapNavButton()
-        
-        print("在新開的BickingMapCell看MapView的位置", mapView.self)
         
         return view
     }

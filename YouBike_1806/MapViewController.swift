@@ -58,9 +58,7 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         return tb
     }()
     
-//    var mapViewBaseCell: MapViewBaseCell?
     lazy var mapViewBaseCell: MapViewBaseCell = {
-//        let mc = MapViewBaseCell(locationService: LocationService.sharedInstance)
         let mc = MapViewBaseCell()
         mc.mapViewController = self
         return mc
@@ -91,7 +89,6 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         setupCollectionView()
         createObservers()
         setupSearchTable()
-        print("在MapViewController看mapBaseCell的位置",mapViewBaseCell.self)
     }
 
     func createObservers() {
@@ -105,12 +102,8 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
             Alert.showAlert(title: "請開啟網路", message: "更新失敗", vc: self)
         }
     }
-//    @objc func removeNetworkAlert(notification: NSNotification) {
-//
-//    }
     
     func setupCollectionView() {
-        
 //        collectionView?.register(MapViewBaseCell.self, forCellWithReuseIdentifier: mapViewCellId)
         collectionView?.register(BickingMapViewCell.self, forCellWithReuseIdentifier: bickMapViewCellId)
         collectionView?.register(ParkingMapViewCell.self, forCellWithReuseIdentifier: parkMapViewCellId)
@@ -155,21 +148,16 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         mapBarLeftToolbar.anchor(top: mapBarSelectedContaner.topAnchor, left: mapBarDataUpdateButton.rightAnchor, bottom: mapBarSelectedContaner.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 65, heightConstant: 0)
     }
     
-    var locationSearchTableViewController = LocationSearchTableViewController(style: UITableViewStyle.plain)
-//    lazy var locationSearchTableViewController: LocationSearchTableViewController = {
-//        let table = LocationSearchTableViewController()
-////        table.handleMapSearchDelegate = self.mapViewBaseCell
-////        table.mapView = self.mapViewBaseCell.mapView
-//        return table
-//    }()
+    
+
     func setupSearchTable() {
+        let locationSearchTableViewController = LocationSearchTableViewController(style: UITableViewStyle.plain)
         resultSearchController = UISearchController(searchResultsController: locationSearchTableViewController)
         resultSearchController.searchResultsUpdater = locationSearchTableViewController
     }
     
     @objc func handleSearchBarItem() {
         resultSearchController.delegate = self
-//        resultSearchController.searchResultsUpdater = locationSearchTableViewController
         resultSearchController.searchBar.delegate = self
         resultSearchController.searchBar.sizeToFit()
         resultSearchController.searchBar.placeholder = "請輸入站點關鍵字"
@@ -179,7 +167,6 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         definesPresentationContext = true
         present(resultSearchController, animated: true, completion: nil)
         isShowMapSearchResult = resultSearchController.isActive
-        print("MapViewContoller 看到的 Map位置", mapViewBaseCell.mapView.self )
     }
     
     lazy var mapBarDataUpdateButton: UIButton = {
@@ -204,18 +191,11 @@ class MapViewController: UICollectionViewController, UICollectionViewDelegateFlo
         
         if indexPath.item == 1 {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: parkMapViewCellId, for: indexPath) as! ParkingMapViewCell
-            print("在MapController cellForItem == parkMapViewCell 看 MapCell的位置",mapViewBaseCell.self)
             return cell
         }
-//            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: mapViewCellId, for: indexPath) as! MapViewBaseCell
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: bickMapViewCellId, for: indexPath) as! BickingMapViewCell
-        print("在MapController cellForItem == bickMapViewCell 看 MapCell的位置",mapViewBaseCell.self)
-        
-        
-         print("在MapController cellForItem == mapViewBaseCell 看 MapCell的位置",mapViewBaseCell.self)
-            return cell
-
+        return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {

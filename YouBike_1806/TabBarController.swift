@@ -7,16 +7,28 @@
 //
 
 import UIKit
+import MapKit
 
 class TabBarController: UITabBarController {
 
+    let locationService: LocationService
+    
+    init(locationService: LocationService) {
+        self.locationService = locationService
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         let layout = UICollectionViewFlowLayout()
-        let bikeCollectionViewController = BikeViewController(collectionViewLayout: layout)
+        let bikeCollectionViewController = StationController(collectionViewLayout: layout)
         let navigationController = UINavigationController(rootViewController: bikeCollectionViewController)
         navigationController.title = "站點"
         navigationController.tabBarItem.image = #imageLiteral(resourceName: "note")
@@ -33,7 +45,7 @@ class TabBarController: UITabBarController {
         infoNavgationController.title = "更多"
         infoNavgationController.tabBarItem.image = #imageLiteral(resourceName: "information")
         
-        viewControllers = [secondnavigationController, navigationController, infoNavgationController]
+        viewControllers = [navigationController, secondnavigationController, infoNavgationController]
         tabBar.isTranslucent = false
         tabBar.tintColor = mapBarColorBlue
         

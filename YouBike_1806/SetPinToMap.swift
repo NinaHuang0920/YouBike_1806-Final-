@@ -16,12 +16,12 @@ class SetPinToMap {
     func setPinToMap(arrAnnotation: [MKAnnotation], in mapView: MKMapView, at mapViewController: UICollectionViewController? ) {
         
         mapView.removeAnnotations(mapView.annotations)
-        print("setPin 大頭針加入前map位置:", mapView.self)
+
         print("setPinToMap大頭針數量 mapView annotations", mapView.annotations.count, mapView.self)
         print("setPinToMap大頭針數量 arrAnnotation", arrAnnotation.count, mapView.self)
         mapView.addAnnotations(arrAnnotation)
         mapView.showAnnotations(arrAnnotation, animated: false)
-        print("setPin 大頭針加入後map位置:", mapView.self, mapView.self)
+
         print("setPinToMap大頭針數量mapView加入annotations後",mapView.annotations.count, mapView.self)
         let viewRegion = MKCoordinateRegionMakeWithDistance(mapView.userLocation.coordinate,3000,3000)
         mapView.setRegion(viewRegion, animated: true)

@@ -15,7 +15,6 @@ let mapChangeNotificationKey = "com.smilec.mapChange"
 let moveToSelectedPinNotificationKey =  "com.smilec.moveToSelectedPin"
 
 var arrAnnotation = [MKAnnotation]()
-
 var selectedPin: MKAnnotation?
 
 class MapViewBaseCell: BaseCell {
@@ -25,35 +24,15 @@ class MapViewBaseCell: BaseCell {
     let removeAnnotationstNotification = Notification.Name(rawValue: removeAnnotationsNotificationKey)
     let mapChangeNotification = Notification.Name(rawValue: mapChangeNotificationKey)
     let moveToSelectedPinNotification = Notification.Name(rawValue: moveToSelectedPinNotificationKey)
-    
-    
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
     
-//    let locationService: LocationService
-//
-//    init(locationService: LocationService) {
-//        self.locationService = locationService
-//        super.init(frame: .zero)
-//    }
-//
-//    required init?(coder aDecoder: NSCoder) {
-//        fatalError("init(coder:) has not been implemented")
-//    }
-    
     let cellItem = 0
     
     var mapViewController: MapViewController?
-//    lazy var mapViewController: MapViewController = {
-//        let mvc = MapViewController()
-//        mvc.locationSearchTableViewController.handleMapSearchDelegate = self
-//        mvc.locationSearchTableViewController.mapView = mapView
-//        return mvc
-//    }()
     
-    
-    var currentCoordinate: CLLocationCoordinate2D?
+//    var currentCoordinate: CLLocationCoordinate2D?
     var selectedPinLocation: CLLocationCoordinate2D?
     
     lazy var mapView: MKMapView = {
@@ -63,7 +42,6 @@ class MapViewBaseCell: BaseCell {
         mapv.isScrollEnabled = true
         mapv.delegate = self
         mapv.showsCompass = false
-        print("Map參數建立時的Map位置", mapv.self)
         return mapv
     }()
     
@@ -100,28 +78,24 @@ class MapViewBaseCell: BaseCell {
         
         SetMapService.sharedInstance.setMapService(setPinToMapCompletion: {
             SetPinToMap.sharedInstance.setPinToMap(arrAnnotation: arrAnnotation, in: self.mapView, at: self.mapViewController)
-             print("setupViews setPinToMapCompletion map位置:", self.mapView.self)
         }, messageblock: {
             Timer.scheduledTimer(withTimeInterval: 2, repeats: false, block: { (_) in
                 self.activityIndicator.stopAnimating()
                 self.showTimeLabel()
                 self.loadingView.removeFromSuperview()
             })
-            print("setupViews messageblock map位置:", self.mapView.self)
 //             self.showNetworkAlert(mapNetworkCheck: mapNetworkCheck)
         })
         
-        print("在MapBaseCell看自己本身的位置",self)
-        
         setupMap()
         setupActivityIndicator()
-        setupToolButtonAndScaleView()
+        setupMapTools()
         setUpdateTimeLabel()
         createObservers()
 
     }
     
-    var showCollout: Bool = true
+//    var showCollout: Bool = true
     
     func createObservers() {
         NotificationCenter.default.addObserver(self, selector: #selector(updateMapData(notification:)), name: updateMapDataFromMapViewController, object: nil)
@@ -133,11 +107,12 @@ class MapViewBaseCell: BaseCell {
 
     @objc func moveToSelectedPint(notification: NSNotification) {
         guard let selectedPinCoordinate = selectedPin?.coordinate else { return }
-        updateMap(latitude: selectedPinCoordinate.latitude, longitude: selectedPinCoordinate.longitude)
+        updateMapToSelectedPin(latitude: selectedPinCoordinate.latitude, longitude: selectedPinCoordinate.longitude)
     }
-    func updateMap(latitude: CLLocationDegrees, longitude: CLLocationDegrees)  {
+    func updateMapToSelectedPin(latitude: CLLocationDegrees, longitude: CLLocationDegrees)  {
+        
         let centerCoordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-        let region = MKCoordinateRegionMakeWithDistance(centerCoordinate, 1000, 1000)
+        let region = MKCoordinateRegionMakeWithDistance(centerCoordinate, 200, 200)
         mapView.setRegion(region, animated: true)
     }
     
@@ -158,8 +133,6 @@ class MapViewBaseCell: BaseCell {
             SetPinToMap.sharedInstance.setPinToMap(arrAnnotation: arrAnnotation, in: self.mapView, at: self.mapViewController)
         }, messageblock: {
             isShowAlertBlock ? self.showNetworkAlert(mapNetworkCheck: mapNetworkCheck) : nil
-
-              print("upDate Btn map位置:", self.mapView.self)
         })
     }
 
@@ -173,19 +146,6 @@ class MapViewBaseCell: BaseCell {
         }
     }
     
-    func showTimeLabel() {
-        if bikeDatas.count > 1 {
-            self.updateTimeLabel.text = TimeHelper.showUpdateTime(timeString: bikeDatas[0].mday!)
-        } else {
-            self.updateTimeLabel.text = "無法更新時間"
-        }
-    }
-
-    func setUpdateTimeLabel() {
-        mapView.addSubview(updateTimeLabel)
-        updateTimeLabel.anchor(top: mapView.topAnchor, left:  mapView.leftAnchor, bottom: nil, right: nil, topConstant: 2, leftConstant: 12, bottomConstant: 0, rightConstant: 0, widthConstant: 200, heightConstant: 20)
-    }
-    
     func showNetworkAlert(mapNetworkCheck: Bool) {
         
         UIView.animate(withDuration: 1.5, delay: 0.1, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: UIViewAnimationOptions.curveEaseOut, animations: {
@@ -196,22 +156,24 @@ class MapViewBaseCell: BaseCell {
             NotificationCenter.default.post(name: self.showNetworkAlert, object: nil)
         }
     }
+    func setUpdateTimeLabel() {
+        mapView.addSubview(updateTimeLabel)
+        updateTimeLabel.anchor(top: mapView.topAnchor, left:  mapView.leftAnchor, bottom: nil, right: nil, topConstant: 2, leftConstant: 12, bottomConstant: 0, rightConstant: 0, widthConstant: 200, heightConstant: 20)
+    }
+    func showTimeLabel() {
+        if bikeDatas.count > 1 {
+            self.updateTimeLabel.text = TimeHelper.showUpdateTime(timeString: bikeDatas[0].mday!)
+        } else {
+            self.updateTimeLabel.text = "無法更新時間"
+        }
+    }
 
     func setupMap()  {
         addSubview(mapView)
         mapView.anchor(top: self.topAnchor, left: self.leftAnchor, bottom: self.bottomAnchor, right: self.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
-        
-        print("setupMap 產生的 mapView 位置", mapView.self)
-        
-//        SetPinToMap.sharedInstance.setPinToMap(arrAnnotation: arrAnnotation, in: self.mapView, at: self.mapViewController)
-//
-//        DispatchQueue.main.async {
-//            self.mapView.updateConstraints()
-//            self.mapViewController?.collectionView?.reloadData()
-//        }
     }
     
-    func setupToolButtonAndScaleView() {
+    func setupMapTools() {
         mapView.showsUserLocation = true
 
         let trackingButton = MKUserTrackingButton(mapView: mapView)
@@ -241,8 +203,6 @@ class MapViewBaseCell: BaseCell {
              compassButton.topAnchor.constraint(equalTo: mapView.topAnchor, constant: 7),
              compassButton.trailingAnchor.constraint(equalTo: mapView.trailingAnchor, constant: -7)])
     }
-    
-
 }
 
 //extension MapViewBaseCell: CLLocationManagerDelegate {
@@ -292,7 +252,7 @@ extension MapViewBaseCell: MKMapViewDelegate {
         
 //        view?.canShowCallout = showCollout
         
-         print("在BikeBaceCell看MapView的位置", mapView.self)
+//         print("在BikeBaceCell看MapView的位置", mapView.self)
         
         return view
     }

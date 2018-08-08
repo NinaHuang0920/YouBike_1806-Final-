@@ -51,31 +51,31 @@ extension UIView {
     
 }
 
-extension BikeCell {
-    
-    func selectedProfileImage(act: String,num: Int) -> UIImage? {
-        if act == "0" {
-            let closeTamplateImage = #imageLiteral(resourceName: "Close").withRenderingMode(UIImageRenderingMode.alwaysTemplate)
-            profileImage.image = closeTamplateImage
-            profileImage.tintColor = redColor
-        } else {
-            switch num {
-            case 10...1000:
-                let goTamplateImage = #imageLiteral(resourceName: "goodtogo").withRenderingMode(UIImageRenderingMode.alwaysTemplate)
-                profileImage.image = goTamplateImage
-                profileImage.tintColor = greenColor
-            case 1...9:
-                let carefulTamplateImage = #imageLiteral(resourceName: "careful").withRenderingMode(UIImageRenderingMode.alwaysTemplate)
-                profileImage.image = carefulTamplateImage
-                profileImage.tintColor = orangeColor
-            default:
-                let stopTamplateImage = #imageLiteral(resourceName: "stop").withRenderingMode(UIImageRenderingMode.alwaysTemplate)
-                profileImage.image = stopTamplateImage
-                profileImage.tintColor = redColor
-            }
-        }
-        return profileImage.image
-    }
-    
-    
-}
+//extension StationCell {
+//    
+//    func selectedProfileImage(act: String,num: Int) -> UIImage? {
+//        if act == "0" {
+//            let closeTamplateImage = #imageLiteral(resourceName: "Close").withRenderingMode(UIImageRenderingMode.alwaysTemplate)
+//            profileImage.image = closeTamplateImage
+//            profileImage.tintColor = redColor
+//        } else {
+//            switch num {
+//            case 10...1000:
+//                let goTamplateImage = #imageLiteral(resourceName: "goodtogo").withRenderingMode(UIImageRenderingMode.alwaysTemplate)
+//                profileImage.image = goTamplateImage
+//                profileImage.tintColor = greenColor
+//            case 1...9:
+//                let carefulTamplateImage = #imageLiteral(resourceName: "careful").withRenderingMode(UIImageRenderingMode.alwaysTemplate)
+//                profileImage.image = carefulTamplateImage
+//                profileImage.tintColor = orangeColor
+//            default:
+//                let stopTamplateImage = #imageLiteral(resourceName: "stop").withRenderingMode(UIImageRenderingMode.alwaysTemplate)
+//                profileImage.image = stopTamplateImage
+//                profileImage.tintColor = redColor
+//            }
+//        }
+//        return profileImage.image
+//    }
+//    
+//    
+//}

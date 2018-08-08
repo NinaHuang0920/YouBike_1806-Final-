@@ -8,7 +8,7 @@
 
 import UIKit
 
-class BikeViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UISearchControllerDelegate {
+class StationController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UISearchControllerDelegate {
     
     var bikeDatas = [BikeStationInfo]()
     
@@ -37,7 +37,7 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
     func setupCollectionView(){
         collectionView?.backgroundColor = mainViewBackgroundColor
         collectionView?.alwaysBounceVertical = true
-        collectionView?.register(BikeCell.self, forCellWithReuseIdentifier: cellId)
+        collectionView?.register(StationCell.self, forCellWithReuseIdentifier: cellId)
         collectionView?.register(HeaderCell.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: headerId)
     }
     
@@ -49,7 +49,18 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
     }
     
     func setupNavSearchItem() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.search, target: self, action: #selector(handleSearchBarItem))
+        
+        let searchBarBtn = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.search, target: self, action: #selector(handleSearchBarItem))
+        
+        let favoriteBtnImage = #imageLiteral(resourceName: "like").withRenderingMode(.alwaysTemplate)
+        let favoriteBarBtn = UIBarButtonItem(image: favoriteBtnImage, style: UIBarButtonItemStyle.plain, target: self, action: #selector(handleFavoriteBarBtn))
+        favoriteBarBtn.tintColor = redColor
+        navigationItem.rightBarButtonItems = [favoriteBarBtn, searchBarBtn]
+//        navigationItem.rightBarButtonItem =
+    }
+    
+    @objc func handleFavoriteBarBtn() {
+        
     }
     
     @objc func handleSearchBarItem() {
@@ -100,11 +111,10 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
                 Alert.showAlert(title: "請開啟網路", message: "更新失敗", vc: self)
             }
             guard let bikeinfos = bikeinfos else { self.bikeDatas = []; return }
-            self.bikeDatas = bikeinfos
+            self.bikeDatas = bikeinfos.sorted(by: { $0.distence! < $1.distence! })
             DispatchQueue.main.async {
                 self.collectionView?.reloadData()
             }
-            
             Alert.showAlert(title: "下載完成", message: TimeHelper.showUpdateTime(timeString: self.bikeDatas[0].mday!), vc: self)
         })
     }
@@ -120,7 +130,7 @@ class BikeViewController: UICollectionViewController, UICollectionViewDelegateFl
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! BikeCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! StationCell
         
         if searchController.isActive == true {
             cell.bikeStationInfo = self.searchArr[indexPath.item]
@@ -188,7 +198,7 @@ class HeaderCell: BaseCell {
     }
 }
 
-extension BikeViewController: UISearchBarDelegate {
+extension StationController: UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         self.searchController.searchBar.becomeFirstResponder() // close keyborad
@@ -204,7 +214,7 @@ extension BikeViewController: UISearchBarDelegate {
     }
 }
 
-extension BikeViewController: UISearchResultsUpdating {
+extension StationController: UISearchResultsUpdating {
     
     func updateSearchResults(for searchController: UISearchController) {
         
@@ -223,7 +233,7 @@ extension BikeViewController: UISearchResultsUpdating {
     }
 }
 
-extension BikeViewController {
+extension StationController {
     func searchResultText(searchArrCount: Int) -> String {
         let searchResult: String
         if searchArrCount > 0 {

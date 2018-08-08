@@ -38,7 +38,9 @@ class BikeStationInfo: Decodable {
     var lng: String?       //經度
     var sbi: String?       //場站目前車輛數量
     var mday: String?      //資料更新時間
-    var locate:CLLocationCoordinate2D? //lat緯度, lng經度
+    var coordinate2D:CLLocationCoordinate2D? //lat緯度, lng經度
+    var location: CLLocation?
+    var distence: Int?
     
     enum CodingKeys: String, CodingKey {
         case sno, sna, sarea, ar, lat, lng, tot, sbi, bemp, mday, act, sareaen, snaen, aren
@@ -47,6 +49,7 @@ class BikeStationInfo: Decodable {
     
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        let currentLocation = LocationService.sharedInstance.currentLocation
         
         id = try container.decode(Int.self, forKey: .id)
         sno = try container.decode(String.self, forKey: .sno)
@@ -64,10 +67,17 @@ class BikeStationInfo: Decodable {
         
         let lat = try container.decode(String.self, forKey: .lat)
         let lng = try container.decode(String.self, forKey: .lng)
-        if lat != "" && lng != "" {
-             locate = CLLocationCoordinate2D(latitude: Double(lat)!, longitude: Double(lng)!)
+        if lat != "" && lng != "" && lat != nil && lng != nil {
+            coordinate2D = CLLocationCoordinate2D(latitude: Double(lat)!, longitude: Double(lng)!)
+            location = CLLocation(latitude: Double(lat)!, longitude: Double(lng)!)
+            distence = Int((currentLocation?.distance(from: location!))!)
         }
-//        locate = CLLocationCoordinate2D(latitude: Double(lat)!, longitude: Double(lng)!)
+        
+//        guard lat != nil, lng != nil else { return }
+//        coordinate2D = CLLocationCoordinate2D(latitude: Double(lat)!, longitude: Double(lng)!)
+//        location = CLLocation(latitude: Double(lat)!, longitude: Double(lng)!)
+//        distence = Int((currentLocation?.distance(from: location!))!)
+        
     }
 }
 

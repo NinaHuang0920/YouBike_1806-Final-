@@ -15,7 +15,6 @@ class ParkingMapViewCell: MapViewBaseCell {
     
     override func setupViews() {
         super.setupViews()
-        print("在ParkingMapCell看自己的位置",self)
     }
     
     
@@ -31,8 +30,6 @@ class ParkingMapViewCell: MapViewBaseCell {
 
         view?.setupPinCalloutView(index: index!, cellItem: parkingCellItem)
         view?.rightCalloutAccessoryView = setupMapNavButton()
-        
-        print("在ParkingMapCell看MapView的位置", mapView.self)
         
         return view
     }
