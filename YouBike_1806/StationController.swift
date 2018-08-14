@@ -6,11 +6,16 @@
 //  Copyright © 2018年 CheshireCat. All rights reserved.
 //
 
+//protocol StationControllerDelegate {
+//    func changeButtonColor(isFavorited: Bool?)
+//}
+
 import UIKit
 
+ var stationBikeDatas = [BikeStationInfo]()
+ var hasFavoritedArray: [HasFavorited]?
+
 class StationController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UISearchControllerDelegate {
-    
-    var bikeDatas = [BikeStationInfo]()
     
     var refreshControl = UIRefreshControl()
     
@@ -25,11 +30,23 @@ class StationController: UICollectionViewController, UICollectionViewDelegateFlo
         }
     }
     
+    var favoritedArr: [BikeStationInfo] = [BikeStationInfo]() {
+        didSet {
+            self.collectionView?.reloadData()
+        }
+    }
+    
+    var isFavoriteBtnPressed: Bool = false {
+        didSet {
+            print("isFavoriteBtnPressed", isFavoriteBtnPressed)
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        SetService()
+        getStationService()
         setupNav()
-        setupNavSearchItem()
+        setupRightBarItems()
         setupCollectionView()
         setupRefreshControl()
     }
@@ -48,19 +65,75 @@ class StationController: UICollectionViewController, UICollectionViewDelegateFlo
         navigationController?.navigationBar.isTranslucent = false
     }
     
-    func setupNavSearchItem() {
+    let favoritedBarBtn = UIBarButtonItem()
+    var searchBarBtn = UIBarButtonItem()
+    
+    let iconButton: UIButton = {
+        let bt = UIButton()
+        bt.setBackgroundImage(#imageLiteral(resourceName: "unfavstar"), for: .normal)
+        return bt
+    }()
+    
+    func setupRightBarItems() {
+        searchBarBtn = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.search, target: self, action: #selector(handleSearchBarItem))
         
-        let searchBarBtn = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.search, target: self, action: #selector(handleSearchBarItem))
+        iconButton.addTarget(self, action: #selector(handleFavoriteBarBtn(sender:)), for: .touchUpInside)
+        favoritedBarBtn.customView = iconButton
+        favoritedBarBtn.customView?.transform = CGAffineTransform(scaleX: 0, y: 0)
         
-        let favoriteBtnImage = #imageLiteral(resourceName: "like").withRenderingMode(.alwaysTemplate)
-        let favoriteBarBtn = UIBarButtonItem(image: favoriteBtnImage, style: UIBarButtonItemStyle.plain, target: self, action: #selector(handleFavoriteBarBtn))
-        favoriteBarBtn.tintColor = redColor
-        navigationItem.rightBarButtonItems = [favoriteBarBtn, searchBarBtn]
-//        navigationItem.rightBarButtonItem =
+        UIView.animate(withDuration: 1.0, delay: 0.5, usingSpringWithDamping: 0.5, initialSpringVelocity: 10, options: .curveLinear, animations: {
+            self.favoritedBarBtn.customView!.transform = CGAffineTransform.identity
+            let items = [self.favoritedBarBtn, self.searchBarBtn]
+            self.navigationItem.rightBarButtonItems = items
+        }, completion: nil)
     }
     
-    @objc func handleFavoriteBarBtn() {
+    var choosefavoritedArr = [BikeStationInfo]()
+    
+    @objc func handleFavoriteBarBtn(sender: UIButton) {
+        choosefavoritedArr = []
         
+        if !isFavoriteBtnPressed {
+            favoriteBtnPressed()
+        } else {
+            dismissFavoriteBtnPressed()
+        }
+        collectionView?.reloadData()
+    }
+    
+    func favoriteBtnPressed()  {
+        isFavoriteBtnPressed = true
+        iconButton.setBackgroundImage(#imageLiteral(resourceName: "favstar"), for: .normal)
+        favoritedBarBtn.customView = iconButton
+        UIView.animate(withDuration: 1.0) {
+            let items = [self.favoritedBarBtn, self.searchBarBtn]
+            self.navigationItem.rightBarButtonItems = items
+        }
+        
+        var templetBikeArry = [BikeStationInfo]()
+        let templetFavoriteArray = hasFavoritedArray!.filter({
+            return $0.hasFavorited
+        })
+//        print(templetFavoriteArray)
+        for bike in stationBikeDatas {
+            for favoritedItem in templetFavoriteArray {
+                if bike.sna == favoritedItem.stationName {
+                    templetBikeArry.append(bike)
+//                    print(bike.sna)
+                }
+            }
+        }
+        choosefavoritedArr = templetBikeArry.sorted(by: {$0.distence! < $1.distence!})
+    }
+    
+    func dismissFavoriteBtnPressed()  {
+        isFavoriteBtnPressed = false
+        iconButton.setBackgroundImage(#imageLiteral(resourceName: "unfavstar"), for: .normal)
+        favoritedBarBtn.customView = iconButton
+        UIView.animate(withDuration: 1.0) {
+            let items = [self.favoritedBarBtn, self.searchBarBtn]
+            self.navigationItem.rightBarButtonItems = items
+        }
     }
     
     @objc func handleSearchBarItem() {
@@ -86,8 +159,8 @@ class StationController: UICollectionViewController, UICollectionViewDelegateFlo
     
     @objc func refreshContents() {
         refreshControl.attributedTitle = NSAttributedString(string: "資料更新中")
-        self.bikeDatas.removeAll()
-        self.SetService()
+        stationBikeDatas.removeAll()
+        self.getStationService()
         self.collectionView?.reloadData()
         self.perform(#selector(finishedRefreshing), with: nil, afterDelay: 1.5)
     }
@@ -98,54 +171,83 @@ class StationController: UICollectionViewController, UICollectionViewDelegateFlo
         }, completion: { _ in
             self.refreshControl.endRefreshing()
             
-            if self.bikeDatas.count == 0 {
+            if stationBikeDatas.count == 0 {
                 Alert.showAlert(title: "請檢查網路", message: "", vc: self)
             }
         })
     }
     
-    func SetService() {
+    
+    func getStationService() {
         Service.sharedInstance.fetchJsonData(urlString: webString, completion: { (bikeinfos, err) in
             if let err = err {
                  print("BikeViewController 偵測網路沒開：",err.localizedDescription)
                 Alert.showAlert(title: "請開啟網路", message: "更新失敗", vc: self)
             }
-            guard let bikeinfos = bikeinfos else { self.bikeDatas = []; return }
-            self.bikeDatas = bikeinfos.sorted(by: { $0.distence! < $1.distence! })
+            guard let bikeinfos = bikeinfos else { stationBikeDatas = []; return }
+           
+            let templeteBikeInfos = bikeinfos.sorted(by: { $0.id! < $1.id! })
+            if hasFavoritedArray?.count == nil {
+                var favoritedArr = [HasFavorited]()
+                _ = templeteBikeInfos.map{ favoritedArr.append(HasFavorited(bikeStationInfo: $0, hasFavorited: false)) }
+                hasFavoritedArray = favoritedArr
+            }
+            
+            stationBikeDatas = bikeinfos.sorted(by: { $0.distence! < $1.distence! })
             DispatchQueue.main.async {
                 self.collectionView?.reloadData()
             }
-            Alert.showAlert(title: "下載完成", message: TimeHelper.showUpdateTime(timeString: self.bikeDatas[0].mday!), vc: self)
+            Alert.showAlert(title: "下載完成", message: TimeHelper.showUpdateTime(timeString: stationBikeDatas[0].mday!), vc: self)
         })
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
-        if searchController.isActive == true {
-            return self.searchArr.count
+        if isFavoriteBtnPressed {
+            return self.choosefavoritedArr.count
         } else {
-            return self.bikeDatas.count
+            if searchController.isActive == true {
+                return self.searchArr.count
+            } else {
+                return stationBikeDatas.count
+            }
         }
-        
     }
-
+    
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! StationCell
         
-        if searchController.isActive == true {
-            cell.bikeStationInfo = self.searchArr[indexPath.item]
+        var favoritedId: Int
+
+        if isFavoriteBtnPressed {
+            cell.bikeStationInfo = self.choosefavoritedArr[indexPath.item]
+            cell.favoriteButton.setImage(#imageLiteral(resourceName: "favstar").withRenderingMode(.alwaysOriginal), for: .normal)
         } else {
-            cell.bikeStationInfo = self.bikeDatas[indexPath.item]
+            if searchController.isActive == true {
+                cell.bikeStationInfo = self.searchArr[indexPath.item]
+                favoritedId = self.searchArr[indexPath.item].id!
+                print("測試searchArr Id", favoritedId)
+                print("測試searchArr Item", indexPath.item)
+                cell.favoriteButton.tag = favoritedId
+                
+            } else {
+                cell.bikeStationInfo = stationBikeDatas[indexPath.item]
+                favoritedId = stationBikeDatas[indexPath.item].id!
+                cell.favoriteButton.tag = favoritedId
+                print("測試bikeArr Id", favoritedId)
+                print("測試bikeArr Item", indexPath.item)
+            }
+             hasFavoritedArray![favoritedId-1].hasFavorited ? cell.favoriteButton.setImage(#imageLiteral(resourceName: "favstar").withRenderingMode(.alwaysOriginal), for: .normal) : cell.favoriteButton.setImage(#imageLiteral(resourceName: "unfavstar").withRenderingMode(.alwaysOriginal), for: .normal)
         }
+        
         return cell
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         if searchController.isActive == true {
-            print("你選擇的是 \(self.searchArr[indexPath.row].sna!)")
+            print("你選擇的是 \(self.searchArr[indexPath.item].sna!)")
         } else {
-            print("你選擇的是 \(self.bikeDatas[indexPath.row].sna!)")
+            print("你選擇的是 \(stationBikeDatas[indexPath.item].sna!)")
         }
     }
 
@@ -222,7 +324,7 @@ extension StationController: UISearchResultsUpdating {
         guard let searchText = searchController.searchBar.text else { return }
         if searchText.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).count == 0 { return }
 
-        searchArr = bikeDatas.filter({ (bikeStation) -> Bool in
+        searchArr = stationBikeDatas.filter({ (bikeStation) -> Bool in
             
             let bikeId = bikeStation.id ?? 0
             let bikeStationId = "#"+String(bikeId)

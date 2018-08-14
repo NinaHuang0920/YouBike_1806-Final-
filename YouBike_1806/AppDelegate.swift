@@ -23,7 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        window?.rootViewController = LocationSearchTableViewController(style: UITableViewStyle.plain)
         
         
-        window?.rootViewController = TabBarController(locationService: LocationService.sharedInstance)
+        window?.rootViewController = TabBarController(locationService: LocationService.sharedInstance, persistenceManager: PersistenceManager.sharedInstance)
         UITabBar.appearance().backgroundColor = UIColor.rgb(red: 250, green: 246, blue: 227)
         
 //        application.statusBarStyle = .lightContent  // plist要增加

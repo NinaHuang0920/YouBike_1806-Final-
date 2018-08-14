@@ -9,7 +9,12 @@
 import UIKit
 import MapKit
 
+
+
+
 class StationCell: BaseCell {
+
+//    var stationController: StationController?
     
     var bikeStationInfo: BikeStationInfo? {
         didSet {
@@ -44,7 +49,13 @@ class StationCell: BaseCell {
     let stationNameLabel = StationLabel(stationLabelType: StationLabelType.stationName)
     let stationAddsLabel = StationLabel(stationLabelType: StationLabelType.stationAddress)
     let distanceLabel = StationLabel(stationLabelType: StationLabelType.stationDistance)
-    let favoriteButton = FavoriteButton()
+//    let favoriteButton = FavoriteButton()
+    lazy var favoriteButton: UIButton = {
+        let btn = UIButton(type: UIButtonType.system)
+//        btn.setImage(#imageLiteral(resourceName: "unfavstar").withRenderingMode(.alwaysOriginal), for: .normal)
+        btn.addTarget(self, action: #selector(handleFavoriteButtonTapped), for: .touchUpInside)
+        return btn
+    }()
     let infosLabelContainer = UIView()
     let bikeLabel = StationInfosLabel(labelColor: LabelColorType.bikeLabelColor)
     let parkLabel = StationInfosLabel(labelColor: LabelColorType.parkLabelColor)
@@ -71,6 +82,20 @@ class StationCell: BaseCell {
     distanceLabel.anchor(top: topAnchor, left: stationAddsLabel.rightAnchor, bottom: nil, right: rightAnchor, topConstant: 3, leftConstant: 0, bottomConstant: 0, rightConstant: 2, widthConstant: 60, heightConstant: 35)
     favoriteButton.anchor(top: distanceLabel.bottomAnchor, left: distanceLabel.leftAnchor, bottom: bottomAnchor, right: rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
     setupInfoLabels()
+    }
+    
+    @objc func handleFavoriteButtonTapped(sender: UIButton) {
+        
+        let favoritedId = sender.tag
+        let favoritedIndex = favoritedId - 1
+        let stationName = hasFavoritedArray![favoritedIndex].stationName
+        print("FavoritedArry 第#按鈕被按下了,id: \(favoritedId),\(stationName)")
+        
+        let pressedItemIsFavorited = hasFavoritedArray![favoritedIndex].hasFavorited
+        hasFavoritedArray![favoritedIndex].hasFavorited = !pressedItemIsFavorited
+        print("hasFavorited的Bool",hasFavoritedArray![favoritedIndex].hasFavorited)
+        
+        hasFavoritedArray![favoritedIndex].hasFavorited ?  favoriteButton.setImage(#imageLiteral(resourceName: "favstar").withRenderingMode(.alwaysOriginal), for: .normal) : favoriteButton.setImage(#imageLiteral(resourceName: "unfavstar").withRenderingMode(.alwaysOriginal), for: .normal)
     }
     
     func setupInfoLabels() {

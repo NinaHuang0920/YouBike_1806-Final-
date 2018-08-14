@@ -8,59 +8,59 @@
 
 import UIKit
 
-class FavoriteButton: UIButton {
+//protocol FavoriteButtonDelegate {
+//    func favoriteButtonIsTapped(buttonIndex: Int, sender: UIButton)
+//}
 
-    var favoriteImage = #imageLiteral(resourceName: "like").withRenderingMode(UIImageRenderingMode.alwaysTemplate)
+
+class FavoriteButton: UIButton {
     
-    var isChecked: Bool = false {
-        didSet {
-            updateImage()
-        }
-    }
     
+//    var favoriteButtonDelegate: FavoriteButtonDelegate!
+    
+    var isChecked: Bool?
+     
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.setImage(favoriteImage, for: UIControlState.normal)
-        self.addTarget(self, action: #selector(buttonClicked), for: UIControlEvents.touchUpInside)
-        updateImage()
+        self.setImage(#imageLiteral(resourceName: "unfavstar"), for: UIControlState.normal)
+//        self.setImage(#imageLiteral(resourceName: "favstar"), for: UIControlState.selected)
+//        self.addTarget(self, action: #selector(buttonClicked), for: UIControlEvents.touchUpInside)
+//        updateImage()
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    @objc func buttonClicked(sender: UIButton) {
-        if sender == self {
-            isChecked = !isChecked
-        }
-    }
+//    @objc func buttonClicked(sender: UIButton) {
+//        if sender == self {
+//
+//            self.isChecked = isChecked == nil ? true : !isChecked!
+//            favoriteButtonDelegate.favoriteButtonIsTapped(buttonIndex: sender.tag, sender: sender)
+//
+//            print("第\(sender.tag)按鈕被按下了 isChcked的值現在是：\(String(describing: isChecked!))")
+//        }
+
+//        UIView.animate(withDuration: 0.3, delay: 0.1, options: .curveLinear, animations: {
+//            sender.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+//
+//        }) { (success) in
+//            UIView.animate(withDuration: 0.5, delay: 0.1, options: .curveLinear, animations: {
+//                sender.isSelected = !sender.isSelected
+//                sender.transform = .identity
+//            }, completion: nil)
+//        }
+//    }
     
     
-    func updateImage() {
-        if isChecked == true {
-            self.tintColor = redColorWithAlpha
-        } else {
-            self.tintColor = UIColor(white: 0.8, alpha: 0.5)
-        }
-    }
-    
-//    let favoriteButton: UIButton = {
-//        let btn = UIButton(type: UIButtonType.system)
-//        btn.setImage(#imageLiteral(resourceName: "like"), for: .normal)
-//        btn.tintColor = redColor
-//        btn.backgroundColor = .clear
-//        btn.addTarget(self, action: #selector(handleFavoriateBtn), for: .touchUpInside)
-//        btn.translatesAutoresizingMaskIntoConstraints = false
-//        return btn
-//    }()
-    
-    /*
-    // Only override draw() if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func draw(_ rect: CGRect) {
-        // Drawing code
-    }
-    */
+//    func updateImage() {
+//        if isChecked == true {
+//           self.setImage(checkImage, for: UIControlState.normal)
+//        } else {
+//            self.setImage(uncheckImage, for: UIControlState.normal)
+//        }
+//    }
+
 
 }

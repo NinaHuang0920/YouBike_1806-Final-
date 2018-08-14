@@ -12,9 +12,11 @@ import MapKit
 class TabBarController: UITabBarController {
 
     let locationService: LocationService
+    let persistenceManager: PersistenceManager
     
-    init(locationService: LocationService) {
+    init(locationService: LocationService, persistenceManager: PersistenceManager) {
         self.locationService = locationService
+        self.persistenceManager = persistenceManager
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -22,11 +24,8 @@ class TabBarController: UITabBarController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-
         let layout = UICollectionViewFlowLayout()
         let bikeCollectionViewController = StationController(collectionViewLayout: layout)
         let navigationController = UINavigationController(rootViewController: bikeCollectionViewController)

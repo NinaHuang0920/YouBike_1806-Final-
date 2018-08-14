@@ -61,23 +61,16 @@ class BikeStationInfo: Decodable {
         bemp = try container.decode(String.self, forKey: .bemp)
         mday = try container.decode(String.self, forKey: .mday)
         act = try container.decode(String.self, forKey: .act)
-//        sareaen = try container.decode(String.self, forKey: .sareaen)
-//        snaen = try container.decode(String.self, forKey: .snaen)
-//        aren = try container.decode(String.self, forKey: .aren)
+        lat = try container.decode(String.self, forKey: .lat)
+        lng = try container.decode(String.self, forKey: .lng)
         
-        let lat = try container.decode(String.self, forKey: .lat)
-        let lng = try container.decode(String.self, forKey: .lng)
-        if lat != "" && lng != "" && lat != nil && lng != nil {
-            coordinate2D = CLLocationCoordinate2D(latitude: Double(lat)!, longitude: Double(lng)!)
+        if let lat = lat, let lng = lng, let currentLocation = currentLocation {
+            guard lat != "" && lng != "" else { return }
+            coordinate2D = CLLocationCoordinate2DMake(Double(lat)!, Double(lng)!)
             location = CLLocation(latitude: Double(lat)!, longitude: Double(lng)!)
-            distence = Int((currentLocation?.distance(from: location!))!)
+            distence = Int((currentLocation.distance(from: location!)))
         }
-        
-//        guard lat != nil, lng != nil else { return }
-//        coordinate2D = CLLocationCoordinate2D(latitude: Double(lat)!, longitude: Double(lng)!)
-//        location = CLLocation(latitude: Double(lat)!, longitude: Double(lng)!)
-//        distence = Int((currentLocation?.distance(from: location!))!)
-        
     }
+    
 }
 
