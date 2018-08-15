@@ -49,7 +49,15 @@ class StationController: UICollectionViewController, UICollectionViewDelegateFlo
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        getStationService()
+//        getStationService()
+        SetService.sharedInstance.getStationService(setCollectionCompletion: {
+           self.collectionView?.reloadData()
+        }, messageblock: {
+            if stationBikeDatas.count == 0 {
+                Alert.showAlert(title: "請開啟網路", message: "資料無法下載", vc: self)
+            }
+        })
+        
         setupNav()
         setupRightBarItems()
         setupCollectionView()
@@ -60,9 +68,8 @@ class StationController: UICollectionViewController, UICollectionViewDelegateFlo
         super.viewWillAppear(animated)
      
         if LocationService.sharedInstance.authorizationStatus() == .denied {
-            Alert.showAlert(title: "定位權限已關閉", message: "請至 設定 > 隱私權 > 定位服務 開啟定位服務", vc: self)
+            Alert.showAlert(title: "使用者定位關閉", message: "請至 設定 > 隱私權 > 定位服務 開啟定位服務", vc: self)
         }
-        
     }
     
     func setupCollectionView(){
@@ -182,7 +189,16 @@ class StationController: UICollectionViewController, UICollectionViewDelegateFlo
     @objc func refreshContents() {
         refreshControl?.attributedTitle = NSAttributedString(string: "資料更新中")
         stationBikeDatas.removeAll()
-        self.getStationService()
+        
+//        self.getStationService()
+        SetService.sharedInstance.getStationService(setCollectionCompletion: {
+            self.collectionView?.reloadData()
+        }, messageblock: {
+//            if stationBikeDatas.count == 0 {
+//                Alert.showAlert(title: "更新失敗", message: "請確認網路開啟", vc: self)
+//            }
+        })
+        
         self.collectionView?.reloadData()
         self.perform(#selector(finishedRefreshing), with: nil, afterDelay: 1.5)
     }
@@ -194,43 +210,54 @@ class StationController: UICollectionViewController, UICollectionViewDelegateFlo
             self.refreshControl?.endRefreshing()
             
             if stationBikeDatas.count == 0 {
-                Alert.showAlert(title: "請檢查網路", message: "", vc: self)
+                Alert.showAlert(title: "更新失敗", message: "請確認網路開啟", vc: self)
             }
         })
     }
     
-    func getStationService() {
-        Service.sharedInstance.fetchJsonData(urlString: webString, completion: { (bikeinfos, err) in
-            if let err = err {
-                 print("BikeViewController 偵測網路沒開：",err.localizedDescription)
-                Alert.showAlert(title: "請開啟網路", message: "更新失敗", vc: self)
-            }
-            guard let bikeinfos = bikeinfos else { stationBikeDatas = []; return }
-           
-            let templeteBikeInfos = bikeinfos.sorted(by: { $0.id! < $1.id! })
-            if hasFavoritedArray?.count == nil {
-                var favoritedArr = [HasFavorited]()
-                _ = templeteBikeInfos.map{ favoritedArr.append(HasFavorited(bikeStationInfo: $0, hasFavorited: false)) }
-                hasFavoritedArray = favoritedArr
-            }
-
-//            Timer.scheduledTimer(withTimeInterval: 5, repeats: self.reloadServiceData) { (_) in
-//                self.currentLocation = LocationService.sharedInstance.currentLocation
+//    func getStationService() {
+//
+//        Service.sharedInstance.fetchJsonData(urlString: webString, completion: { (bikeinfos, err) in
+//            if let err = err {
+//                 print("BikeViewController 偵測網路沒開：",err.localizedDescription)
+//                Alert.showAlert(title: "請開啟網路", message: "更新失敗", vc: self)
 //            }
-            
-            if LocationService.sharedInstance.currentLocation != nil {
-                 stationBikeDatas = bikeinfos.sorted(by: { $0.distence! < $1.distence! })
-            } else {
-                stationBikeDatas = bikeinfos
-            }
-
-           
-            DispatchQueue.main.async {
-                self.collectionView?.reloadData()
-            }
-//            Alert.showAlert(title: "下載完成", message: TimeHelper.showUpdateTime(timeString: stationBikeDatas[0].mday!), vc: self)
-        })
-    }
+//            guard let bikeInfos = bikeinfos else { stationBikeDatas = []; return }
+//
+//            let templeteBikeInfos = bikeInfos.sorted(by: { $0.id! < $1.id! })
+//
+//            if bikeInfos.count > 0 && hasFavoritedArray?.count == nil {
+//
+//                var favoritedArr = [HasFavorited]()
+//                _ = templeteBikeInfos.map{ favoritedArr.append(HasFavorited(bikeStationInfo: $0, hasFavorited: false)) }
+//                hasFavoritedArray = favoritedArr
+//
+//            } else if bikeInfos.count > 0 && (hasFavoritedArray?.count)! < bikeInfos.count {
+//
+//                let filterArray = templeteBikeInfos.filter({ !hasFavoritedArray!.map({ $0.stationName }).contains($0.sna) })
+//                _ = filterArray.map({hasFavoritedArray?.append(HasFavorited(bikeStationInfo: $0, hasFavorited: false)) })
+//
+//            } else if bikeInfos.count > 0 && (hasFavoritedArray?.count)! > bikeInfos.count {
+//
+//                let filterArray = hasFavoritedArray?.filter({ !templeteBikeInfos.map({$0.sna}).contains($0.stationName) })
+//                let templateFilterHasFavoritedArray = hasFavoritedArray?.filter({ return !filterArray!.map({$0.stationName}).contains($0.stationName) })
+//                hasFavoritedArray?.removeAll()
+//                hasFavoritedArray = templateFilterHasFavoritedArray
+//
+//            }
+//
+//            if LocationService.sharedInstance.currentLocation != nil {
+//                 stationBikeDatas = bikeInfos.sorted(by: { $0.distence! < $1.distence! })
+//            } else {
+//                stationBikeDatas = bikeInfos
+//            }
+//
+//            DispatchQueue.main.async {
+//                self.collectionView?.reloadData()
+//            }
+////            Alert.showAlert(title: "下載完成", message: TimeHelper.showUpdateTime(timeString: stationBikeDatas[0].mday!), vc: self)
+//        })
+//    }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if isFavoriteBtnPressed {
