@@ -49,6 +49,7 @@ class BikeStationInfo: Decodable {
     
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+
         let currentLocation = LocationService.sharedInstance.currentLocation
         
         id = try container.decode(Int.self, forKey: .id)
@@ -64,10 +65,11 @@ class BikeStationInfo: Decodable {
         lat = try container.decode(String.self, forKey: .lat)
         lng = try container.decode(String.self, forKey: .lng)
         
-        if let lat = lat, let lng = lng, let currentLocation = currentLocation {
+        if let lat = lat, let lng = lng {
             guard lat != "" && lng != "" else { return }
             coordinate2D = CLLocationCoordinate2DMake(Double(lat)!, Double(lng)!)
             location = CLLocation(latitude: Double(lat)!, longitude: Double(lng)!)
+            guard let currentLocation = currentLocation else { return }
             distence = Int((currentLocation.distance(from: location!)))
         }
     }

@@ -21,7 +21,8 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     
     var locationManager: CLLocationManager?
     var currentLocation: CLLocation?
-    var delegate: LocationServiceDelegate?
+    var delegate: LocationServiceDelegate!
+    var status: CLAuthorizationStatus?
     
     private override init() {
         super.init()
@@ -56,6 +57,10 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         self.locationManager?.requestWhenInUseAuthorization()
     }
     
+    func authorizationStatus() -> CLAuthorizationStatus {
+      return  CLLocationManager.authorizationStatus()
+    }
+    
     func requestLocation() {
         self.locationManager?.requestLocation()
     }
@@ -79,8 +84,8 @@ class LocationService: NSObject, CLLocationManagerDelegate {
             locationManager?.requestLocation()
         }
         updateLocationDidChangeAuthorization(status: status)
-
     }
+    
     
     // Private function
     private func updateLocation(currentLocation: CLLocation){

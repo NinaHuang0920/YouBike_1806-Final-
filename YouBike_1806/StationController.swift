@@ -6,18 +6,23 @@
 //  Copyright © 2018年 CheshireCat. All rights reserved.
 //
 
-//protocol StationControllerDelegate {
-//    func changeButtonColor(isFavorited: Bool?)
-//}
 
 import UIKit
+import MapKit
 
  var stationBikeDatas = [BikeStationInfo]()
  var hasFavoritedArray: [HasFavorited]?
 
 class StationController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UISearchControllerDelegate {
     
-    var refreshControl = UIRefreshControl()
+//    var currentLocation: CLLocation? = LocationService.sharedInstance.currentLocation
+//    var reloadServiceData: Bool = LocationService.sharedInstance.currentLocation == nil ? true : false {
+//        didSet {
+//            print("reloadServiceData", reloadServiceData, currentLocation)
+//        }
+//    }
+    
+    var refreshControl: UIRefreshControl?
     
     private let cellId = "cellId"
     private let headerId = "headerId"
@@ -49,6 +54,15 @@ class StationController: UICollectionViewController, UICollectionViewDelegateFlo
         setupRightBarItems()
         setupCollectionView()
         setupRefreshControl()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+     
+        if LocationService.sharedInstance.authorizationStatus() == .denied {
+            Alert.showAlert(title: "定位權限已關閉", message: "請至 設定 > 隱私權 > 定位服務 開啟定位服務", vc: self)
+        }
+        
     }
     
     func setupCollectionView(){
@@ -102,37 +116,44 @@ class StationController: UICollectionViewController, UICollectionViewDelegateFlo
     }
     
     func favoriteBtnPressed()  {
+        collectionView?.refreshControl = nil
         isFavoriteBtnPressed = true
         iconButton.setBackgroundImage(#imageLiteral(resourceName: "favstar"), for: .normal)
         favoritedBarBtn.customView = iconButton
         UIView.animate(withDuration: 1.0) {
-            let items = [self.favoritedBarBtn, self.searchBarBtn]
+            let items = [self.favoritedBarBtn]
             self.navigationItem.rightBarButtonItems = items
         }
         
-        var templetBikeArry = [BikeStationInfo]()
-        let templetFavoriteArray = hasFavoritedArray!.filter({
+//        var templetBikeArry = [BikeStationInfo]()
+        guard let hasFavoritedArray = hasFavoritedArray else { return }
+        let templetFavoriteArray = hasFavoritedArray.filter({
             return $0.hasFavorited
         })
 //        print(templetFavoriteArray)
-        for bike in stationBikeDatas {
-            for favoritedItem in templetFavoriteArray {
-                if bike.sna == favoritedItem.stationName {
-                    templetBikeArry.append(bike)
-//                    print(bike.sna)
-                }
-            }
-        }
+//        for bike in stationBikeDatas {
+//            for favoritedItem in templetFavoriteArray {
+//                if bike.sna == favoritedItem.stationName {
+//                    templetBikeArry.append(bike)
+////                    print(bike.sna)
+//                }
+//            }
+//        }
+        let templetBikeArry = stationBikeDatas.filter({ return templetFavoriteArray.map({ $0.stationName }).contains( $0.sna ) })
+        
         choosefavoritedArr = templetBikeArry.sorted(by: {$0.distence! < $1.distence!})
     }
     
     func dismissFavoriteBtnPressed()  {
+        setupRefreshControl()
         isFavoriteBtnPressed = false
         iconButton.setBackgroundImage(#imageLiteral(resourceName: "unfavstar"), for: .normal)
         favoritedBarBtn.customView = iconButton
+        favoritedBarBtn.customView!.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi * 6/5))
         UIView.animate(withDuration: 1.0) {
             let items = [self.favoritedBarBtn, self.searchBarBtn]
             self.navigationItem.rightBarButtonItems = items
+            self.favoritedBarBtn.customView!.transform = CGAffineTransform.identity
         }
     }
     
@@ -149,16 +170,17 @@ class StationController: UICollectionViewController, UICollectionViewDelegateFlo
     }
 
     func setupRefreshControl() {
-        refreshControl.addTarget(self, action: #selector(refreshContents), for: .valueChanged)
+        refreshControl = UIRefreshControl()
+        refreshControl?.addTarget(self, action: #selector(refreshContents), for: .valueChanged)
         if #available(iOS 10.0, *) {
             collectionView?.refreshControl = refreshControl
         } else {
-            collectionView?.addSubview(refreshControl)
+            collectionView?.addSubview(refreshControl!)
         }
     }
     
     @objc func refreshContents() {
-        refreshControl.attributedTitle = NSAttributedString(string: "資料更新中")
+        refreshControl?.attributedTitle = NSAttributedString(string: "資料更新中")
         stationBikeDatas.removeAll()
         self.getStationService()
         self.collectionView?.reloadData()
@@ -167,16 +189,15 @@ class StationController: UICollectionViewController, UICollectionViewDelegateFlo
     
     @objc func finishedRefreshing() {
         UIView.animate(withDuration: 0.2, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-            self.refreshControl.attributedTitle = NSAttributedString(string: "資料更新完成")
+            self.refreshControl?.attributedTitle = NSAttributedString(string: "資料更新完成")
         }, completion: { _ in
-            self.refreshControl.endRefreshing()
+            self.refreshControl?.endRefreshing()
             
             if stationBikeDatas.count == 0 {
                 Alert.showAlert(title: "請檢查網路", message: "", vc: self)
             }
         })
     }
-    
     
     func getStationService() {
         Service.sharedInstance.fetchJsonData(urlString: webString, completion: { (bikeinfos, err) in
@@ -192,12 +213,22 @@ class StationController: UICollectionViewController, UICollectionViewDelegateFlo
                 _ = templeteBikeInfos.map{ favoritedArr.append(HasFavorited(bikeStationInfo: $0, hasFavorited: false)) }
                 hasFavoritedArray = favoritedArr
             }
+
+//            Timer.scheduledTimer(withTimeInterval: 5, repeats: self.reloadServiceData) { (_) in
+//                self.currentLocation = LocationService.sharedInstance.currentLocation
+//            }
             
-            stationBikeDatas = bikeinfos.sorted(by: { $0.distence! < $1.distence! })
+            if LocationService.sharedInstance.currentLocation != nil {
+                 stationBikeDatas = bikeinfos.sorted(by: { $0.distence! < $1.distence! })
+            } else {
+                stationBikeDatas = bikeinfos
+            }
+
+           
             DispatchQueue.main.async {
                 self.collectionView?.reloadData()
             }
-            Alert.showAlert(title: "下載完成", message: TimeHelper.showUpdateTime(timeString: stationBikeDatas[0].mday!), vc: self)
+//            Alert.showAlert(title: "下載完成", message: TimeHelper.showUpdateTime(timeString: stationBikeDatas[0].mday!), vc: self)
         })
     }
     
@@ -220,7 +251,11 @@ class StationController: UICollectionViewController, UICollectionViewDelegateFlo
 
         if isFavoriteBtnPressed {
             cell.bikeStationInfo = self.choosefavoritedArr[indexPath.item]
-            cell.favoriteButton.setImage(#imageLiteral(resourceName: "favstar").withRenderingMode(.alwaysOriginal), for: .normal)
+            favoritedId = self.choosefavoritedArr[indexPath.item].id!
+            print("chooseFAvoritdArr Id:", favoritedId)
+            cell.favoriteButton.tag = favoritedId
+            hasFavoritedArray![favoritedId-1].hasFavorited ? cell.favoriteButton.setImage(#imageLiteral(resourceName: "favstar").withRenderingMode(.alwaysOriginal), for: .normal) : cell.favoriteButton.setImage(#imageLiteral(resourceName: "unfavstar").withRenderingMode(.alwaysOriginal), for: .normal)            
+            
         } else {
             if searchController.isActive == true {
                 cell.bikeStationInfo = self.searchArr[indexPath.item]

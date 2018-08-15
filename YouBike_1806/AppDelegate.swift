@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MapKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -22,7 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
 //        window?.rootViewController = LocationSearchTableViewController(style: UITableViewStyle.plain)
         
-        
+        LocationService.sharedInstance.requestWhenInUseAuthorization()
         window?.rootViewController = TabBarController(locationService: LocationService.sharedInstance, persistenceManager: PersistenceManager.sharedInstance)
         UITabBar.appearance().backgroundColor = UIColor.rgb(red: 250, green: 246, blue: 227)
         
@@ -37,11 +38,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
+        
+        LocationService.sharedInstance.stopUpdatingLocation()
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
+
+        LocationService.sharedInstance.startUpdatingLocation()
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
     }
 

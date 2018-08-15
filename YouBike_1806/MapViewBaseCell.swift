@@ -74,7 +74,7 @@ class MapViewBaseCell: BaseCell {
     override func setupViews() {
         super.setupViews()
         
-        LocationService.sharedInstance.requestWhenInUseAuthorization()
+//        LocationService.sharedInstance.requestWhenInUseAuthorization()
         
         SetService.sharedInstance.getMapService(setPinToMapCompletion: {
             SetPinToMap.sharedInstance.setPinToMap(arrAnnotation: arrAnnotation, in: self.mapView, at: self.mapViewController)
