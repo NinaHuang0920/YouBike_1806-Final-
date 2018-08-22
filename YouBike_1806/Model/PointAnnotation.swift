@@ -10,9 +10,9 @@ import MapKit
 
 class PointAnnotation: MKPointAnnotation {
     
-    let bikeStationInfo: BikeStationInfo?
+    let bikeStationInfo: StationInfo?
     
-    init(bikeStationInfo: BikeStationInfo) {
+    init(bikeStationInfo: StationInfo) {
         self.bikeStationInfo = bikeStationInfo
         super.init()
         
@@ -27,9 +27,9 @@ class PointAnnotation: MKPointAnnotation {
 
 class PointAnnotation2: MKPointAnnotation {
     
-    let bikeStationInfo: BikeStationInfo?
+    let bikeStationInfo: StationInfo?
     
-    init(bikeStationInfo: BikeStationInfo) {
+    init(bikeStationInfo: StationInfo) {
         self.bikeStationInfo = bikeStationInfo
         super.init()
         

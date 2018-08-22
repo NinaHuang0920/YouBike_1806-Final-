@@ -14,31 +14,31 @@ import MapKit
 
 class StationCell: BaseCell {
 
-//    var stationController: StationController?
+    var stationController: StationController?
     
-    var bikeStationInfo: BikeStationInfo? {
+    var stationInfos: StationInfo? {
         didSet {
             
-            if let stationNameLabelText = bikeStationInfo?.sna, let stationIdNumber = bikeStationInfo?.id {
+            if let stationNameLabelText = stationInfos?.sna, let stationIdNumber = stationInfos?.id {
                 stationNameLabel.text = "\(stationNameLabelText) (#\(stationIdNumber))"
             }
-            if let stationAddsLabelText = bikeStationInfo?.ar {
+            if let stationAddsLabelText = stationInfos?.ar {
                 stationAddsLabel.text = stationAddsLabelText
             }
-            if let bikeLabelText = bikeStationInfo?.sbi {
+            if let bikeLabelText = stationInfos?.sbi {
                 bikeLabel.attributedText = bikeLabel.labealAttributedTex(infosType: InfosType.bikeInfo, inputString: bikeLabelText)
             }
-            if let parkLabelText = bikeStationInfo?.bemp {
+            if let parkLabelText = stationInfos?.bemp {
                 parkLabel.attributedText = parkLabel.labealAttributedTex(infosType: InfosType.parkInfo, inputString: parkLabelText)
             }
-            if let timeLabelText = bikeStationInfo?.mday {
+            if let timeLabelText = stationInfos?.mday {
                 timeLabel.text = TimeHelper.showUpdateTimeMS(timeString: timeLabelText)
             }
-            if let profileImageNum = bikeStationInfo?.sbi, let stationStatus = bikeStationInfo?.act {
+            if let profileImageNum = stationInfos?.sbi, let stationStatus = stationInfos?.act {
                 let bikeNum:Int = Int(profileImageNum)!
                 profileImage.image = profileImage.selectedProfileImage(act: stationStatus, num: bikeNum)
             }
-            if let distance = bikeStationInfo?.distence {
+            if let distance = stationInfos?.distence {
                 let distanceKilometer: Double = Double(distance) / 1000.00
                 distanceLabel.text = "\(String(describing: distanceKilometer).dropLast(1)) 公里"
             }
@@ -49,10 +49,9 @@ class StationCell: BaseCell {
     let stationNameLabel = StationLabel(stationLabelType: StationLabelType.stationName)
     let stationAddsLabel = StationLabel(stationLabelType: StationLabelType.stationAddress)
     let distanceLabel = StationLabel(stationLabelType: StationLabelType.stationDistance)
-//    let favoriteButton = FavoriteButton()
+
     lazy var favoriteButton: UIButton = {
         let btn = UIButton(type: UIButtonType.system)
-//        btn.setImage(#imageLiteral(resourceName: "unfavstar").withRenderingMode(.alwaysOriginal), for: .normal)
         btn.addTarget(self, action: #selector(handleFavoriteButtonTapped), for: .touchUpInside)
         return btn
     }()
@@ -84,18 +83,38 @@ class StationCell: BaseCell {
     setupInfoLabels()
     }
     
+    func setStationCellFavoritedButtonWith(buttonStatus: ButtonStatus) {
+        
+        buttonStatus.hasFavorited ? favoriteButton.setImage(#imageLiteral(resourceName: "favstar").withRenderingMode(.alwaysOriginal), for: .normal) : favoriteButton.setImage(#imageLiteral(resourceName: "unfavstar").withRenderingMode(.alwaysOriginal), for: .normal)
+        
+        
+    }
+    
+    
     @objc func handleFavoriteButtonTapped(sender: UIButton) {
         
-        let favoritedId = sender.tag
-        let favoritedIndex = favoritedId - 1
-        let stationName = hasFavoritedArray![favoritedIndex].stationName
-        print("FavoritedArry 第#按鈕被按下了,id: \(favoritedId),\(stationName)")
+        let favoritedId: Int16 = Int16(sender.tag)
         
-        let pressedItemIsFavorited = hasFavoritedArray![favoritedIndex].hasFavorited
-        hasFavoritedArray![favoritedIndex].hasFavorited = !pressedItemIsFavorited
-        print("hasFavorited的Bool",hasFavoritedArray![favoritedIndex].hasFavorited)
+        _ = stationController?.updateButtonStatus(by: favoritedId)
+        // 如何修改core data 的 favorited by id
         
-        hasFavoritedArray![favoritedIndex].hasFavorited ?  favoriteButton.setImage(#imageLiteral(resourceName: "favstar").withRenderingMode(.alwaysOriginal), for: .normal) : favoriteButton.setImage(#imageLiteral(resourceName: "unfavstar").withRenderingMode(.alwaysOriginal), for: .normal)
+        let test = stationController?.filterDataByStationId(stationId: favoritedId)
+        test!.map({print("測試 ",$0.stationId,$0.stationName,$0.hasFavorited) })
+        
+        (stationController?.filterDataByStationId(stationId: favoritedId)?.first?.hasFavorited)! ? favoriteButton.setImage(#imageLiteral(resourceName: "favstar").withRenderingMode(.alwaysOriginal), for: .normal) : favoriteButton.setImage(#imageLiteral(resourceName: "unfavstar").withRenderingMode(.alwaysOriginal), for: .normal)
+        
+        
+        
+        
+//        let favoritedIndex = favoritedId - 1
+//        let stationName = stationController?.hasFavoritedArray![favoritedIndex].stationName
+//        print("FavoritedArry 第#按鈕被按下了,id: \(favoritedId),\(stationName)")
+////
+//        let pressedItemIsFavorited = stationController?.hasFavoritedArray![favoritedIndex].hasFavorited
+//        stationController?.hasFavoritedArray![favoritedIndex].hasFavorited = !pressedItemIsFavorited!
+//        print("hasFavorited的Bool",stationController?.hasFavoritedArray![favoritedIndex].hasFavorited)
+////
+//        (stationController?.hasFavoritedArray![favoritedIndex].hasFavorited)! ?  favoriteButton.setImage(#imageLiteral(resourceName: "favstar").withRenderingMode(.alwaysOriginal), for: .normal) : favoriteButton.setImage(#imageLiteral(resourceName: "unfavstar").withRenderingMode(.alwaysOriginal), for: .normal)
     }
     
     func setupInfoLabels() {

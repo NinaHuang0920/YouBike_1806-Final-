@@ -2,7 +2,7 @@
 //  ButtonStatus+CoreDataProperties.swift
 //  YouBike_1806
 //
-//  Created by 黃玉玲 on 2018/8/13.
+//  Created by 黃玉玲 on 2018/8/22.
 //  Copyright © 2018年 CheshireCat. All rights reserved.
 //
 //
@@ -17,8 +17,8 @@ extension ButtonStatus {
         return NSFetchRequest<ButtonStatus>(entityName: "ButtonStatus")
     }
 
-    @NSManaged public var stationName: String?
-    @NSManaged public var stationId: Int64
     @NSManaged public var hasFavorited: Bool
+    @NSManaged public var stationId: Int16
+    @NSManaged public var stationName: String?
 
 }

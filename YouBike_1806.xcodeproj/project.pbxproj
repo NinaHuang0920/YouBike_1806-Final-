@@ -9,14 +9,15 @@
 /* Begin PBXBuildFile section */
 		BF0E2101211AF38C0060FAFB /* HasFavorited.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0E2100211AF38C0060FAFB /* HasFavorited.swift */; };
 		BF0EB4FA21101B2B005D278A /* SetPinToMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0EB4F921101B2B005D278A /* SetPinToMap.swift */; };
-		BF0EB4FE21101CF0005D278A /* SetService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0EB4FD21101CF0005D278A /* SetService.swift */; };
+		BF0EB4FE21101CF0005D278A /* GetService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0EB4FD21101CF0005D278A /* GetService.swift */; };
 		BF0EC3F5210F07A200F9B04C /* PointAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0EC3F4210F07A200F9B04C /* PointAnnotation.swift */; };
+		BF188019212AAC050052A0CB /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFF8A4582124316500D74CEB /* CoreDataStack.swift */; };
 		BF18DDED20D39C250053B565 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF18DDEC20D39C250053B565 /* AppDelegate.swift */; };
 		BF18DDF220D39C250053B565 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BF18DDF020D39C250053B565 /* Main.storyboard */; };
 		BF18DDF420D39C270053B565 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BF18DDF320D39C270053B565 /* Assets.xcassets */; };
 		BF18DDF720D39C270053B565 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BF18DDF520D39C270053B565 /* LaunchScreen.storyboard */; };
 		BF18DDFF20D39C6C0053B565 /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF18DDFE20D39C6C0053B565 /* Json.swift */; };
-		BF18DE0220D3ABD00053B565 /* Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF18DE0120D3ABD00053B565 /* Service.swift */; };
+		BF18DE0220D3ABD00053B565 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF18DE0120D3ABD00053B565 /* NetworkService.swift */; };
 		BF372221211AB3F000CABD2C /* StationInfosLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF372220211AB3F000CABD2C /* StationInfosLabel.swift */; };
 		BF372223211AC0EA00CABD2C /* StationProfileImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF372222211AC0EA00CABD2C /* StationProfileImageView.swift */; };
 		BF372225211AC44A00CABD2C /* StationLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF372224211AC44A00CABD2C /* StationLabel.swift */; };
@@ -34,19 +35,17 @@
 		BFCE9DF320DBACC900C55267 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFCE9DF220DBACC900C55267 /* MapKit.framework */; };
 		BFDEBB2220D7ED63006CF920 /* StationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDEBB2120D7ED63006CF920 /* StationController.swift */; };
 		BFE30F6621145E2800551C82 /* BickingMapViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE30F6521145E2800551C82 /* BickingMapViewCell.swift */; };
-		BFEC11BF211D5F280061ABE2 /* FavoriteButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF37221E211AACF600CABD2C /* FavoriteButton.swift */; };
 		BFF9BEB320DA97D70011C11C /* MapBarSelectedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFF9BEB220DA97D70011C11C /* MapBarSelectedView.swift */; };
-		BFFC2C472121BEFB00CD5AD1 /* PersistenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFC2C462121BEFB00CD5AD1 /* PersistenceManager.swift */; };
+		BFFB3426212C1F7C00DB281D /* ButtonStatus+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFB3424212C1F7C00DB281D /* ButtonStatus+CoreDataClass.swift */; };
+		BFFB3427212C1F7C00DB281D /* ButtonStatus+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFB3425212C1F7C00DB281D /* ButtonStatus+CoreDataProperties.swift */; };
 		BFFC2C4A2121C03C00CD5AD1 /* YouBike_1806.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = BFFC2C482121C03C00CD5AD1 /* YouBike_1806.xcdatamodeld */; };
-		BFFC2C4D2121C33900CD5AD1 /* ButtonStatus+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFC2C4B2121C33900CD5AD1 /* ButtonStatus+CoreDataClass.swift */; };
-		BFFC2C4E2121C33900CD5AD1 /* ButtonStatus+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFC2C4C2121C33900CD5AD1 /* ButtonStatus+CoreDataProperties.swift */; };
 		BFFF2FE0210B1F1A00F4F3D7 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFF2FDF210B1F1A00F4F3D7 /* LocationService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		BF0E2100211AF38C0060FAFB /* HasFavorited.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HasFavorited.swift; sourceTree = "<group>"; };
 		BF0EB4F921101B2B005D278A /* SetPinToMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetPinToMap.swift; sourceTree = "<group>"; };
-		BF0EB4FD21101CF0005D278A /* SetService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetService.swift; sourceTree = "<group>"; };
+		BF0EB4FD21101CF0005D278A /* GetService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetService.swift; sourceTree = "<group>"; };
 		BF0EC3F4210F07A200F9B04C /* PointAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointAnnotation.swift; sourceTree = "<group>"; };
 		BF0FD51420E628F90078ED44 /* ParkingMapViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParkingMapViewCell.swift; sourceTree = "<group>"; };
 		BF11D70820E7BBA600EAD538 /* BicycleAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BicycleAnnotationView.swift; sourceTree = "<group>"; };
@@ -57,8 +56,7 @@
 		BF18DDF620D39C270053B565 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		BF18DDF820D39C270053B565 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BF18DDFE20D39C6C0053B565 /* Json.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Json.swift; sourceTree = "<group>"; };
-		BF18DE0120D3ABD00053B565 /* Service.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Service.swift; sourceTree = "<group>"; };
-		BF37221E211AACF600CABD2C /* FavoriteButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteButton.swift; sourceTree = "<group>"; };
+		BF18DE0120D3ABD00053B565 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		BF372220211AB3F000CABD2C /* StationInfosLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationInfosLabel.swift; sourceTree = "<group>"; };
 		BF372222211AC0EA00CABD2C /* StationProfileImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationProfileImageView.swift; sourceTree = "<group>"; };
 		BF372224211AC44A00CABD2C /* StationLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationLabel.swift; sourceTree = "<group>"; };
@@ -68,6 +66,7 @@
 		BF3D654E20DA573600C310EF /* GeneralSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSetting.swift; sourceTree = "<group>"; };
 		BF4F974520D8DAF30033343F /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		BF4F974720D8F05F0033343F /* StationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationCell.swift; sourceTree = "<group>"; };
+		BF50BDA521252ABF0080B74C /* CoreDataHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataHandler.swift; sourceTree = "<group>"; };
 		BF6930402112CADB00D6EF11 /* LocationSearchTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSearchTableViewController.swift; sourceTree = "<group>"; };
 		BF735F9E2106F24700EDC110 /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
 		BF735FA021070A7B00EDC110 /* TimeHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeHelper.swift; sourceTree = "<group>"; };
@@ -75,11 +74,12 @@
 		BFCE9DF220DBACC900C55267 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		BFDEBB2120D7ED63006CF920 /* StationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationController.swift; sourceTree = "<group>"; };
 		BFE30F6521145E2800551C82 /* BickingMapViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BickingMapViewCell.swift; sourceTree = "<group>"; };
+		BFF8A4582124316500D74CEB /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		BFF9BEB220DA97D70011C11C /* MapBarSelectedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapBarSelectedView.swift; sourceTree = "<group>"; };
+		BFFB3424212C1F7C00DB281D /* ButtonStatus+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ButtonStatus+CoreDataClass.swift"; sourceTree = "<group>"; };
+		BFFB3425212C1F7C00DB281D /* ButtonStatus+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ButtonStatus+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		BFFC2C462121BEFB00CD5AD1 /* PersistenceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceManager.swift; sourceTree = "<group>"; };
 		BFFC2C492121C03C00CD5AD1 /* YouBike_1806.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = YouBike_1806.xcdatamodel; sourceTree = "<group>"; };
-		BFFC2C4B2121C33900CD5AD1 /* ButtonStatus+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ButtonStatus+CoreDataClass.swift"; sourceTree = "<group>"; };
-		BFFC2C4C2121C33900CD5AD1 /* ButtonStatus+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ButtonStatus+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		BFFF2FDF210B1F1A00F4F3D7 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -139,8 +139,8 @@
 		BF18DDEB20D39C250053B565 /* YouBike_1806 */ = {
 			isa = PBXGroup;
 			children = (
-				BFFC2C4B2121C33900CD5AD1 /* ButtonStatus+CoreDataClass.swift */,
-				BFFC2C4C2121C33900CD5AD1 /* ButtonStatus+CoreDataProperties.swift */,
+				BFFB3424212C1F7C00DB281D /* ButtonStatus+CoreDataClass.swift */,
+				BFFB3425212C1F7C00DB281D /* ButtonStatus+CoreDataProperties.swift */,
 				BF15426A20E682E100B64275 /* Controller */,
 				BF15426920E682D200B64275 /* View */,
 				BF15426820E682C700B64275 /* Model */,
@@ -149,10 +149,12 @@
 				BF18DDF320D39C270053B565 /* Assets.xcassets */,
 				BF18DDF520D39C270053B565 /* LaunchScreen.storyboard */,
 				BF18DDF820D39C270053B565 /* Info.plist */,
-				BF18DE0120D3ABD00053B565 /* Service.swift */,
+				BF18DE0120D3ABD00053B565 /* NetworkService.swift */,
 				BFDEBB2120D7ED63006CF920 /* StationController.swift */,
+				BFF8A4582124316500D74CEB /* CoreDataStack.swift */,
 				BF4F974720D8F05F0033343F /* StationCell.swift */,
-				BF37221E211AACF600CABD2C /* FavoriteButton.swift */,
+				BF0EB4FD21101CF0005D278A /* GetService.swift */,
+				BFFC2C482121C03C00CD5AD1 /* YouBike_1806.xcdatamodeld */,
 				BF372224211AC44A00CABD2C /* StationLabel.swift */,
 				BF372222211AC0EA00CABD2C /* StationProfileImageView.swift */,
 				BF372220211AB3F000CABD2C /* StationInfosLabel.swift */,
@@ -169,11 +171,10 @@
 				BF735F9E2106F24700EDC110 /* Alert.swift */,
 				BF735FA021070A7B00EDC110 /* TimeHelper.swift */,
 				BFFF2FDF210B1F1A00F4F3D7 /* LocationService.swift */,
-				BF0EB4FD21101CF0005D278A /* SetService.swift */,
 				BF0EB4F921101B2B005D278A /* SetPinToMap.swift */,
 				BF6930402112CADB00D6EF11 /* LocationSearchTableViewController.swift */,
 				BFFC2C462121BEFB00CD5AD1 /* PersistenceManager.swift */,
-				BFFC2C482121C03C00CD5AD1 /* YouBike_1806.xcdatamodeld */,
+				BF50BDA521252ABF0080B74C /* CoreDataHandler.swift */,
 			);
 			path = YouBike_1806;
 			sourceTree = "<group>";
@@ -270,7 +271,7 @@
 				BF372223211AC0EA00CABD2C /* StationProfileImageView.swift in Sources */,
 				BF3D654920DA331900C310EF /* MapViewController.swift in Sources */,
 				BF3D654F20DA573600C310EF /* GeneralSetting.swift in Sources */,
-				BF0EB4FE21101CF0005D278A /* SetService.swift in Sources */,
+				BF0EB4FE21101CF0005D278A /* GetService.swift in Sources */,
 				BF735FA121070A7B00EDC110 /* TimeHelper.swift in Sources */,
 				BF0EB4FA21101B2B005D278A /* SetPinToMap.swift in Sources */,
 				BF372221211AB3F000CABD2C /* StationInfosLabel.swift in Sources */,
@@ -280,21 +281,20 @@
 				BFDEBB2220D7ED63006CF920 /* StationController.swift in Sources */,
 				BF735F9F2106F24700EDC110 /* Alert.swift in Sources */,
 				BF3D654D20DA433100C310EF /* InformationView.swift in Sources */,
-				BFFC2C472121BEFB00CD5AD1 /* PersistenceManager.swift in Sources */,
 				BF6930412112CADB00D6EF11 /* LocationSearchTableViewController.swift in Sources */,
 				BF4EED592109C084009F9C10 /* ParkingMapViewCell.swift in Sources */,
-				BF18DE0220D3ABD00053B565 /* Service.swift in Sources */,
+				BFFB3427212C1F7C00DB281D /* ButtonStatus+CoreDataProperties.swift in Sources */,
+				BF18DE0220D3ABD00053B565 /* NetworkService.swift in Sources */,
+				BFFB3426212C1F7C00DB281D /* ButtonStatus+CoreDataClass.swift in Sources */,
 				BF3D654720DA323D00C310EF /* TabBarController.swift in Sources */,
-				BFFC2C4D2121C33900CD5AD1 /* ButtonStatus+CoreDataClass.swift in Sources */,
 				BF18DDED20D39C250053B565 /* AppDelegate.swift in Sources */,
 				BFCE9DCF20DB8E6700C55267 /* MapViewBaseCell.swift in Sources */,
 				BFE30F6621145E2800551C82 /* BickingMapViewCell.swift in Sources */,
 				BFF9BEB320DA97D70011C11C /* MapBarSelectedView.swift in Sources */,
-				BFFC2C4E2121C33900CD5AD1 /* ButtonStatus+CoreDataProperties.swift in Sources */,
 				BF4F974820D8F05F0033343F /* StationCell.swift in Sources */,
 				BF372225211AC44A00CABD2C /* StationLabel.swift in Sources */,
-				BFEC11BF211D5F280061ABE2 /* FavoriteButton.swift in Sources */,
 				BFFC2C4A2121C03C00CD5AD1 /* YouBike_1806.xcdatamodeld in Sources */,
+				BF188019212AAC050052A0CB /* CoreDataStack.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

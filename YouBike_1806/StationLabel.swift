@@ -38,16 +38,16 @@ class StationLabel: UILabel {
     }
     
     
-    let stationNameLabel: UILabel = {
-        let label = UILabel()
-        label.text = "STATION NAME"
-        label.font = UIFont.boldSystemFont(ofSize: 18) //
-        label.textColor = stationTitleColor //
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.adjustsFontSizeToFitWidth = true
-        label.adjustsFontForContentSizeCategory = true
-        return label
-    }()
+//    let stationNameLabel: UILabel = {
+//        let label = UILabel()
+//        label.text = "STATION NAME"
+//        label.font = UIFont.boldSystemFont(ofSize: 18) //
+//        label.textColor = stationTitleColor //
+//        label.translatesAutoresizingMaskIntoConstraints = false
+//        label.adjustsFontSizeToFitWidth = true
+//        label.adjustsFontForContentSizeCategory = true
+//        return label
+//    }()
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

@@ -9,7 +9,7 @@
 import UIKit
 import MapKit
 
-var bikeDatas = [BikeStationInfo]()
+var bikeDatas = [StationInfo]()
 let updateMapViewNotificationName = Notification.Name(rawValue: updateMapViewNotificationKey)
 let showNetworkAlertNotificationKey = "com.smilec.showAlert"
 

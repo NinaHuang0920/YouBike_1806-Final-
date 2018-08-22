@@ -9,33 +9,28 @@
 
 import UIKit
 import MapKit
+import CoreData
 
- var stationBikeDatas = [BikeStationInfo]()
- var hasFavoritedArray: [HasFavorited]?
+var stationDatas = [StationInfo]()
 
 class StationController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UISearchControllerDelegate {
-    
-//    var currentLocation: CLLocation? = LocationService.sharedInstance.currentLocation
-//    var reloadServiceData: Bool = LocationService.sharedInstance.currentLocation == nil ? true : false {
-//        didSet {
-//            print("reloadServiceData", reloadServiceData, currentLocation)
-//        }
-//    }
-    
+
     var refreshControl: UIRefreshControl?
+    
+//    var hasFavoritedArray: [HasFavorited]?
     
     private let cellId = "cellId"
     private let headerId = "headerId"
 
     let searchController = UISearchController(searchResultsController: nil)
     var isShowSearchResult: Bool = false
-    var searchArr: [BikeStationInfo] = [BikeStationInfo]() {
+    var searchArr: [StationInfo] = [StationInfo]() {
         didSet {
             self.collectionView?.reloadData()
         }
     }
     
-    var favoritedArr: [BikeStationInfo] = [BikeStationInfo]() {
+    var favoritedArr: [StationInfo] = [StationInfo]() {
         didSet {
             self.collectionView?.reloadData()
         }
@@ -47,15 +42,36 @@ class StationController: UICollectionViewController, UICollectionViewDelegateFlo
         }
     }
     
+    var choosefavoritedArr = [StationInfo]()
+    
+//    lazy var fetchedResultController: NSFetchedResultsController<NSFetchRequestResult> = {
+//        let fetchedRequest = NSFetchRequest<NSFetchRequestResult>(entityName: String(describing: ButtonStatus.self))
+//        fetchedRequest.sortDescriptors = [NSSortDescriptor(key: "stationId", ascending: true)]
+//        let frc = NSFetchedResultsController(fetchRequest: fetchedRequest, managedObjectContext: CoreDataStack.sharedInstance.persistentContainer.viewContext, sectionNameKeyPath: nil, cacheName: nil)
+//        frc.delegate = self
+//        return frc
+//    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-//        getStationService()
-        SetService.sharedInstance.getStationService(setCollectionCompletion: {
-           self.collectionView?.reloadData()
+        view.addSubview(self.nodataMessageLabel)
+        
+        GetService.sharedInstance.getStationService(coreDataHandler: { (sortStationIdDatas) in
+            
+//            if LocationService.sharedInstance.currentLocation != nil {
+//                stationDatas = sortStationIdDatas.sorted(by: { $0.distence! < $1.distence! })
+//            } else {
+//                stationDatas = sortStationIdDatas
+//            }
+            
+            self.saveInCoreDataWith(sortedArrayById: sortStationIdDatas)
+        }, collectionViewReloadHandler: {
+             self.collectionView?.reloadData()
         }, messageblock: {
-            if stationBikeDatas.count == 0 {
-                Alert.showAlert(title: "請開啟網路", message: "資料無法下載", vc: self)
+            if stationDatas.count == 0 {
+                Alert.showAlert(title: "資料無法下載", message: "請開啟網路", vc: self)
             }
+            self.nodataMessageLabel.isHidden = !(stationDatas.count == 0)
         })
         
         setupNav()
@@ -63,6 +79,226 @@ class StationController: UICollectionViewController, UICollectionViewDelegateFlo
         setupCollectionView()
         setupRefreshControl()
     }
+    
+//    class func deleteObject(user: User) -> Bool {
+//        let context = getContext()
+//        context.delete(user)
+//
+//        do {
+//            try context.save()
+//            return true
+//        } catch  {
+//            return false
+//        }
+//    }
+    
+//    class func cleanDelete() -> Bool {
+//        let context = getContext()
+//        let delete = NSBatchDeleteRequest(fetchRequest: User.fetchRequest())
+//        do {
+//            try context.execute(delete)
+//            return true
+//        } catch  {
+//            return false
+//        }
+//    }
+    
+    func deleteObject(buttonStatus: ButtonStatus) -> Bool {
+        let context = CoreDataStack.sharedInstance.persistentContainer.viewContext
+        context.delete(buttonStatus)
+        do {
+            try context.save()
+            print("DeleteObject Successed")
+            return true
+        } catch let error {
+            print(error)
+            print("DeleteObject Failed")
+            return false
+        }
+    }
+    
+    func clearData() -> Bool {
+        let context = CoreDataStack.sharedInstance.persistentContainer.viewContext
+        let delete = NSBatchDeleteRequest(fetchRequest: ButtonStatus.fetchRequest())
+        
+        do{
+            try context.execute(delete)
+            print("Batched Delete Successed")
+            return true
+        } catch let error {
+            print("Error Delete CoreData", error.localizedDescription)
+            print("Batched Delete Failed")
+            return false
+        }
+        
+//        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: String(describing: ButtonStatus.self))
+//        do {
+//            let objects = try context.fetch(fetchRequest) as? [NSManagedObject]
+//            _ = objects.map({$0.map({context.delete($0)})})
+//            CoreDataStack.sharedInstance.saveContext()
+//        } catch let error {
+//            print("Error Delete CoreData", error.localizedDescription)
+//        }
+    }
+    
+    func fetchObject() -> [ButtonStatus]? {
+        let context = CoreDataStack.sharedInstance.persistentContainer.viewContext
+        var buttonStatus: [ButtonStatus]? = nil
+        do {
+            buttonStatus = try context.fetch(ButtonStatus.fetchRequest())
+            return buttonStatus
+            
+        } catch {
+            return buttonStatus
+        }
+    }
+    
+    func filterDataByStationName(stationName: String) -> [ButtonStatus]? {
+        let context = CoreDataStack.sharedInstance.persistentContainer.viewContext
+        let fetchRequest: NSFetchRequest<ButtonStatus> = ButtonStatus.fetchRequest()
+        var buttonStatus: [ButtonStatus]? = nil
+
+        let perdicate = NSPredicate(format: "stationName contains[c] %@", stationName)
+        fetchRequest.predicate = perdicate
+        
+        do {
+            buttonStatus = try context.fetch(fetchRequest)
+            return buttonStatus
+        } catch {
+            return buttonStatus
+        }
+    }
+    
+    func filterDataByHasFavoritedButton() -> [ButtonStatus]? {
+        let context = CoreDataStack.sharedInstance.persistentContainer.viewContext
+        let fetchRequest: NSFetchRequest<ButtonStatus> = ButtonStatus.fetchRequest()
+        var buttonStatus: [ButtonStatus]? = nil
+        
+        let perdicate = NSPredicate(format: "hasFavorited == YES")
+        fetchRequest.predicate = perdicate
+        
+        do {
+            buttonStatus = try context.fetch(fetchRequest)
+            return buttonStatus
+        } catch {
+            return buttonStatus
+        }
+    }
+    
+    func filterDataByStationId(stationId: Int16) -> [ButtonStatus]? {
+        let context = CoreDataStack.sharedInstance.persistentContainer.viewContext
+        let fetchRequest: NSFetchRequest<ButtonStatus> = ButtonStatus.fetchRequest()
+        var buttonStatus: [ButtonStatus]? = nil
+        
+        let perdicate = NSPredicate(format: "stationId == \(stationId)")
+        fetchRequest.predicate = perdicate
+        
+        do {
+            buttonStatus = try context.fetch(fetchRequest)
+            return buttonStatus
+        } catch {
+            return buttonStatus
+        }
+    }
+    
+    func updateButtonStatus(by stationId: Int16) -> Bool {
+//        let context = CoreDataStack.sharedInstance.persistentContainer.viewContext
+        let firstdata = filterDataByStationId(stationId: stationId)?.first
+        let buttonStatus = firstdata?.hasFavorited
+        firstdata?.hasFavorited = !buttonStatus!
+        
+        do {
+            try CoreDataStack.sharedInstance.persistentContainer.viewContext.save()
+        } catch let error {
+            print(error)
+        }
+        
+        return (firstdata?.hasFavorited)!
+    }
+    
+    func createButtonStatusEntityFrom(stationInfo: StationInfo) -> NSManagedObject? {
+        let context = CoreDataStack.sharedInstance.persistentContainer.viewContext
+        if let buttonStatusEntity = NSEntityDescription.insertNewObject(forEntityName: "ButtonStatus", into: context) as? ButtonStatus {
+            
+            buttonStatusEntity.stationId = Int16(stationInfo.id!)
+            buttonStatusEntity.stationName = stationInfo.sna!
+            buttonStatusEntity.hasFavorited = false
+            return buttonStatusEntity
+        }
+        return nil
+    }
+    
+    func saveInCoreDataWith(sortedArrayById: [StationInfo]) {
+        
+        if sortedArrayById.count > 0 && (self.fetchObject()?.count) == nil {
+            let clearDataSuccess = clearData()
+            print("clearDataSuccess:",clearDataSuccess)
+            _ = sortedArrayById.map({ self.createButtonStatusEntityFrom(stationInfo: $0) })
+            
+            do {
+                try CoreDataStack.sharedInstance.persistentContainer.viewContext.save()
+            } catch let error {
+                print(error)
+            }
+            
+            var printButtonStatus: [ButtonStatus]? = nil
+            printButtonStatus = self.fetchObject()
+            _ = printButtonStatus!.map({print("corddata = nil迴圈",$0.stationId, $0.stationName!, $0.hasFavorited)})
+            print(self.fetchObject()!.count)
+            
+        } else if sortedArrayById.count > 0 && (self.fetchObject()?.count)! < sortedArrayById.count {
+            
+            var stationNames: [String] = []
+            _ = self.fetchObject()!.map{ stationNames.append($0.stationName!) }
+            let filterStationInfoArray = sortedArrayById.filter({ !stationNames.map{ $0 }.contains($0.sna) })
+            _ = filterStationInfoArray.map({ self.createButtonStatusEntityFrom(stationInfo: $0) })
+            do {
+                try CoreDataStack.sharedInstance.persistentContainer.viewContext.save()
+            } catch let error {
+                print(error)
+            }
+            
+            var printButtonStatus: [ButtonStatus]? = nil
+            printButtonStatus = self.fetchObject()
+            _ = printButtonStatus!.map({print("coredata > download迴圈",$0.stationId, $0.stationName!, $0.hasFavorited)})
+            print(self.fetchObject()!.count)
+            
+        } else if sortedArrayById.count > 0 && (self.fetchObject()?.count)! > sortedArrayById.count {
+            
+            var stationNames: [String] = []
+            _ = self.fetchObject()!.map{ stationNames.append($0.stationName!) }
+            
+            let filterstationNamesArray = stationNames.filter({ !sortedArrayById.map({ $0.sna}).contains($0) })
+            
+            _ = filterstationNamesArray.map({ self.deleteObject(buttonStatus: (self.filterDataByStationName(stationName: $0)?.first)!) })
+
+            var printButtonStatus: [ButtonStatus]? = nil
+            printButtonStatus = self.fetchObject()
+            _ = printButtonStatus!.map({print("coredata > download迴圈",$0.stationId, $0.stationName!, $0.hasFavorited)})
+            print(self.fetchObject()!.count)
+        } else {
+            
+            var printButtonStatus: [ButtonStatus]? = nil
+            printButtonStatus = self.fetchObject()
+            _ = printButtonStatus!.map({print("else迴圈",$0.stationId, $0.stationName!, $0.hasFavorited)})
+            print(self.fetchObject()!.count)
+            
+        }
+    }
+    
+    lazy var nodataMessageLabel: UILabel = {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: screenWidth, height: 150))
+        label.text = "無資料可顯示\n開啟網路後下拉更新頁面"
+        label.numberOfLines = 2
+        label.textAlignment = .center
+        label.font = UIFont.boldSystemFont(ofSize: 22) //
+        label.textColor = stationTitleColor //
+        label.isHidden = true
+        label.adjustsFontSizeToFitWidth = true
+        label.adjustsFontForContentSizeCategory = true
+        label.center = CGPoint(x: self.view.bounds.width/2, y: self.view.bounds.height*0.4)
+        return label
+    }()
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -77,8 +313,9 @@ class StationController: UICollectionViewController, UICollectionViewDelegateFlo
         collectionView?.alwaysBounceVertical = true
         collectionView?.register(StationCell.self, forCellWithReuseIdentifier: cellId)
         collectionView?.register(HeaderCell.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: headerId)
+        
     }
-    
+
     func setupNav() {
         navigationItem.title = "租賃站列表"
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: UIFont.boldSystemFont(ofSize: 22), NSAttributedStringKey.foregroundColor: mapBarColorBlue]
@@ -109,11 +346,10 @@ class StationController: UICollectionViewController, UICollectionViewDelegateFlo
         }, completion: nil)
     }
     
-    var choosefavoritedArr = [BikeStationInfo]()
+    
     
     @objc func handleFavoriteBarBtn(sender: UIButton) {
         choosefavoritedArr = []
-        
         if !isFavoriteBtnPressed {
             favoriteBtnPressed()
         } else {
@@ -132,11 +368,18 @@ class StationController: UICollectionViewController, UICollectionViewDelegateFlo
             self.navigationItem.rightBarButtonItems = items
         }
         
-//        var templetBikeArry = [BikeStationInfo]()
-        guard let hasFavoritedArray = hasFavoritedArray else { return }
-        let templetFavoriteArray = hasFavoritedArray.filter({
-            return $0.hasFavorited
-        })
+        var templetButtonFavoritedArray = [String]()
+        _ = self.filterDataByHasFavoritedButton()?.map({ templetButtonFavoritedArray.append($0.stationName!)})
+        
+        
+        let templeteStationFavoritedArray = stationDatas.filter({ templetButtonFavoritedArray.contains($0.sna!)})
+        
+        choosefavoritedArr = templeteStationFavoritedArray.sorted(by: { $0.distence! < $1.distence! })
+        
+//        guard let hasFavoritedArray = hasFavoritedArray else { return }
+//        let templetFavoriteArray = hasFavoritedArray.filter({
+//            return $0.hasFavorited
+//        })
 //        print(templetFavoriteArray)
 //        for bike in stationBikeDatas {
 //            for favoritedItem in templetFavoriteArray {
@@ -146,9 +389,9 @@ class StationController: UICollectionViewController, UICollectionViewDelegateFlo
 //                }
 //            }
 //        }
-        let templetBikeArry = stationBikeDatas.filter({ return templetFavoriteArray.map({ $0.stationName }).contains( $0.sna ) })
-        
-        choosefavoritedArr = templetBikeArry.sorted(by: {$0.distence! < $1.distence!})
+//        let templetBikeArry = stationDatas.filter({ return templetFavoriteArray.map({ $0.stationName }).contains( $0.sna ) })
+//
+//        choosefavoritedArr = templetBikeArry.sorted(by: {$0.distence! < $1.distence!})
     }
     
     func dismissFavoriteBtnPressed()  {
@@ -188,17 +431,14 @@ class StationController: UICollectionViewController, UICollectionViewDelegateFlo
     
     @objc func refreshContents() {
         refreshControl?.attributedTitle = NSAttributedString(string: "資料更新中")
-        stationBikeDatas.removeAll()
+        stationDatas.removeAll()
         
-//        self.getStationService()
-        SetService.sharedInstance.getStationService(setCollectionCompletion: {
+        GetService.sharedInstance.getStationService(coreDataHandler: { (sortStationIdDatas) in
+            self.saveInCoreDataWith(sortedArrayById: sortStationIdDatas)
+        }, collectionViewReloadHandler: {
             self.collectionView?.reloadData()
         }, messageblock: {
-//            if stationBikeDatas.count == 0 {
-//                Alert.showAlert(title: "更新失敗", message: "請確認網路開啟", vc: self)
-//            }
-        })
-        
+            self.nodataMessageLabel.isHidden = !(stationDatas.count == 0)                     })
         self.collectionView?.reloadData()
         self.perform(#selector(finishedRefreshing), with: nil, afterDelay: 1.5)
     }
@@ -208,56 +448,13 @@ class StationController: UICollectionViewController, UICollectionViewDelegateFlo
             self.refreshControl?.attributedTitle = NSAttributedString(string: "資料更新完成")
         }, completion: { _ in
             self.refreshControl?.endRefreshing()
-            
-            if stationBikeDatas.count == 0 {
+            if stationDatas.count == 0 {
                 Alert.showAlert(title: "更新失敗", message: "請確認網路開啟", vc: self)
             }
+            
         })
     }
     
-//    func getStationService() {
-//
-//        Service.sharedInstance.fetchJsonData(urlString: webString, completion: { (bikeinfos, err) in
-//            if let err = err {
-//                 print("BikeViewController 偵測網路沒開：",err.localizedDescription)
-//                Alert.showAlert(title: "請開啟網路", message: "更新失敗", vc: self)
-//            }
-//            guard let bikeInfos = bikeinfos else { stationBikeDatas = []; return }
-//
-//            let templeteBikeInfos = bikeInfos.sorted(by: { $0.id! < $1.id! })
-//
-//            if bikeInfos.count > 0 && hasFavoritedArray?.count == nil {
-//
-//                var favoritedArr = [HasFavorited]()
-//                _ = templeteBikeInfos.map{ favoritedArr.append(HasFavorited(bikeStationInfo: $0, hasFavorited: false)) }
-//                hasFavoritedArray = favoritedArr
-//
-//            } else if bikeInfos.count > 0 && (hasFavoritedArray?.count)! < bikeInfos.count {
-//
-//                let filterArray = templeteBikeInfos.filter({ !hasFavoritedArray!.map({ $0.stationName }).contains($0.sna) })
-//                _ = filterArray.map({hasFavoritedArray?.append(HasFavorited(bikeStationInfo: $0, hasFavorited: false)) })
-//
-//            } else if bikeInfos.count > 0 && (hasFavoritedArray?.count)! > bikeInfos.count {
-//
-//                let filterArray = hasFavoritedArray?.filter({ !templeteBikeInfos.map({$0.sna}).contains($0.stationName) })
-//                let templateFilterHasFavoritedArray = hasFavoritedArray?.filter({ return !filterArray!.map({$0.stationName}).contains($0.stationName) })
-//                hasFavoritedArray?.removeAll()
-//                hasFavoritedArray = templateFilterHasFavoritedArray
-//
-//            }
-//
-//            if LocationService.sharedInstance.currentLocation != nil {
-//                 stationBikeDatas = bikeInfos.sorted(by: { $0.distence! < $1.distence! })
-//            } else {
-//                stationBikeDatas = bikeInfos
-//            }
-//
-//            DispatchQueue.main.async {
-//                self.collectionView?.reloadData()
-//            }
-////            Alert.showAlert(title: "下載完成", message: TimeHelper.showUpdateTime(timeString: stationBikeDatas[0].mday!), vc: self)
-//        })
-//    }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if isFavoriteBtnPressed {
@@ -266,39 +463,58 @@ class StationController: UICollectionViewController, UICollectionViewDelegateFlo
             if searchController.isActive == true {
                 return self.searchArr.count
             } else {
-                return stationBikeDatas.count
+                return stationDatas.count
             }
         }
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! StationCell
+        cell.stationController = self
         
         var favoritedId: Int
+        var favoritedStationName: String
 
         if isFavoriteBtnPressed {
-            cell.bikeStationInfo = self.choosefavoritedArr[indexPath.item]
+            cell.stationInfos = self.choosefavoritedArr[indexPath.item]
             favoritedId = self.choosefavoritedArr[indexPath.item].id!
+            favoritedStationName = self.choosefavoritedArr[indexPath.item].sna!
+            
             print("chooseFAvoritdArr Id:", favoritedId)
             cell.favoriteButton.tag = favoritedId
-            hasFavoritedArray![favoritedId-1].hasFavorited ? cell.favoriteButton.setImage(#imageLiteral(resourceName: "favstar").withRenderingMode(.alwaysOriginal), for: .normal) : cell.favoriteButton.setImage(#imageLiteral(resourceName: "unfavstar").withRenderingMode(.alwaysOriginal), for: .normal)            
+            
+            (self.filterDataByStationName(stationName: favoritedStationName)?.first?.hasFavorited)! ? cell.favoriteButton.setImage(#imageLiteral(resourceName: "favstar").withRenderingMode(.alwaysOriginal), for: .normal) : cell.favoriteButton.setImage(#imageLiteral(resourceName: "unfavstar").withRenderingMode(.alwaysOriginal), for: .normal)
+            
+            
+            
+//                hasFavoritedArray![favoritedId-1].hasFavorited ? cell.favoriteButton.setImage(#imageLiteral(resourceName: "favstar").withRenderingMode(.alwaysOriginal), for: .normal) : cell.favoriteButton.setImage(#imageLiteral(resourceName: "unfavstar").withRenderingMode(.alwaysOriginal), for: .normal)
+
             
         } else {
             if searchController.isActive == true {
-                cell.bikeStationInfo = self.searchArr[indexPath.item]
+                cell.stationInfos = self.searchArr[indexPath.item]
                 favoritedId = self.searchArr[indexPath.item].id!
+                favoritedStationName = self.searchArr[indexPath.item].sna!
+                
                 print("測試searchArr Id", favoritedId)
                 print("測試searchArr Item", indexPath.item)
                 cell.favoriteButton.tag = favoritedId
                 
             } else {
-                cell.bikeStationInfo = stationBikeDatas[indexPath.item]
-                favoritedId = stationBikeDatas[indexPath.item].id!
+                cell.stationInfos = stationDatas[indexPath.item]
+                favoritedId = stationDatas[indexPath.item].id!
+                favoritedStationName = stationDatas[indexPath.item].sna!
+                
                 cell.favoriteButton.tag = favoritedId
                 print("測試bikeArr Id", favoritedId)
                 print("測試bikeArr Item", indexPath.item)
             }
-             hasFavoritedArray![favoritedId-1].hasFavorited ? cell.favoriteButton.setImage(#imageLiteral(resourceName: "favstar").withRenderingMode(.alwaysOriginal), for: .normal) : cell.favoriteButton.setImage(#imageLiteral(resourceName: "unfavstar").withRenderingMode(.alwaysOriginal), for: .normal)
+            
+            
+            (self.filterDataByStationName(stationName: favoritedStationName)?.first?.hasFavorited)! ? cell.favoriteButton.setImage(#imageLiteral(resourceName: "favstar").withRenderingMode(.alwaysOriginal), for: .normal) : cell.favoriteButton.setImage(#imageLiteral(resourceName: "unfavstar").withRenderingMode(.alwaysOriginal), for: .normal)
+            
+//             hasFavoritedArray![favoritedId-1].hasFavorited ? cell.favoriteButton.setImage(#imageLiteral(resourceName: "favstar").withRenderingMode(.alwaysOriginal), for: .normal) : cell.favoriteButton.setImage(#imageLiteral(resourceName: "unfavstar").withRenderingMode(.alwaysOriginal), for: .normal)
+
         }
         
         return cell
@@ -309,7 +525,7 @@ class StationController: UICollectionViewController, UICollectionViewDelegateFlo
         if searchController.isActive == true {
             print("你選擇的是 \(self.searchArr[indexPath.item].sna!)")
         } else {
-            print("你選擇的是 \(stationBikeDatas[indexPath.item].sna!)")
+            print("你選擇的是 \(stationDatas[indexPath.item].sna!)")
         }
     }
 
@@ -386,7 +602,7 @@ extension StationController: UISearchResultsUpdating {
         guard let searchText = searchController.searchBar.text else { return }
         if searchText.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).count == 0 { return }
 
-        searchArr = stationBikeDatas.filter({ (bikeStation) -> Bool in
+        searchArr = stationDatas.filter({ (bikeStation) -> Bool in
             
             let bikeId = bikeStation.id ?? 0
             let bikeStationId = "#"+String(bikeId)
@@ -409,3 +625,29 @@ extension StationController {
     }
 }
 
+//extension StationController: NSFetchedResultsControllerDelegate {
+//
+//    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+//
+////        collectionView?.performBatchUpdates({
+////
+////        }, completion: {
+////
+////        })
+//
+//    }
+//
+//    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+////        switch type {
+////        case .insert:
+////            collectionView?.insertItems(at: [newIndexPath!])
+////        case .update:
+////            collectionView?.reloadItems(at: [indexPath!])
+////        default:
+////            break
+////        }
+//
+//    }
+//
+//
+//}

@@ -15,7 +15,7 @@ struct HasFavorited {
     let stationName: String
     var hasFavorited: Bool
     
-    init(bikeStationInfo: BikeStationInfo, hasFavorited: Bool?) {
+    init(bikeStationInfo: StationInfo, hasFavorited: Bool?) {
 //        self.bikeStationInfo = bikeStationInfo
             self.stationId = bikeStationInfo.id!
             self.stationName = bikeStationInfo.sna!

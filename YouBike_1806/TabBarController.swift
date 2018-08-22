@@ -12,11 +12,11 @@ import MapKit
 class TabBarController: UITabBarController {
 
     let locationService: LocationService
-    let persistenceManager: PersistenceManager
+//    let persistenceManager: PersistenceManager
     
-    init(locationService: LocationService, persistenceManager: PersistenceManager) {
+    init(locationService: LocationService) {
         self.locationService = locationService
-        self.persistenceManager = persistenceManager
+//        self.persistenceManager = persistenceManager
         super.init(nibName: nil, bundle: nil)
     }
     

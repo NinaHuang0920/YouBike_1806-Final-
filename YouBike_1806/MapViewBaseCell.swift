@@ -76,7 +76,7 @@ class MapViewBaseCell: BaseCell {
         
 //        LocationService.sharedInstance.requestWhenInUseAuthorization()
         
-        SetService.sharedInstance.getMapService(setPinToMapCompletion: {
+        GetService.sharedInstance.getMapService(setPinToMapCompletion: {
             SetPinToMap.sharedInstance.setPinToMap(arrAnnotation: arrAnnotation, in: self.mapView, at: self.mapViewController)
         }, messageblock: {
             Timer.scheduledTimer(withTimeInterval: 2, repeats: false, block: { (_) in
@@ -129,7 +129,7 @@ class MapViewBaseCell: BaseCell {
     @objc func updateMapData(notification: NSNotification) {
         let isShowAlertBlock = notification.name == updateMapDataFromMapViewController
          self.activityIndicator.startAnimating()
-        SetService.sharedInstance.getMapService(setPinToMapCompletion: {
+        GetService.sharedInstance.getMapService(setPinToMapCompletion: {
             SetPinToMap.sharedInstance.setPinToMap(arrAnnotation: arrAnnotation, in: self.mapView, at: self.mapViewController)
         }, messageblock: {
             isShowAlertBlock ? self.showNetworkAlert(mapNetworkCheck: mapNetworkCheck) : nil

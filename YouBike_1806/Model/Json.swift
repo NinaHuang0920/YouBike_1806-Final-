@@ -16,12 +16,12 @@ struct Top: Decodable {
 
 struct BikeResult: Decodable {
 //    let resource_id: String
-    let records: [BikeStationInfo]
+    let records: [StationInfo]
     let total: Int?
     let limit: Int?
 }
 
-class BikeStationInfo: Decodable {
+class StationInfo: Decodable {
     
     var id: Int?
     var sarea: String?     //場站區域(中文)
