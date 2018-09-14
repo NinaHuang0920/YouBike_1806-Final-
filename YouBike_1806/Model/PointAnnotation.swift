@@ -24,19 +24,3 @@ class PointAnnotation: MKPointAnnotation {
     }
 }
 
-
-class PointAnnotation2: MKPointAnnotation {
-    
-    let bikeStationInfo: StationInfo?
-    
-    init(bikeStationInfo: StationInfo) {
-        self.bikeStationInfo = bikeStationInfo
-        super.init()
-        
-        self.title = bikeStationInfo.sna
-        let stationId = bikeStationInfo.id! - 1
-        self.subtitle = String(stationId)
-        guard let bikeStationLocate = bikeStationInfo.coordinate2D else { return }
-        self.coordinate = bikeStationLocate
-    }
-}

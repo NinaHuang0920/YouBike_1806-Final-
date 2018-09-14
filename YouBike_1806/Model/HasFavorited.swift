@@ -9,24 +9,15 @@
 import Foundation
 
 struct HasFavorited {
-    
-//    var bikeStationInfo: BikeStationInfo
+
     let stationId: Int
     let stationName: String
     var hasFavorited: Bool
     
     init(bikeStationInfo: StationInfo, hasFavorited: Bool?) {
-//        self.bikeStationInfo = bikeStationInfo
             self.stationId = bikeStationInfo.id!
             self.stationName = bikeStationInfo.sna!
             self.hasFavorited = hasFavorited!
     }
-    
-    
-//    init(stationId: Int, stationName: String) {
-//        self.stationId = stationId
-//        self.stationName = stationName
-//        self.hasFavorited = false
-//    }
     
 }

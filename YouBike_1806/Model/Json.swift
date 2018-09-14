@@ -15,7 +15,6 @@ struct Top: Decodable {
 }
 
 struct BikeResult: Decodable {
-//    let resource_id: String
     let records: [StationInfo]
     let total: Int?
     let limit: Int?
